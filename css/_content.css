@@ -1,0 +1,28 @@
+/*
+	Content.css - stylesheet or all content-oriented styles
+*/
+
+/* SECTIONS & DIVS */
+section#content
+{
+	clear: both;
+	height: 100%;
+}
+
+div#text
+{
+	position: relative;
+	height: 100%;
+}
+
+div#text textarea
+{
+	border: 2px solid #000;
+	box-sizing:border-box;
+	/*position: absolute;*/
+	/*top: 0;*/
+	/*left: 0;*/
+	padding: 10px;
+	height: 100%;
+	width: 100%;
+}

@@ -1,0 +1,10 @@
+/*
+	Fonts.css - stylesheet for importing all external fonts
+*/
+
+/* TITLE */
+@import url(http://fonts.googleapis.com/css?family=Quicksand);
+
+/* BODY */
+/* https://www.google.com/fonts#UsePlace:use/Collection:Open+Sans */
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);

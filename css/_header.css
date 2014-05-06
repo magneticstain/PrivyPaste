@@ -1,0 +1,39 @@
+/*
+	Header.css - stylesheet or all header-oriented styles
+*/
+
+header
+{
+	height: 80px;
+}
+
+header h1, header p
+{
+	display: inline;
+}
+
+div#logo
+{
+	float: left;
+	width: 300px;
+}
+
+/* HEADINGS */
+div#logo h1
+{
+	font: 2.5em 'Quicksand', sans-serif;
+	line-height: 80px;
+}
+
+/* IMGS */
+div#logo img
+{
+	vertical-align: super;
+}
+
+/* TEXT */
+header p
+{
+	float: right;
+	margin: 10px 15px;
+}
