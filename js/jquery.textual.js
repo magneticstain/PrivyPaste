@@ -8,6 +8,15 @@
     Textual - a jQuery library used in PrivyPaste or any text-related manipulations to the view
  */
 
+function setFocusToMainTextarea()
+{
+    // puts th focus on the main textarea on the index page
+    $('textarea#mainText').focus();
+
+    // make sure to update the main text based on what's in it (usually clearing it if it's the initial load of the page)
+    updateMainTxt();
+}
+
 function sendToMainTextarea(text)
 {
     // update main text area on index page with given text string

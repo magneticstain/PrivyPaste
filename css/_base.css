@@ -2,7 +2,7 @@
 	Base.css - stylesheet for all base-tag-oriented or widely-used styles
 */
 
-html, body
+html, body, div#container
 {
 	height: 100%;
 }
@@ -14,10 +14,9 @@ body
 }
 
 /* DIVS */
-#container
+div#container
 {
 	margin: 0 auto;
-	height: 100%;
 	width: 98%;
 }
 
