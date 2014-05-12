@@ -2,6 +2,34 @@
 	Header.css - stylesheet or all header-oriented styles
 */
 
+#ticker
+{
+	background: #333;
+	color: #999;
+	font: 1.2em 'Raleway', sans-serif;
+	line-height: 30px;
+	margin-bottom: 5px;
+	overflow: hidden;
+	text-align: center;
+	height: 30px;
+	width: 100%;
+}
+
+/*.tickerModule*/
+/*{*/
+	/*margin: 0 5px;*/
+/*}*/
+
+/*.tickerModule:first-of-type*/
+/*{*/
+	/*float: left;*/
+/*}*/
+
+/*.tickerModule:nth-of-type(2)*/
+/*{*/
+	/*float: right;*/
+/*}*/
+
 header
 {
 	height: 80px;
@@ -35,5 +63,5 @@ div#logo img
 header p
 {
 	float: right;
-	margin: 10px 15px;
+	margin: 0 15px;
 }

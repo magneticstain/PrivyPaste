@@ -7,7 +7,8 @@
 
 /*
  *  lib/Pastrie.php - a library containing the class Paste() - an object representing a paste and all associated
- * 						characteristics.
+ * 						characteristics. One of the components of the 'model' portion of the underlying MVC
+ * 						framework.
  */
 
 class Paste

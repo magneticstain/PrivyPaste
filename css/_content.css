@@ -14,13 +14,9 @@ section#content
 	height: 95%;
 }
 
-div#text, div#textUploadButton
-{
-	border: 2px solid #000;
-}
-
 div#text
 {
+	border: 2px solid #000;
 	overflow: hidden;
 	position: relative;
 }
@@ -28,6 +24,7 @@ div#text
 div#textUploadButton
 {
 	background: #333333;
+	border-bottom: 2px solid #000;
 	color: #D1463D;
 	cursor: pointer;
 	font: 2em 'Raleway', sans-serif;
