@@ -1,0 +1,16 @@
+-> Pastebin()
+	-> userId
+	-> token
+	-> username
+	-> db connection
+	-> page generation
+-> Paste()
+	-> In Motion
+		-> userId
+		-> creation date
+		-> expiration date
+		-> last updated
+		-> title
+		-> text
+	-> At Rest
+		-> views

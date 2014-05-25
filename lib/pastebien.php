@@ -18,17 +18,18 @@ class Pastebin
 	protected $username;
 
 	public function __construct(
-		$token = null,
 		$userId = 0,
-		$username = null
+		$username = 'default',
+		$token = null
 	)
 	{
 		if(
-			!$this->setToken($token)
-			|| !$this->setUserId($userId)
+			!$this->setUserId($userId)
 			|| !$this->setUsername($username)
+			|| !$this->setToken($token)
 		)
 		{
+//			echo $this->setUserId($userId)." -- ".$this->setUsername($username)." -- ".$this->setToken($token);
 			// invalid; throw exception
 			throw new Exception('ERROR: could not create new pastebin!');
 		}
@@ -40,21 +41,21 @@ class Pastebin
 		return $this->userId;
 	}
 
-	public function getToken()
-	{
-		return $this->token;
-	}
-
 	public function getUsername()
 	{
 		return $this->username;
+	}
+
+	public function getToken()
+	{
+		return $this->token;
 	}
 
 	// SETTERS
 	public function setUserId($userId)
 	{
 		// user id must be a numeral up to 11 digits long (due to db constraints)
-		if(is_numeric($userId) && ($userId > 0 && $userId < 100000000000))
+		if(is_numeric($userId) && ($userId >= 0 && $userId < 100000000000))
 		{
 			// valid
 			$this->userId = $userId;
@@ -63,23 +64,6 @@ class Pastebin
 		}
 
 		// invalid
-		return false;
-	}
-
-	public function setToken($token)
-	{
-		// token is a 16 byte (128-bit) hex string of random bytes generated from OpenSSL
-
-		// try to get token
-		if($newToken = $this->generateCSRFToken())
-		{
-			// successfully generated
-			$this->token = $newToken;
-
-			return true;
-		}
-
-		// something went wrong; OpenSSL is probably not present or < PHP5 installed
 		return false;
 	}
 
@@ -94,27 +78,53 @@ class Pastebin
 		{
 			// valid
 			$this->username = $username;
+
+			return true;
 		}
 
 		// invalid
 		return false;
 	}
 
-	// OTHER FUNCTIONS
-
-
-	protected function generateCSRFToken()
+	public function setToken($token)
 	{
-		// generates a cryptographically secure token used to prevent CSRF attacks
-		// gathered from OpenSSL
+		// token is a 16 byte (128-bit) hex string of random bytes generated from OpenSSL
+		$newToken = '';
 
-		// "cyptographically-strong" variable must be passed by reference with openssl_random_psuedo_bytes(),
-		// so cflag is set in its own variable
-		$cryptographicallySecure = true;
+		// check input token
+		if($token === null)
+		{
+			// try to generate new token
+			if(!$newToken = $this->generateCSRFToken())
+			{
+				// log error
+				error_log('ERROR: could not generate CSRF token - please check OpenSSL library integrity!');
 
-		return bin2hex(openssl_random_pseudo_bytes(16, $cryptographicallySecure));
+				// something went wrong; OpenSSL is probably not present or < PHP5 installed
+				return false;
+			}
+		}
+		elseif(ctype_xdigit($token) && strlen($token) === 64) // check if valid token string format
+		{
+			// token already generated
+			$newToken = $token;
+		}
+
+		// check if a new token has been fed in or generated
+		if(!empty($newToken))
+		{
+			// token found, set as object token
+			$this->token = $newToken;
+
+			return true;
+		}
+
+		// something went wrong...
+		return false;
 	}
 
+	// OTHER FUNCTIONS
+	// SECURITY/SANATIZATION/VERIFICATION
 	public function isValidString($string)
 	{
 		// checks if string is valid (i.e. not blank or null)
@@ -130,5 +140,16 @@ class Pastebin
 
 		// invalid
 		return false;
+	}
+	protected function generateCSRFToken()
+	{
+		// generates a cryptographically secure token used to prevent CSRF attacks
+		// gathered from OpenSSL
+
+		// "cyptographically-strong" variable must be passed by reference with openssl_random_psuedo_bytes(),
+		// so cflag is set in its own variable
+		$cryptographicallySecure = true;
+
+		return bin2hex(openssl_random_pseudo_bytes(32, $cryptographicallySecure));
 	}
 }
