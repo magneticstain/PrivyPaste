@@ -9,22 +9,33 @@
  */
 
 $(document).ready(function(){
+    /*
+        VIEW-ORIENTED LOGIC
+     */
     // focus on main textarea on load of page
     setFocusToMainTextarea();
 
     // clear text in main textarea if default text, and replace if blank
-    $('textarea#mainText').focus(function(){
+    mainTextarea.focus(function(){
         // send to update function
-        updateMainTxt();
+        checkMainTextarea();
     }).blur(function(){
         // send to update function
-        updateMainTxt();
+        checkMainTextarea();
     });
 
     // change opacity of upload button on hover
-    $('div#textUploadButton').hover(function(){
+    uploadButton.hover(function(){
         $(this).fadeTo(400, 1);
     },function(){
         $(this).fadeTo(400,.85);
+    });
+
+    /*
+        CONTROLLER-ORIENTED LOGIC
+     */
+    // upload main text on click of upload button
+    uploadButton.click(function(){
+        uploadText();
     });
 });

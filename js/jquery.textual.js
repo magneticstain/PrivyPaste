@@ -8,34 +8,69 @@
     Textual - a jQuery library used in PrivyPaste or any text-related manipulations to the view
  */
 
+function isValidText(rawText)
+{
+    // checks if the given text is valid (i.e. not blank, null, etc)
+
+    // trim whitespace
+    var trimmedText = rawText.trim();
+
+    // check if blank
+    if(trimmedText !== '' || trimmedText !== null)
+    {
+        // valid
+        return true;
+    }
+
+    // invalid
+    return false;
+}
+
 function setFocusToMainTextarea()
 {
     // puts th focus on the main textarea on the index page
-    $('textarea#mainText').focus();
+    mainTextarea.focus();
 
     // make sure to update the main text based on what's in it (usually clearing it if it's the initial load of the page)
-    updateMainTxt();
+    checkMainTextarea();
 }
 
-function sendToMainTextarea(text)
+function getMainTextarea()
+{
+    // returns text from the main textarea
+    // should never be null
+    var mainText = mainTextarea.val();
+
+    if(typeof mainText !== null)
+    {
+        return mainText;
+    }
+    else
+    {
+        return '';
+    }
+}
+
+function sendToMainTextarea(newText)
 {
     // update main text area on index page with given text string
-    $('textarea#mainText').val(text);
+    mainTextarea.val(newText);
 }
 
-function updateMainTxt()
+function checkMainTextarea()
 {
-    // update the main text area with the default text or no text, depending on the current text
-    var currentTxt = $('textarea#mainText').val();
+    // update the main text area with the default text or no text, depending on the current text. usually performed on
+    // focus or blur of textarea
+    var currentText = getMainTextarea(),
+        defaultText = 'Enter your text here!',
+        newText = '';
 
-    if(currentTxt === 'Enter your text here!')
-    {
-        // default text, clear it out
-        sendToMainTextarea('');
-    }
-    else if(currentTxt === '')
+    // check if the text is blank
+    if(currentText === '')
     {
         // no input, replace with default text
-        sendToMainTextarea('Enter your text here!');
+        newText = defaultText;
     }
+
+    sendToMainTextarea(newText);
 }

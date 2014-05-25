@@ -26,6 +26,11 @@ div#container
 	color: #CC2014;
 }
 
+.statusMsg
+{
+	margin: 15px;
+}
+
 /* LINKS */
 a:link,a:visited
 {

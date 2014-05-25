@@ -28,6 +28,7 @@ div#textUploadButton
 	color: #D1463D;
 	cursor: pointer;
 	font: 2em 'Raleway', sans-serif;
+	height: 100px;
 	opacity: .85;
 	padding: 20px 0;
 	text-align: center;
@@ -43,8 +44,18 @@ div#text textarea
 }
 
 /* IMGS */
-#textUploadButton img
+div#textUploadButton img
 {
 	margin: 0 15px;
 	vertical-align: middle;
+}
+
+/* OTHER */
+div#textUploadButton hr
+{
+	/*background: #881A14;*/
+	background: #E84B43;
+	border: none;
+	height: 3px;
+	width: 30%;
 }
