@@ -1,2 +1,5 @@
 # PHPStorm project files folder
 .idea/
+
+# certain docs
+docs/data_layout_notes.txt
