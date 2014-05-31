@@ -5,7 +5,7 @@
  *  Email: jcarlson@carlso.net
  */
 
-	// set db parameters here
+	// set default db parameters
 	$_conf_db_host = '';
 	$_conf_db_username = '';
 	$_conf_db_password = '';

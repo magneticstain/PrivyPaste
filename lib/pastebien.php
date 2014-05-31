@@ -219,7 +219,7 @@ class Pastebin
 	}
 
 	// VIEW
-	public function outputHtml($key = 'index')
+	public function outputHtml($key = 'index', $outputToScreen = false)
 	{
 		// outputs HTML based on given key (i.e. which page)
 		// html header
@@ -280,7 +280,7 @@ class Pastebin
 		';
 
 		// get rest of content html based on key(page)
-		if($this->isValidString($key = 'index', $outputToScreen = false))
+		if($this->isValidString($key))
 		{
 			// currently only single key -- case is only an example for further development
 			switch($key)
@@ -310,7 +310,7 @@ class Pastebin
 		$html = $header.$content.$footer;
 
 		// echo out if needed
-		if($outputToScreen)
+		if(is_bool($outputToScreen) && $outputToScreen)
 		{
 			echo $html;
 		}

@@ -26,6 +26,4 @@
 	// output paste form
 	echo $pasteBin->getToken();
 	echo $pasteBin;
-
-	$pasteBin->connectToMysqlDb();
 ?>
