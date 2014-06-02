@@ -178,6 +178,7 @@ class Pastebin
 
 	// DATABASE
 	public function connectToMysqlDb(
+		// default db settings
 		$host = '127.0.0.1',
 		$username = 'privypaste',
 		$password = '',
@@ -193,13 +194,24 @@ class Pastebin
 			// include db conf
 			require $dbConfFilename;
 
+			/*
+			 * [DEV NOTE] I did some research into how best to store db passwords in config files, and the consensus seems
+			 * to be storing it in plaintext and simply relying on the sysadmin to handle the config permissions. I agree
+			 * with that, as web files should already be secured properly on the host.
+			 * src:  https://stackoverflow.com/questions/97984/how-to-secure-database-passwords-in-php
+			 */
 			// check if conf settings are set
-			if($this->isValidString($_conf_db_host))
+			if(
+				$this->isValidString($_conf_db_host)
+				&& $this->isValidString($_conf_db_username)
+				&& $this->isValidString($_conf_db_password)
+				&& $this->isValidString($_conf_db_name)
+			)
 			{
 				$host = $_conf_db_host;
 				$username = $_conf_db_username;
 				$password = $_conf_db_password;
-				$db = $_conf_db_db_name;
+				$db = $_conf_db_name;
 			}
 		}
 
