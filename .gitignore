@@ -7,5 +7,5 @@ data_layout_notes.txt
 # db conf
 db.php
 
-# http conf
-# http.php
+# base conf
+base.php
