@@ -20,8 +20,20 @@
 	// include prereqs
 	require BASE_DIR.'lib/prereq.php';
 
-	$jsonOutput = '';
+	$jsonOutput = array(
+		'error' => 'something went wrong!'
+	);
 
 	// check for token get variable
-//	if()
+	if(isset($_GET['token']) && $pasteBin->isValidString($_GET['token']))
+	{
+		// token set, action is to update it in the db
+		// * check if it already exists
+		// * if not, insert into db
+		// TODO: Add token-check logic
+//		$pasteBin->
+	}
+
+	// output in json format
+	echo json_encode($jsonOutput);
 ?>

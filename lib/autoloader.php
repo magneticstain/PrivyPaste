@@ -28,7 +28,7 @@
 	{
 		// define dependency filenames
 		$dependencies = array(
-			BASE_DIR.'lib/pastebien.php'
+			BASE_DIR.'lib/pastebin.php'
 		);
 
 		openDependencies($dependencies);
@@ -38,7 +38,7 @@
 	{
 		// define dependency filenames
 		$dependencies = array(
-			BASE_DIR.'lib/pastrie.php'
+			BASE_DIR.'lib/paste.php'
 		);
 
 		openDependencies($dependencies);

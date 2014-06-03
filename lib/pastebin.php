@@ -6,7 +6,7 @@
 	 */
 
 	/*
-	 *  lib/Pastebien.php - a library containing the class Pastebin() - an all-encompassing object with site-wide functions
+	 *  lib/Pastebin.php -  a library containing the class Pastebin() - an all-encompassing object with site-wide functions
 	 * 						that other classes can inherit from. One of the components of the 'model' portion of the underlying MVC
 	 * 						framework.
 	 */
@@ -176,6 +176,28 @@
 			return bin2hex(openssl_random_pseudo_bytes(32, $cryptographicallySecure));
 		}
 
+		public function checkTokenInDB($token)
+		{
+			// try to lookup the token in the db
+			// i.e. - check for token validity
+			if($this->isValidString($token))
+			{
+				// TODO: finish building token sql lookup
+				// connect to db
+				$db_conn = $this->connectToMysqlDb();
+
+				// set sql
+				$sql = '';
+
+				// lookup
+
+				// check and return
+
+			}
+
+			return false;
+		}
+
 		// DATABASE
 		public function connectToMysqlDb(
 			// default db settings
@@ -228,6 +250,13 @@
 			$db_conn->autocommit($autocommit);
 
 			return $db_conn;
+		}
+
+		protected function queryDb($db_conn, $dataTypes, $sql)
+		{
+			// take a given mysqli connection and query the db using a parameterized sql query
+			// TODO Add query logic
+
 		}
 
 		// VIEW
