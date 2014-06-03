@@ -24,21 +24,21 @@
 	}
 
 	// DEFINE
-	function autoloadPastebien()
+	function autoloadPastebien($_conf_base_directory = '')
 	{
 		// define dependency filenames
 		$dependencies = array(
-			'lib/pastebien.php'
+			$_conf_base_directory.'/lib/pastebien.php'
 		);
 
 		openDependencies($dependencies);
 	}
 
-	function autoloadPastrie()
+	function autoloadPastrie($_conf_base_directory = '')
 	{
 		// define dependency filenames
 		$dependencies = array(
-			'lib/pastrie.php'
+			$_conf_base_directory.'/lib/pastrie.php'
 		);
 
 		openDependencies($dependencies);

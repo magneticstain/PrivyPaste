@@ -5,8 +5,14 @@
  *  Email: jcarlson@carlso.net
  */
 
+	// include base config files
+	require 'conf/base.php';
+
+	// include autoloader logic
+	require 'lib/autoloader.php';
+
 	// include prereqs
-	require '/lib/prereq.php';
+	require 'lib/prereq.php';
 
 	// output paste form
 	echo $pasteBin->getToken();

@@ -9,9 +9,6 @@
 	 * lib/prereq.php - a library that handles all of the commonly used prerequisites for php scripts
 	 */
 
-	// include autoloader logic
-	require 'autoloader.php';
-
 	// try to create PasteBin() object
 	try
 	{
