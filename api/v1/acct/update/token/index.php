@@ -9,8 +9,10 @@
 	 *  api/current_version/acct/update/token - api feature to update the user token in the database
 	 */
 
-	// include prereqs
-	require '/lib/prereq.php';
+	$directoryRoot = '../../../../../';
+
+	// include aprereq logic
+	require $directoryRoot.'lib/prereq.php';
 
 	$jsonOutput = '';
 

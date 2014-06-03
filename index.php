@@ -6,7 +6,7 @@
  */
 
 	// include prereqs
-	require 'lib/prereq.php';
+	require '/lib/prereq.php';
 
 	// output paste form
 	echo $pasteBin->getToken();

@@ -10,7 +10,7 @@
 	 */
 
 	// include autoloader logic
-	require_once 'autoloader.php';
+	require 'autoloader.php';
 
 	// try to create PasteBin() object
 	try
