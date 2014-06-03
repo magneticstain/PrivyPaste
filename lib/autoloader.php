@@ -1,9 +1,9 @@
 <?php
-/**
- *  Josh Carlson
- *  Created: 5/24/14 10:45 PM
- *  Email: jcarlson@carlso.net
- */
+	/**
+	 *  Josh Carlson
+	 *  Created: 5/24/14 10:45 PM
+	 *  Email: jcarlson@carlso.net
+	 */
 
 	/*
 	 *  lib/Autoloader.php - the autoloader library that loads all libs needed for various classes
@@ -24,21 +24,21 @@
 	}
 
 	// DEFINE
-	function autoloadPastebien($_conf_base_directory = '')
+	function autoloadPastebien()
 	{
 		// define dependency filenames
 		$dependencies = array(
-			$_conf_base_directory.'/lib/pastebien.php'
+			BASE_DIR.'lib/pastebien.php'
 		);
 
 		openDependencies($dependencies);
 	}
 
-	function autoloadPastrie($_conf_base_directory = '')
+	function autoloadPastrie()
 	{
 		// define dependency filenames
 		$dependencies = array(
-			$_conf_base_directory.'/lib/pastrie.php'
+			BASE_DIR.'lib/pastrie.php'
 		);
 
 		openDependencies($dependencies);
