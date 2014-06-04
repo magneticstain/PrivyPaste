@@ -164,7 +164,7 @@
 			return false;
 		}
 
-		protected function generateCSRFToken()
+		private function generateCSRFToken()
 		{
 			// generates a cryptographically secure token used to prevent CSRF attacks
 			// gathered from OpenSSL
@@ -233,7 +233,7 @@
 		}
 
 		// VIEW
-		public function outputHtml($key = 'index', $outputToScreen = false)
+		protected function outputHtml($key = 'index', $outputToScreen = false)
 		{
 			// outputs HTML based on given key (i.e. which page)
 			// html header
