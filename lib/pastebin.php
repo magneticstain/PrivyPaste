@@ -116,14 +116,18 @@
 			// check input token
 			if($token === null)
 			{
-				// try to generate new token
-				if(!$newToken = $this->generateCSRFToken())
+				// check for token cookie
+				if(!$newToken = $this->loadCSRFToken())
 				{
-					// log error
-					error_log('ERROR: Pastebin() -> could not generate CSRF token - please check OpenSSL library integrity and/or PHP version requirement!', 0);
+					// try to generate and set the cookie (prupose of true param) for a new token
+					if(!$newToken = $this->generateCSRFToken(true))
+					{
+						// log error
+						error_log('ERROR: Pastebin() -> could not generate CSRF token - please check OpenSSL library integrity and/or PHP version requirement!', 0);
 
-					// something went wrong; OpenSSL is probably not present or < PHP5 installed
-					return false;
+						// something went wrong; OpenSSL is probably not present or < PHP5 installed
+						return false;
+					}
 				}
 			}
 			elseif(ctype_xdigit($token) && strlen($token) === 64) // check if valid token string format
@@ -132,7 +136,7 @@
 				$newToken = $token;
 			}
 
-			// check if a new token has been fed in or generated
+			// check if there's something to set
 			if(!empty($newToken))
 			{
 				// token found, set as object token
@@ -164,7 +168,21 @@
 			return false;
 		}
 
-		private function generateCSRFToken()
+		private function loadCSRFToken()
+		{
+			// function that loads the token cookie
+			if(
+				isset($_COOKIE['token'])
+//				&& $this->checkTokenInDB($_COOKIE['token'])
+			)
+			{
+				return $_COOKIE['token'];
+			}
+
+			return false;
+		}
+
+		private function generateCSRFToken($addCookie = false, $addToDb = false)
 		{
 			// generates a cryptographically secure token used to prevent CSRF attacks
 			// gathered from OpenSSL
@@ -173,7 +191,22 @@
 			// so cflag is set in its own variable
 			$cryptographicallySecure = true;
 
-			return bin2hex(openssl_random_pseudo_bytes(32, $cryptographicallySecure));
+			$generatedToken = bin2hex(openssl_random_pseudo_bytes(32, $cryptographicallySecure));
+
+			// check if a cookie should be generated for this
+			if($addCookie)
+			{
+				// expire tokens after two weeks
+				setcookie('token', $generatedToken, time()+1209600);
+			}
+
+			// check if token should be added to db
+			if($addToDb)
+			{
+				// query db
+			}
+
+			return $generatedToken;
 		}
 
 		public function checkTokenInDB($token)
