@@ -34,7 +34,7 @@
 			{
 	//			echo $this->setUserId($userId)." -- ".$this->setUsername($username)." -- ".$this->setToken($token);
 				// invalid; throw exception
-				throw new Exception('ERROR: could not create new pastebin!');
+				throw new Exception('ERROR: Pastebin() -> could not create new pastebin! Please verify the connection to the database.');
 			}
 		}
 
@@ -120,7 +120,7 @@
 				if(!$newToken = $this->generateCSRFToken())
 				{
 					// log error
-					error_log('ERROR: could not generate CSRF token - please check OpenSSL library integrity and/or PHP version requirement!', 0);
+					error_log('ERROR: Pastebin() -> could not generate CSRF token - please check OpenSSL library integrity and/or PHP version requirement!', 0);
 
 					// something went wrong; OpenSSL is probably not present or < PHP5 installed
 					return false;
@@ -225,7 +225,7 @@
 				}
 				else
 				{
-					error_log('ERROR: Could not lookup token -> ['.$this->db_conn->connect_error.']');
+					error_log('ERROR: Pastebin() -> Could not lookup token -> ['.$this->db_conn->connect_error.']');
 				}
 			}
 
