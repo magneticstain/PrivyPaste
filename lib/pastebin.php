@@ -13,23 +13,23 @@
 
 	class Pastebin
 	{
+		protected $db_conn;
 		protected $token;
 		protected $userId;
 		protected $username;
-		public $db_conn;
 
 		public function __construct(
+			$db_conn,
 			$userId = 0,
 			$username = 'default',
-			$token = null,
-			$db_conn = null
+			$token = null
 		)
 		{
 			if(
-				!$this->setUserId($userId)
+				!$this->setDbConn($db_conn)
+				|| !$this->setUserId($userId)
 				|| !$this->setUsername($username)
 				|| !$this->setToken($token)
-				|| !$this->setDbConn($db_conn)
 			)
 			{
 	//			echo $this->setUserId($userId)." -- ".$this->setUsername($username)." -- ".$this->setToken($token);
@@ -39,6 +39,11 @@
 		}
 
 		// GETTERS
+		public function getDbConn()
+		{
+			return $this->db_conn;
+		}
+
 		public function getUserId()
 		{
 			return $this->userId;
@@ -54,12 +59,21 @@
 			return $this->token;
 		}
 
-		public function getDbConn()
+		// SETTERS
+		public function setDbConn($db_conn)
 		{
-			return $this->db_conn;
+			// set's db_conn object to perform db queries
+			if(is_a($db_conn, 'mysqli'))
+			{
+				// set database connection object
+				$this->db_conn = $db_conn;
+
+				return true;
+			}
+
+			return false;
 		}
 
-		// SETTERS
 		public function setUserId($userId)
 		{
 			// user id must be a numeral up to 11 digits long (due to db constraints)
@@ -131,23 +145,9 @@
 			return false;
 		}
 
-		public function setDbConn($db_conn)
-		{
-			// set's db_conn object to perform db queries
-			if($db_conn === null)
-			{
-				// generate default db connection
-				$this->db_conn = $this->connectToMysqlDb();
-
-				return true;
-			}
-
-			return false;
-		}
-
 		// OTHER FUNCTIONS
 		// SECURITY/SANATIZATION/VERIFICATION
-		public function isValidString($string)
+		public static function isValidString($string)
 		{
 			// checks if string is valid (i.e. not blank or null)
 			// trim whitespace
@@ -182,81 +182,54 @@
 			// i.e. - check for token validity
 			if($this->isValidString($token))
 			{
-				// TODO: finish building token sql lookup
-				// connect to db
-				$db_conn = $this->connectToMysqlDb();
+				$userId = 0;
 
 				// set sql
-				$sql = '';
+				$sql = '
+						/* PrivyPaste - Pastebin - User - Token Lookup */
+						SELECT
+							id
+						FROM
+							users
+						WHERE
+							token = ?
+				';
 
 				// lookup
-
-				// check and return
-
-			}
-
-			return false;
-		}
-
-		// DATABASE
-		public function connectToMysqlDb(
-			// default db settings
-			$host = '127.0.0.1',
-			$username = 'privypaste',
-			$password = '',
-			$db = 'privypaste',
-			$autocommit = true
-		)
-		{
-			// generate new database connection using default creds/host, given, or in conf file
-			// check db conf file (BASE_DIR should be set in conf/base.php
-			$dbConfFilename = BASE_DIR.'conf/db.php';
-			if(is_readable($dbConfFilename))
-			{
-				// include db conf
-				require $dbConfFilename;
-
-				/*
-				 * [DEV NOTE] I did some research into how best to store db passwords in config files, and the consensus seems
-				 * to be storing it in plaintext and simply relying on the sysadmin to handle the config permissions. I agree
-				 * with that, as web files should already be secured properly on the host.
-				 * src:  https://stackoverflow.com/questions/97984/how-to-secure-database-passwords-in-php
-				 */
-				// check if conf settings are set
-				if(
-					$this->isValidString($_conf_db_host)
-					&& $this->isValidString($_conf_db_username)
-					&& $this->isValidString($_conf_db_password)
-					&& $this->isValidString($_conf_db_name)
-				)
+				// create statement
+				$db_stmt = $this->db_conn->prepare($sql);
+//				var_dump($db_stmt);
+				if($db_stmt)
 				{
-					$host = $_conf_db_host;
-					$username = $_conf_db_username;
-					$password = $_conf_db_password;
-					$db = $_conf_db_name;
+					// bind params
+					$db_stmt->bind_param(
+						's',
+						$token
+					);
+
+					// execute
+					$db_stmt->execute();
+
+					// bind results
+					$db_stmt->bind_result($userId);
+
+					// fetch
+					$db_stmt->fetch();
+
+					// check and return
+					if($userId > 0)
+					{
+						// valid
+						return true;
+					}
+				}
+				else
+				{
+					error_log('ERROR: Could not lookup token -> ['.$this->db_conn->connect_error.']');
 				}
 			}
 
-			// start db connection
-			$db_conn = new mysqli($host, $username, $password, $db);
-			if($db_conn->connect_error)
-			{
-				error_log('ERROR: could not connect to database -> ['.$db_conn->connect_error.']');
-
-				return false;
-			}
-
-			// mysql has connected at this point. time to set the autocommit setting
-			$db_conn->autocommit($autocommit);
-
-			return $db_conn;
-		}
-
-		protected function queryDb($db_conn, $dataTypes, $sql)
-		{
-			// take a given mysqli connection and query the db using a parameterized sql query
-			// TODO Add query logic
-
+			return false;
 		}
 
 		// VIEW

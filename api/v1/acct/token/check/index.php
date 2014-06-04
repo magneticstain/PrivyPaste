@@ -6,7 +6,7 @@
 	 */
 
 	/*
-	 *  api/current_version/acct/update/token - api feature to update the user token in the database
+	 *  api/current_version/acct/token/check - api feature to verify a given user token in the database
 	 */
 
 	$directoryRoot = '../../../../../';
@@ -27,11 +27,8 @@
 	// check for token get variable
 	if(isset($_GET['token']) && $pasteBin->isValidString($_GET['token']))
 	{
-		// token set, action is to update it in the db
-		// * check if it already exists
-		// * if not, insert into db
-		// TODO: Add token-check logic
-//		$pasteBin->
+		// token set, action is to look it up it in the db
+		$jsonOutput = $pasteBin->checkTokenInDB($_GET['token']);
 	}
 
 	// output in json format

@@ -24,7 +24,7 @@
 	}
 
 	// DEFINE
-	function autoloadPastebien()
+	function autoloadPastebin()
 	{
 		// define dependency filenames
 		$dependencies = array(
@@ -34,7 +34,7 @@
 		openDependencies($dependencies);
 	}
 
-	function autoloadPastrie()
+	function autoloadPaste()
 	{
 		// define dependency filenames
 		$dependencies = array(
@@ -44,7 +44,18 @@
 		openDependencies($dependencies);
 	}
 
+	function autoloadDb()
+	{
+		// define dependency filenames
+		$dependencies = array(
+			BASE_DIR.'lib/db.php'
+		);
+
+		openDependencies($dependencies);
+	}
+
 	// REGISTER
-	spl_autoload_register('autoloadPastebien');
-	spl_autoload_register('autoloadPastrie');
+	spl_autoload_register('autoloadPastebin');
+	spl_autoload_register('autoloadPaste');
+	spl_autoload_register('autoloadDb');
 ?>
