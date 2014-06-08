@@ -13,5 +13,15 @@
 
 class Paste
 {
+	private $pasteId;
+	private $owner;
+
+	// CONSTRUCTOR
+
+	// GETTERS
+
+	// SETTERS
+
+	// OTHER FUNCTIONS
 
 }

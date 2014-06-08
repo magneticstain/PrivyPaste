@@ -15,6 +15,8 @@
 	require BASE_DIR.'lib/prereq.php';
 
 	// output paste form
-	echo $pasteBin->getToken();
+//	echo '<pre>';
+//	var_dump($pasteBin);
+//	echo '</pre>';
 	echo $pasteBin;
 ?>

@@ -14,14 +14,14 @@
 	class Pastebin
 	{
 		protected $db_conn;
-		protected $token;
 		protected $userId;
 		protected $username;
+		protected $token;
 
 		public function __construct(
 			$db_conn,
-			$userId = 0,
-			$username = 'default',
+			$userId = 1,
+			$username = 'general_user',
 			$token = null
 		)
 		{
@@ -77,7 +77,7 @@
 		public function setUserId($userId)
 		{
 			// user id must be a numeral up to 11 digits long (due to db constraints)
-			if(is_numeric($userId) && ($userId >= 0 && $userId < 100000000000))
+			if(is_numeric($userId) && ($userId > 0 && $userId < 100000000000))
 			{
 				// valid
 				$this->userId = $userId;
@@ -228,13 +228,16 @@
 			return $generatedToken;
 		}
 
-		public function checkTokenInDB($token, $userId = 1)
+		public function checkTokenInDB($token)
 		{
 			// try to lookup the token in the db
 			// i.e. - check for token validity
 			if($this->isValidString($token))
 			{
 				$tokenId = 0;
+
+				// get user ID and place into local variable (necessary for binding mysqli params)
+				$userId = $this->userId;
 
 				// set sql
 				$sql = '
@@ -247,6 +250,7 @@
 							token = ?
 						AND
 							user_id = ?
+						LIMIT 1
 				';
 
 				// lookup
@@ -331,6 +335,22 @@
 		}
 
 		// VIEW
+		private function generateOutputNavMenu()
+		{
+			// generate a nav menu
+			// default is the general menu for non-logged-in users
+			$navMenu = '<p id="accountInfo"><a href="login.php" title="Login to your PrivyPaste Account">Login</a> | <a href="signup.php" title="Sign Up for a PrivyPaste Account">Sign Up</a></p>';
+
+			// can be customized for those that are logged in
+			if($this->userId > 1)
+			{
+				// customized version
+				$navMenu = '<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="logout.php" title="Logout of Your Account">Logout</a></p>';
+			}
+
+			return $navMenu;
+		}
+
 		protected function outputHtml($key = 'index', $outputToScreen = false)
 		{
 			// outputs HTML based on given key (i.e. which page)
@@ -359,7 +379,7 @@
 						</div>
 						<div id="container">
 							<header>
-								<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="signout.php" title="Sign Out of Your Account">Sign Out</a></p>
+								'.$this->generateOutputNavMenu().'
 								<div id="logo">
 									<img src="media/icons/paper_airplane.png" alt="Welcome to PrivyPaste!" />
 									<h1 class="accent">Privy</h1><h1>Paste</h1>
@@ -370,17 +390,6 @@
 			// content html
 			$content = '
 							<section id="content">
-			';
-
-			// footer html
-			$footer = '
-							</section>
-							<footer>
-								2014 &copy; Joshua Carlson-Purcell | <a target="_blank" href="http://opensource.org/licenses/MIT">The MIT License (MIT)</a>
-							</footer>
-						</div>
-					</body>
-				</html>
 			';
 
 			// get rest of content html based on key(page)
@@ -409,6 +418,17 @@
 						break;
 				}
 			}
+
+			// footer html
+			$footer = '
+							</section>
+							<footer>
+								2014 &copy; Joshua Carlson-Purcell | <a target="_blank" href="http://opensource.org/licenses/MIT">The MIT License (MIT)</a>
+							</footer>
+						</div>
+					</body>
+				</html>
+			';
 
 			// assemble html stream
 			$html = $header.$content.$footer;
