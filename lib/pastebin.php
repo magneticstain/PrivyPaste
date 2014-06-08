@@ -116,12 +116,13 @@
 			// check input token
 			if($token === null)
 			{
-				// check for token cookie
+				// no token sent, start by checking for token cookie
 				if(!$newToken = $this->loadCSRFToken())
 				{
-					// try to generate and set the cookie (prupose of true param) for a new token
-					if(!$newToken = $this->generateCSRFToken(true))
+					// try to generate, add to the database, and set the cookie (<= purpose of two true params below) for a new token
+					if(!$newToken = $this->generateCSRFToken(true, true))
 					{
+						// well, this sucks...
 						// log error
 						error_log('ERROR: Pastebin() -> could not generate CSRF token - please check OpenSSL library integrity and/or PHP version requirement!', 0);
 
@@ -171,12 +172,27 @@
 		private function loadCSRFToken()
 		{
 			// function that loads the token cookie
-			if(
-				isset($_COOKIE['token'])
-//				&& $this->checkTokenInDB($_COOKIE['token'])
-			)
+			if(isset($_COOKIE['token']))
 			{
-				return $_COOKIE['token'];
+				// validate
+				if($this->checkTokenInDB($_COOKIE['token']))
+				{
+					return $_COOKIE['token'];
+				}
+				else
+				{
+					// get ip
+
+					// check if behind proxy
+					// most proxies will supply the X-FORWARDED-FOR HTTP header field
+					$realIp = $_SERVER['REMOTE_ADDR'];
+					if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+					{
+						$realIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
+					}
+
+					error_log('ERROR: Pastebin() -> Invalid token supplied -> Remote IP:['.$_SERVER['REMOTE_ADDR'].'] -> Actual IP: ['.$realIp.']');
+				}
 			}
 
 			return false;
@@ -203,54 +219,59 @@
 			// check if token should be added to db
 			if($addToDb)
 			{
-				// query db
+				if(!$this->addTokenToDB($generatedToken))
+				{
+					return false;
+				}
 			}
 
 			return $generatedToken;
 		}
 
-		public function checkTokenInDB($token)
+		public function checkTokenInDB($token, $userId = 1)
 		{
 			// try to lookup the token in the db
 			// i.e. - check for token validity
 			if($this->isValidString($token))
 			{
-				$userId = 0;
+				$tokenId = 0;
 
 				// set sql
 				$sql = '
 						/* PrivyPaste - Pastebin - User - Token Lookup */
 						SELECT
-							id
+							token_id
 						FROM
-							users
+							tokens
 						WHERE
 							token = ?
+						AND
+							user_id = ?
 				';
 
 				// lookup
 				// create statement
 				$db_stmt = $this->db_conn->prepare($sql);
-//				var_dump($db_stmt);
 				if($db_stmt)
 				{
 					// bind params
 					$db_stmt->bind_param(
-						's',
-						$token
+						'si',
+						$token,
+						$userId
 					);
 
 					// execute
 					$db_stmt->execute();
 
 					// bind results
-					$db_stmt->bind_result($userId);
+					$db_stmt->bind_result($tokenId);
 
 					// fetch
 					$db_stmt->fetch();
 
 					// check and return
-					if($userId > 0)
+					if($tokenId > 0)
 					{
 						// valid
 						return true;
@@ -260,6 +281,50 @@
 				{
 					error_log('ERROR: Pastebin() -> Could not lookup token -> ['.$this->db_conn->connect_error.']');
 				}
+			}
+
+			return false;
+		}
+
+		private function addTokenToDB($token, $userId = 1)
+		{
+			// add a valid token to the token table in the db
+			// set sql
+			$sql = '
+					/* PrivyPaste - Pastebin - User - Token Insert */
+					INSERT
+					INTO
+						tokens
+						(token, user_id)
+					VALUES
+						(?, ?)
+			';
+
+			// insert into db
+			// create statement
+			$db_stmt = $this->db_conn->prepare($sql);
+			if($db_stmt)
+			{
+				// bind params
+				$db_stmt->bind_param(
+					'si',
+					$token,
+					$userId
+				);
+
+				// execute
+				$db_stmt->execute();
+
+				// check and return
+				if($db_stmt->affected_rows === 1)
+				{
+					// valid
+					return true;
+				}
+			}
+			else
+			{
+				error_log('ERROR: Pastebin() -> Could not insert token into db -> ['.$this->db_conn->connect_error.']');
 			}
 
 			return false;
@@ -291,13 +356,6 @@
 					<body id="home">
 						<div id="ticker">
 							<strong>Most Recent Pastes:</strong><a href="#">Test Alpha #1</a> &bull; <a href="#">Test Beta #2</a> &bull; <a href="#">Test Gamma #3</a> &bull; <a href="#">Test Gamma #4</a> &bull; <a href="#">Test Gamma #5</a>
-							<!--<div id="mostRecentPastes" class="tickerModule">-->
-								<!--<strong>Most Recent Pastes:</strong><a href="#">Test Alpha #1</a> &bull; <a href="#">Test Beta #2</a> &bull; <a href="#">Test Gamma #3</a>-->
-							<!--</div>-->
-							<!--&there4;-->
-							<!--<div id="mostViewedPastes" class="tickerModule">-->
-								<!--<strong>Most Viewed Pastes:</strong><a href="#">Test #1</a> &bull; <a href="#">Test #2</a> &bull; <a href="#">Test #3</a>-->
-							<!--</div>-->
 						</div>
 						<div id="container">
 							<header>
@@ -312,7 +370,6 @@
 			// content html
 			$content = '
 							<section id="content">
-
 			';
 
 			// footer html
