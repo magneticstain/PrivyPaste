@@ -241,15 +241,17 @@
 
 				// set sql
 				$sql = '
-						/* PrivyPaste - Pastebin - User - Token Lookup */
+						/* PrivyPaste - Pastebin - User - Token Verification */
 						SELECT
 							token_id
 						FROM
-							tokens
+							sessions
 						WHERE
 							token = ?
 						AND
 							user_id = ?
+						AND
+							created >= DATE_SUB(NOW(), INTERVAL 1 DAY)
 						LIMIT 1
 				';
 
@@ -298,10 +300,10 @@
 					/* PrivyPaste - Pastebin - User - Token Insert */
 					INSERT
 					INTO
-						tokens
-						(token, user_id)
+						sessions
+						(token, user_id, created)
 					VALUES
-						(?, ?)
+						(?, ?, NOW())
 			';
 
 			// insert into db
@@ -334,18 +336,63 @@
 			return false;
 		}
 
+		// STATS
+		public function getNumCurrentSessions()
+		{
+			// gets number of open sessions, server-side
+			$numSessions = 0;
+
+			return $numSessions;
+		}
+
+		public function getTotalNumPastes()
+		{
+			// retrieve total number of pastes uploaded
+			$totalNumPastes = 0;
+
+			return $totalNumPastes;
+		}
+
+		public function getAvgNumPastes()
+		{
+			// calculates average number of pastes per day (24 hours)
+			$avgNumPastes = 0;
+
+			return $avgNumPastes;
+		}
+
 		// VIEW
 		private function generateOutputNavMenu()
 		{
 			// generate a nav menu
-			// default is the general menu for non-logged-in users
-			$navMenu = '<p id="accountInfo"><a href="login.php" title="Login to your PrivyPaste Account">Login</a> | <a href="signup.php" title="Sign Up for a PrivyPaste Account">Sign Up</a></p>';
-
-			// can be customized for those that are logged in
-			if($this->userId > 1)
+			// default is stats, or the general menu for non-logged-in users if logins are enabled
+			if(USE_LOGIN === true) // prevent mistakes such as using "false", i.e. as a string which would make this true
 			{
-				// customized version
-				$navMenu = '<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="logout.php" title="Logout of Your Account">Logout</a></p>';
+				// set default login/sign up buttons
+				$navMenu = '<p id="accountInfo"><a href="login.php" title="Login to your PrivyPaste Account">Login</a> | <a href="signup.php" title="Sign Up for a PrivyPaste Account">Sign Up</a></p>';
+
+				// can be customized for those that are logged in
+				if($this->userId > 1)
+				{
+					// customized version
+					$navMenu = '<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="logout.php" title="Logout of Your Account">Logout</a></p>';
+				}
+			}
+			else
+			{
+				// generate states
+				$totalPastes = $this->getTotalNumPastes();
+				$avgPastes = $this->getAvgNumPastes();
+				$numSessions = $this->getNumCurrentSessions();
+
+				// format
+				$navMenu = '
+					<div class="stats">
+						<p>['.$totalPastes.']</p><p class="accent">Total Pastes:</p>
+						<p>['.$avgPastes.']</p><p class="accent">Avg Pastes Per Day:</p>
+						<p>['.$numSessions.']</p><p class="accent">Current Sessions:</p>
+					</div>
+				';
 			}
 
 			return $navMenu;

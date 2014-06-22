@@ -15,6 +15,7 @@
 	require BASE_DIR.'lib/prereq.php';
 
 	// output paste form
+	// PasteBin() object is set in the prereq.php library
 //	echo '<pre>';
 //	var_dump($pasteBin);
 //	echo '</pre>';
