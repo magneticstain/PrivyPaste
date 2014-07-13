@@ -10,12 +10,12 @@
 	// set http parameters - e.g. base url, base directory
 	// Base URL
 	// change me before putting into production!
-	define('BASE_URL', '');
+	define('BASE_URL', 'http://www.carlsonet.io');
 
 	// Base Directory
 	// NOTE: make sure to include the ending '/'
 	// you MAY have to change me before putting into production...
-	define('BASE_DIR', $_SERVER['DOCUMENT_ROOT'].'');
+	define('BASE_DIR', $_SERVER['DOCUMENT_ROOT'].'PrivyPaste/');
 
 	// USER OPTIONS
 	// Add Login Functionality
