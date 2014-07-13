@@ -136,7 +136,8 @@ class Paste extends Pastebin
 		$encryptedString = '';
 
 		// extract public key
-		$publicKey = openssl_get_publickey(PUBLIC_KEY);
+		$publibKeyFile = file_get_contents(PUBLIC_KEY);
+		$publicKey = openssl_get_publickey($publibKeyFile);
 
 		// check for keys
 		if($this->isValidString($publicKey))
@@ -150,7 +151,7 @@ class Paste extends Pastebin
 		}
 		else
 		{
-			error_log('ERROR: Paste() -> Private key not defined!');
+			error_log('ERROR: Paste() -> Public key not defined!');
 		}
 
 		return false;
@@ -162,7 +163,8 @@ class Paste extends Pastebin
 		$decryptedString = '';
 
 		// extract private key
-		$privateKey = openssl_get_privatekey(PRIVATE_KEY);
+		$privateKeyFile = file_get_contents(PRIVATE_KEY);
+		$privateKey = openssl_get_privatekey($privateKeyFile);
 
 		// check for public key
 		if($this->isValidString($privateKey))
@@ -175,7 +177,7 @@ class Paste extends Pastebin
 		}
 		else
 		{
-			error_log('ERROR: Paste() -> Public key not defined!');
+			error_log('ERROR: Paste() -> Private key not defined!');
 		}
 
 		return false;
