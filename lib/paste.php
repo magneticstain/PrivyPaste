@@ -136,7 +136,7 @@ class Paste extends Pastebin
 		$encryptedString = '';
 
 		// extract public key
-		$publicKey = openssl_get_publickey(RSA_CERT);
+		$publicKey = openssl_get_publickey(PUBLIC_KEY);
 
 		// check for keys
 		if($this->isValidString($publicKey))
@@ -162,7 +162,7 @@ class Paste extends Pastebin
 		$decryptedString = '';
 
 		// extract private key
-		$privateKey = openssl_get_privatekey(RSA_CERT);
+		$privateKey = openssl_get_privatekey(PRIVATE_KEY);
 
 		// check for public key
 		if($this->isValidString($privateKey))
