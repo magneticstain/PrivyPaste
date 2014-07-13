@@ -135,21 +135,22 @@ class Paste extends Pastebin
 		// encrypts given data using the public key specified in the base.php config file
 		$encryptedString = '';
 
+		// extract public key
+		$publicKey = openssl_get_publickey(RSA_CERT);
+
 		// check for keys
-		if($this->isValidString(PRIVATE_KEY) && $this->isValidString(PUBLIC_KEY))
+		if($this->isValidString($publicKey))
 		{
 			// try encrypting
-			if(openssl_public_encrypt($string, $encryptedString, PUBLIC_KEY))
+			if(openssl_public_encrypt($string, $encryptedString, $publicKey))
 			{
-				// base64 encode it
-				$encryptedString = base64_encode($encryptedString);
-
-				return $encryptedString;
+				// base64 encode it and return
+				return base64_encode($encryptedString);
 			}
 		}
 		else
 		{
-			error_log('ERROR: Paste() -> One or both RSA certificates not set!');
+			error_log('ERROR: Paste() -> Private key not defined!');
 		}
 
 		return false;
@@ -160,10 +161,21 @@ class Paste extends Pastebin
 		// decrypts given encrypted string using the private key specified in the base.php conf file
 		$decryptedString = '';
 
-		// try to decrypt
-		if(openssl_private_decrypt(base64_decode($encryptedString), $decryptedString, PRIVATE_KEY))
+		// extract private key
+		$privateKey = openssl_get_privatekey(RSA_CERT);
+
+		// check for public key
+		if($this->isValidString($privateKey))
 		{
-			return $encryptedString;
+			// try to decrypt
+			if(openssl_private_decrypt(base64_decode($encryptedString), $decryptedString, $privateKey))
+			{
+				return $encryptedString;
+			}
+		}
+		else
+		{
+			error_log('ERROR: Paste() -> Public key not defined!');
 		}
 
 		return false;

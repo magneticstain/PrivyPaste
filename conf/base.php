@@ -24,13 +24,6 @@
 
 	// SECURITY
 	// Certificates
-	// specify the location of your RSA certificates (should be generated separately)
-	// Private Key
-	define('PRIVATE_KEY', '');
-
-	# Private Key Password (Opt.)
-	define('PRIVATE_KEY_PASS', '');
-
-	// Public Key
-	define('PUBLIC_KEY', '');
+	// specify the location of your RSA certificate
+	define('RSA_CERT', '');
 ?>
