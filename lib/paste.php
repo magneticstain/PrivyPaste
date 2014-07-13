@@ -11,17 +11,172 @@
  * 					framework.
  */
 
-class Paste
+class Paste extends Pastebin
 {
 	private $pasteId;
-	private $owner;
+	private $ownerId;
+	private $created;
+	public $contents;
 
 	// CONSTRUCTOR
+	public function __construct(
+		$pasteId = 1,
+		$ownerId = 1,
+		$created = null,
+		$contents = ''
+	)
+	{
+		if(
+			!$this->setPasteId($pasteId)
+			|| !$this->setOwnerId($ownerId)
+			|| !$this->setCreatedTime($created)
+			|| !$this->setContents($contents)
+		)
+		{
+			throw new Exception('ERROR: Paste() -> could not create new paste!');
+		}
+	}
 
 	// GETTERS
+	public function getPasteId()
+	{
+		return $this->pasteId;
+	}
+
+	public function getOwnerId()
+	{
+		return $this->ownerId;
+	}
+
+	public function getCreatedTime()
+	{
+		return $this->created;
+	}
+
+	public function getContents()
+	{
+		return $this->contents;
+	}
 
 	// SETTERS
+	public function setPasteId($pasteId)
+	{
+		// normalize to int
+		$pasteId = (int)$pasteId;
+
+		// paste ID should be between 1 and 9999999999
+		if(0 <= $pasteId && $pasteId <= 9999999999)
+		{
+			$this->pasteId = $pasteId;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function setOwnerId($ownerId)
+	{
+		// normalize to int
+		$ownerId = (int)$ownerId;
+
+		// owner ID should be between 1 and 9999999999
+		if(0 <= $ownerId && $ownerId <= 9999999999)
+		{
+			$this->ownerId = $ownerId;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function setCreatedTime($createdTime)
+	{
+		// created time should be a valid ISO 8601 timestamp (e.g. YYYY-MM-DDTHH:MM:SS)
+		if(strtotime($createdTime))
+		{
+			// valid timestamp
+			$this->created = $createdTime;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function setContents($contents, $encrypt = true)
+	{
+		// contents can be encrypted here (default), or the developer can specify that the content is already
+		// encrypted
+		if($encrypt)
+		{
+			// encrypt contents
+			$contents = $this->encryptString($contents);
+		}
+
+		// verify data
+		// should always be a hex string after encrypting
+		if(ctype_xdigit($contents))
+		{
+			// valid
+			$this->contents = $contents;
+
+			return true;
+		}
+
+		return false;
+	}
 
 	// OTHER FUNCTIONS
+	// ENCRYPTION
+	private function encryptString($string)
+	{
+		// encrypts given data using the public key specified in the base.php config file
+		$encryptedString = '';
 
+		// check for keys
+		if($this->isValidString(PRIVATE_KEY) && $this->isValidString(PUBLIC_KEY))
+		{
+			// try encrypting
+			if(openssl_public_encrypt($string, $encryptedString, PUBLIC_KEY))
+			{
+				// base64 encode it
+				$encryptedString = base64_encode($encryptedString);
+
+				return $encryptedString;
+			}
+		}
+		else
+		{
+			error_log('ERROR: Paste() -> One or both RSA certificates not set!');
+		}
+
+		return false;
+	}
+
+	private function decryptString($encryptedString)
+	{
+		// decrypts given encrypted string using the private key specified in the base.php conf file
+		$decryptedString = '';
+
+		// try to decrypt
+		if(openssl_private_decrypt(base64_decode($encryptedString), $decryptedString, PRIVATE_KEY))
+		{
+			return $encryptedString;
+		}
+
+		return false;
+	}
+
+	// DB
+	protected function sendPasteToDB()
+	{
+		// creates a new paste record in the db
+	}
+
+	protected function updatePasteInDB()
+	{
+		// selects record with set paste ID and updates the record with the object data
+	}
 }

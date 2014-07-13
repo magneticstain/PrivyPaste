@@ -342,6 +342,33 @@
 			// gets number of open sessions, server-side
 			$numSessions = 0;
 
+			// run sql query to get data
+			$sql = "
+					/* PrivyPaste - Pastebin - Stats - Session Count Lookup */
+					SELECT
+						count(*)
+					FROM
+						sessions
+			";
+
+			// create statement
+			$db_stmt = $this->db_conn->prepare($sql);
+			if($db_stmt)
+			{
+				// execute
+				$db_stmt->execute();
+
+				// bind result
+				$db_stmt->bind_result($numSessions);
+
+				// fetch result
+				$db_stmt->fetch();
+			}
+			else
+			{
+				error_log('ERROR: Pastebin() -> Could not insert token into db -> ['.$this->db_conn->connect_error.']');
+			}
+
 			return $numSessions;
 		}
 
