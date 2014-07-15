@@ -5,6 +5,9 @@
 	 *  Email: jcarlson@carlso.net
 	 */
 
+	// set flag to create Pastebin()
+	$createPastebin = true;
+
 	// include base config files
 	require 'conf/base.php';
 

@@ -20,6 +20,7 @@ class Paste extends Pastebin
 
 	// CONSTRUCTOR
 	public function __construct(
+		$db_conn,
 		$pasteId = 1,
 		$ownerId = 1,
 		$created = null,
@@ -27,7 +28,8 @@ class Paste extends Pastebin
 	)
 	{
 		if(
-			!$this->setPasteId($pasteId)
+			!$this->setDbConn($db_conn)
+			|| !$this->setPasteId($pasteId)
 			|| !$this->setOwnerId($ownerId)
 			|| !$this->setCreatedTime($created)
 			|| !$this->setContents($contents)
@@ -98,11 +100,15 @@ class Paste extends Pastebin
 		{
 			// valid timestamp
 			$this->created = $createdTime;
-
-			return true;
+		}
+		else
+		{
+			// invalid timestamp
+			// set to default - current time
+			$this->created = date('Y-m-d H-i-s');
 		}
 
-		return false;
+		return true;
 	}
 
 	public function setContents($contents, $encrypt = true)
@@ -112,12 +118,22 @@ class Paste extends Pastebin
 		if($encrypt)
 		{
 			// encrypt contents
-			$contents = $this->encryptString($contents);
-		}
+			if($contents = $this->encryptString($contents))
+			{
+				// verify data
+				// should always be a base64 string after encrypting
+				// see this stackoverflow thread for source of this base64 verification
+				// https://stackoverflow.com/questions/4278106/how-to-check-if-a-string-is-base64-valid-in-php
+				if(base64_encode(base64_decode($contents)) === $contents)
+				{
+					// valid
+					$this->contents = $contents;
 
-		// verify data
-		// should always be a hex string after encrypting
-		if(ctype_xdigit($contents))
+					return true;
+				}
+			}
+		}
+		elseif(Pastebin::isValidString($contents) || empty($contents))
 		{
 			// valid
 			$this->contents = $contents;
@@ -125,6 +141,7 @@ class Paste extends Pastebin
 			return true;
 		}
 
+		// all else fails...
 		return false;
 	}
 
@@ -136,8 +153,7 @@ class Paste extends Pastebin
 		$encryptedString = '';
 
 		// extract public key
-		$publibKeyFile = file_get_contents(PUBLIC_KEY);
-		$publicKey = openssl_get_publickey($publibKeyFile);
+		$publicKey = file_get_contents(PUBLIC_KEY);
 
 		// check for keys
 		if($this->isValidString($publicKey))
@@ -163,8 +179,7 @@ class Paste extends Pastebin
 		$decryptedString = '';
 
 		// extract private key
-		$privateKeyFile = file_get_contents(PRIVATE_KEY);
-		$privateKey = openssl_get_privatekey($privateKeyFile);
+		$privateKey = file_get_contents(PRIVATE_KEY);
 
 		// check for public key
 		if($this->isValidString($privateKey))
@@ -184,12 +199,12 @@ class Paste extends Pastebin
 	}
 
 	// DB
-	protected function sendPasteToDB()
+	public function sendPasteToDB()
 	{
 		// creates a new paste record in the db
 	}
 
-	protected function updatePasteInDB()
+	public function updatePasteInDB()
 	{
 		// selects record with set paste ID and updates the record with the object data
 	}

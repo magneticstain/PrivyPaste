@@ -155,14 +155,17 @@
 		public static function isValidString($string)
 		{
 			// checks if string is valid (i.e. not blank or null)
-			// trim whitespace
-			$string = trim($string);
-
-			// check
-			if(is_string($string) && !empty($string) && $string !== '\0') // protects from NULL byte vuln
+			if(is_string($string))
 			{
-				// valid
-				return true;
+				// trim whitespace
+				$string = trim($string);
+
+				// check
+				if(is_string($string) && !empty($string) && $string !== '\0') // protects from NULL byte vuln
+				{
+					// valid
+					return true;
+				}
 			}
 
 			// invalid

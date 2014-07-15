@@ -6,13 +6,13 @@
 	 */
 
 	/*
-	 *  api/current_version/acct/token/check - api feature to verify a given user token in the database
+	 *  api/current_version/paste/add - api feature to insert a new paste into the database
 	 */
 
-	$directoryRoot = '../../../../../';
+	$directoryRoot = '../../../../';
 
-	// we will need a Pastebin() object
-	$createPastebin = true;
+	// we will need a Paste() object
+	$createPaste = true;
 
 	// include base config file
 	require $directoryRoot.'conf/base.php';
@@ -23,16 +23,15 @@
 	// include prereqs
 	require BASE_DIR.'lib/prereq.php';
 
+	// start paste generation
 	$jsonOutput = array(
 		'error' => 'something went wrong!'
 	);
 
-	// check for token get variable
-	if(isset($_GET['token']) && $pasteBin->isValidString($_GET['token']))
-	{
-		// token set, action is to look it up it in the db
-		$jsonOutput = $pasteBin->checkTokenInDB($_GET['token']);
-	}
+	// check for params
+//	echo '<pre>';
+//	var_dump($paste);
+//	echo '</pre>';
 
 	// output in json format
 	echo json_encode($jsonOutput);
