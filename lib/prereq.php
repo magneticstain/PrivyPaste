@@ -9,35 +9,49 @@
 	 * lib/prereq.php - a library that handles all of the commonly used prerequisites for php scripts
 	 */
 
+	// set flags to default if not already set (false)
+	// NOTE: must be checked separately as some scripts may only have one set purposely
+	if(!isset($createPastebinObj))
+	{
+		$createPastebinObj = false;
+	}
+
+	if(!isset($createPasteObj))
+	{
+		$createPasteObj = false;
+	}
+
+	if(!isset($createApiObj))
+	{
+		$createApiObj = false;
+	}
+
 	// try to create objects
 	try
 	{
 		// try to create required db connection to send to object
-		$db_conn = Db::connectToDb();
+		$db_conn = Db::connect();
 
-		// created needed objects
-		// set them to default if not already set (false)
-		// NOTE: must be checked separately as some scripts may only have one set purposely
-		if(!isset($createPastebin))
-		{
-			$createPastebin = false;
-		}
+		// try to create user object
+		$user = new User($db_conn);
 
-		if(!isset($createPaste))
-		{
-			$createPaste = false;
-		}
-
+		// create needed objects
 		// Pastebin()
-		if($createPastebin)
+		if($createPastebinObj)
 		{
 			$pasteBin = new Pastebin($db_conn);
 		}
 
 		// Paste
-		if($createPaste)
+		if($createPasteObj)
 		{
 			$paste = new Paste($db_conn);
+		}
+		
+//		// API
+		if($createApiObj)
+		{
+			$api = new Api($db_conn);
 		}
 	}
 	catch (Exception $e)

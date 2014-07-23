@@ -35,7 +35,7 @@ class Paste extends Pastebin
 			|| !$this->setContents($contents)
 		)
 		{
-			throw new Exception('ERROR: Paste() -> could not create new paste!');
+			throw new Exception('FATAL ERROR: Paste() -> could not create new paste!');
 		}
 	}
 
@@ -187,7 +187,7 @@ class Paste extends Pastebin
 			// try to decrypt
 			if(openssl_private_decrypt(base64_decode($encryptedString), $decryptedString, $privateKey))
 			{
-				return $encryptedString;
+				return $decryptedString;
 			}
 		}
 		else
@@ -207,5 +207,20 @@ class Paste extends Pastebin
 	public function updatePasteInDB()
 	{
 		// selects record with set paste ID and updates the record with the object data
+	}
+
+	// VIEW
+	public function getDecryptedContents($outputToScreen = false)
+	{
+		// echo out and/or return contents of paste in plaintext
+		$encryptedContents = $this->contents;
+		$plainTxtContents = $this->decryptString($encryptedContents);
+
+		if($outputToScreen)
+		{
+			echo $plainTxtContents;
+		}
+
+		return $plainTxtContents;
 	}
 }

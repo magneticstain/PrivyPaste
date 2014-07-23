@@ -13,28 +13,19 @@
 
 	class Pastebin
 	{
-		protected $db_conn;
-		protected $userId;
-		protected $username;
-		protected $token;
+		private $db_conn;
+		private $user;
 
-		public function __construct(
-			$db_conn,
-			$userId = 1,
-			$username = 'general_user',
-			$token = null
-		)
+		public function __construct($db_conn)
 		{
 			if(
 				!$this->setDbConn($db_conn)
-				|| !$this->setUserId($userId)
-				|| !$this->setUsername($username)
-				|| !$this->setToken($token)
+//				|| !$this->setUser($user)
 			)
 			{
 	//			echo $this->setUserId($userId)." -- ".$this->setUsername($username)." -- ".$this->setToken($token);
 				// invalid; throw exception
-				throw new Exception('ERROR: Pastebin() -> could not create new pastebin! Please verify the connection to the database.');
+				throw new Exception('FATAL ERROR: Pastebin() -> could not create new pastebin! Please verify the connection to the database.');
 			}
 		}
 
@@ -44,20 +35,10 @@
 			return $this->db_conn;
 		}
 
-		public function getUserId()
-		{
-			return $this->userId;
-		}
-
-		public function getUsername()
-		{
-			return $this->username;
-		}
-
-		public function getToken()
-		{
-			return $this->token;
-		}
+//		public function getUser()
+//		{
+//			return $this->user;
+//		}
 
 		// SETTERS
 		public function setDbConn($db_conn)
@@ -74,81 +55,19 @@
 			return false;
 		}
 
-		public function setUserId($userId)
-		{
-			// user id must be a numeral up to 11 digits long (due to db constraints)
-			if(is_numeric($userId) && ($userId > 0 && $userId < 100000000000))
-			{
-				// valid
-				$this->userId = $userId;
-
-				return true;
-			}
-
-			// invalid
-			return false;
-		}
-
-		public function setUsername($username)
-		{
-			// the username can be any string less than 100 characters
-
-			// trim incoming stream
-			$username = trim($username);
-
-			if($this->isValidString($username))
-			{
-				// valid
-				$this->username = $username;
-
-				return true;
-			}
-
-			// invalid
-			return false;
-		}
-
-		public function setToken($token)
-		{
-			// token is a 16 byte (128-bit) hex string of random bytes generated from OpenSSL
-			$newToken = '';
-
-			// check input token
-			if($token === null)
-			{
-				// no token sent, start by checking for token cookie
-				if(!$newToken = $this->loadCSRFToken())
-				{
-					// try to generate, add to the database, and set the cookie (<= purpose of two true params below) for a new token
-					if(!$newToken = $this->generateCSRFToken(true, true))
-					{
-						// well, this sucks...
-						// log error
-						error_log('ERROR: Pastebin() -> could not generate CSRF token - please check OpenSSL library integrity and/or PHP version requirement!', 0);
-
-						// something went wrong; OpenSSL is probably not present or < PHP5 installed
-						return false;
-					}
-				}
-			}
-			elseif(ctype_xdigit($token) && strlen($token) === 64) // check if valid token string format
-			{
-				// token already generated
-				$newToken = $token;
-			}
-
-			// check if there's something to set
-			if(!empty($newToken))
-			{
-				// token found, set as object token
-				$this->token = $newToken;
-
-				return true;
-			}
-
-			// something went wrong...
-			return false;
-		}
+//		public function setUser($user)
+//		{
+//			// set's User() object to store and manipulate user data
+//			if(get_class($user) === 'User')
+//			{
+//				// set User() obj
+//				$this->user = $user;
+//
+//				return true;
+//			}
+//
+//			return false;
+//		}
 
 		// OTHER FUNCTIONS
 		// SECURITY/SANATIZATION/VERIFICATION
@@ -169,173 +88,6 @@
 			}
 
 			// invalid
-			return false;
-		}
-
-		private function loadCSRFToken()
-		{
-			// function that loads the token cookie
-			if(isset($_COOKIE['token']))
-			{
-				// validate
-				if($this->checkTokenInDB($_COOKIE['token']))
-				{
-					return $_COOKIE['token'];
-				}
-				else
-				{
-					// get ip
-
-					// check if behind proxy
-					// most proxies will supply the X-FORWARDED-FOR HTTP header field
-					$realIp = $_SERVER['REMOTE_ADDR'];
-					if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-					{
-						$realIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
-					}
-
-					error_log('ERROR: Pastebin() -> Invalid token supplied -> Remote IP:['.$_SERVER['REMOTE_ADDR'].'] -> Actual IP: ['.$realIp.']');
-				}
-			}
-
-			return false;
-		}
-
-		private function generateCSRFToken($addCookie = false, $addToDb = false)
-		{
-			// generates a cryptographically secure token used to prevent CSRF attacks
-			// gathered from OpenSSL
-
-			// "cyptographically-strong" variable must be passed by reference with openssl_random_psuedo_bytes(),
-			// so cflag is set in its own variable
-			$cryptographicallySecure = true;
-
-			$generatedToken = bin2hex(openssl_random_pseudo_bytes(32, $cryptographicallySecure));
-
-			// check if a cookie should be generated for this
-			if($addCookie)
-			{
-				// expire tokens after two weeks
-				setcookie('token', $generatedToken, time()+1209600);
-			}
-
-			// check if token should be added to db
-			if($addToDb)
-			{
-				if(!$this->addTokenToDB($generatedToken))
-				{
-					return false;
-				}
-			}
-
-			return $generatedToken;
-		}
-
-		public function checkTokenInDB($token)
-		{
-			// try to lookup the token in the db
-			// i.e. - check for token validity
-			if($this->isValidString($token))
-			{
-				$tokenId = 0;
-
-				// get user ID and place into local variable (necessary for binding mysqli params)
-				$userId = $this->userId;
-
-				// set sql
-				$sql = '
-						/* PrivyPaste - Pastebin - User - Token Verification */
-						SELECT
-							token_id
-						FROM
-							sessions
-						WHERE
-							token = ?
-						AND
-							user_id = ?
-						AND
-							created >= DATE_SUB(NOW(), INTERVAL 1 DAY)
-						LIMIT 1
-				';
-
-				// lookup
-				// create statement
-				$db_stmt = $this->db_conn->prepare($sql);
-				if($db_stmt)
-				{
-					// bind params
-					$db_stmt->bind_param(
-						'si',
-						$token,
-						$userId
-					);
-
-					// execute
-					$db_stmt->execute();
-
-					// bind results
-					$db_stmt->bind_result($tokenId);
-
-					// fetch
-					$db_stmt->fetch();
-
-					// check and return
-					if($tokenId > 0)
-					{
-						// valid
-						return true;
-					}
-				}
-				else
-				{
-					error_log('ERROR: Pastebin() -> Could not lookup token -> ['.$this->db_conn->connect_error.']');
-				}
-			}
-
-			return false;
-		}
-
-		private function addTokenToDB($token, $userId = 1)
-		{
-			// add a valid token to the token table in the db
-			// set sql
-			$sql = '
-					/* PrivyPaste - Pastebin - User - Token Insert */
-					INSERT
-					INTO
-						sessions
-						(token, user_id, created)
-					VALUES
-						(?, ?, NOW())
-			';
-
-			// insert into db
-			// create statement
-			$db_stmt = $this->db_conn->prepare($sql);
-			if($db_stmt)
-			{
-				// bind params
-				$db_stmt->bind_param(
-					'si',
-					$token,
-					$userId
-				);
-
-				// execute
-				$db_stmt->execute();
-
-				// check and return
-				if($db_stmt->affected_rows === 1)
-				{
-					// valid
-					return true;
-				}
-			}
-			else
-			{
-				error_log('ERROR: Pastebin() -> Could not insert token into db -> ['.$this->db_conn->connect_error.']');
-			}
-
 			return false;
 		}
 
@@ -402,7 +154,8 @@
 				$navMenu = '<p id="accountInfo"><a href="login.php" title="Login to your PrivyPaste Account">Login</a> | <a href="signup.php" title="Sign Up for a PrivyPaste Account">Sign Up</a></p>';
 
 				// can be customized for those that are logged in
-				if($this->userId > 1)
+				// TODO: change to public static getLoginStatus() function in User() class
+				if(isset($_COOKIE['user_id']) && $_COOKIE['user_id'] > 1)
 				{
 					// customized version
 					$navMenu = '<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="logout.php" title="Logout of Your Account">Logout</a></p>';

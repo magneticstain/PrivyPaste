@@ -24,6 +24,16 @@
 	}
 
 	// DEFINE
+	function autoloadUser()
+	{
+		// define dependency filenames
+		$dependencies = array(
+			BASE_DIR.'lib/user.php'
+		);
+
+		openDependencies($dependencies);
+	}
+
 	function autoloadPastebin()
 	{
 		// define dependency filenames
@@ -54,8 +64,20 @@
 		openDependencies($dependencies);
 	}
 
+	function autoloadApi()
+	{
+		// define dependency filenames
+		$dependencies = array(
+			BASE_DIR.'lib/api.php'
+		);
+
+		openDependencies($dependencies);
+	}
+
 	// REGISTER
+	spl_autoload_register('autoloadUser');
 	spl_autoload_register('autoloadPastebin');
 	spl_autoload_register('autoloadPaste');
 	spl_autoload_register('autoloadDb');
+	spl_autoload_register('autoloadApi');
 ?>

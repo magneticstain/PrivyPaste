@@ -6,7 +6,7 @@
 	 */
 
 	// set flag to create Pastebin()
-	$createPastebin = true;
+	$createPastebinObj = true;
 
 	// include base config files
 	require 'conf/base.php';
@@ -19,8 +19,5 @@
 
 	// output paste form
 	// PasteBin() object is set in the prereq.php library
-//	echo '<pre>';
-//	var_dump($pasteBin);
-//	echo '</pre>';
 	echo $pasteBin;
 ?>

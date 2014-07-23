@@ -12,7 +12,7 @@
 	$directoryRoot = '../../../../../';
 
 	// we will need a Pastebin() object
-	$createPastebin = true;
+	$createPastebinObj = true;
 
 	// include base config file
 	require $directoryRoot.'conf/base.php';
