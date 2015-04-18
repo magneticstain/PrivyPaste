@@ -1,0 +1,12 @@
+/*
+	Footer.css - stylesheet or all footer-oriented styles
+*/
+
+footer
+{
+	background: #999;
+	color: #E8E8E8;
+	padding: 30px 0;
+	text-align: center;
+	width: 100%;
+}

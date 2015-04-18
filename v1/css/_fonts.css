@@ -1,0 +1,19 @@
+/*
+	Fonts.css - stylesheet for importing all external fonts
+*/
+
+/* INFO TICKER */
+/* https://www.google.com/fonts#UsePlace:use/Collection:Raleway */
+@import url(http://fonts.googleapis.com/css?family=Raleway);
+
+/* TITLE */
+/* https://www.google.com/fonts#UsePlace:use/Collection:Quicksand */
+@import url(http://fonts.googleapis.com/css?family=Quicksand);
+
+/* BODY */
+/* https://www.google.com/fonts#UsePlace:use/Collection:Open+Sans */
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+/* Upload Button & Other Headings */
+/* https://www.google.com/fonts#UsePlace:use/Collection:Raleway:400,300 */
+@import url(http://fonts.googleapis.com/css?family=Raleway:400,300);
