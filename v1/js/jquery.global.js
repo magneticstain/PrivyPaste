@@ -15,8 +15,8 @@ var mainTextarea = null,
 
 $(document).ready(function(){
     // [index] upload button
-    uploadButton = $('div#textUploadButton');
+    uploadButton = $('#textUploadButton');
 
     // [index] main text area
-    mainTextarea = $('textarea#mainText');
+    mainTextarea = $('#mainText');
 });

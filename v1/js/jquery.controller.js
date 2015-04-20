@@ -49,7 +49,7 @@ function sentTextToAPI(text)
 function uploadText()
 {
     // sends text data to api via ajax call
-    var mainText = getMainTextarea();
+    var mainText = getMainTextareaVal();
 
     if(isValidText(mainText))
     {

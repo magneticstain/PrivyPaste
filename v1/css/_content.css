@@ -3,25 +3,25 @@
 */
 
 /* SECTIONS & DIVS */
-div#text, div#text textarea
+#text, #text textarea
 {
 	height: 100%;
 }
 
-section#content
+#content
 {
 	clear: both;
 	height: 95%;
 }
 
-div#text
+#text
 {
 	border: 2px solid #000;
 	overflow: hidden;
 	position: relative;
 }
 
-div#textUploadButton
+#textUploadButton
 {
 	background: #333333;
 	border-bottom: 2px solid #000;
@@ -34,7 +34,7 @@ div#textUploadButton
 	text-align: center;
 }
 
-div#text textarea
+#text textarea
 {
 	border: none;
 	box-sizing:border-box;
@@ -44,14 +44,14 @@ div#text textarea
 }
 
 /* IMGS */
-div#textUploadButton img
+#textUploadButton img
 {
 	margin: 0 15px;
 	vertical-align: middle;
 }
 
 /* OTHER */
-div#textUploadButton hr
+#textUploadButton hr
 {
 	/*background: #881A14;*/
 	background: #E84B43;

@@ -16,7 +16,7 @@ function isValidText(rawText)
     var trimmedText = rawText.trim();
 
     // check if blank
-    if(trimmedText !== '' || trimmedText !== null)
+    if(trimmedText !== '' && trimmedText !== null)
     {
         // valid
         return true;
@@ -35,7 +35,7 @@ function setFocusToMainTextarea()
     checkMainTextarea();
 }
 
-function getMainTextarea()
+function getMainTextareaVal()
 {
     // returns text from the main textarea
     // should never be null
@@ -61,7 +61,7 @@ function checkMainTextarea()
 {
     // update the main text area with the default text or no text, depending on the current text. usually performed on
     // focus or blur of textarea
-    var currentText = getMainTextarea(),
+    var currentText = getMainTextareaVal(),
         defaultText = 'Enter your text here!',
         newText = '';
 
