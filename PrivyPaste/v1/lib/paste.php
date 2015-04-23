@@ -46,7 +46,7 @@
             // normalize to integer
             $pasteId = (int) $pasteId;
 
-            if($pasteId > 0)
+            if($pasteId >= 0)
             {
                 // valid id
                 $this->pasteId = $pasteId;
@@ -73,15 +73,10 @@
             // normalize to string
             $plaintext = (string) $plaintext;
 
-            if($plaintext !== '')
-            {
-                // valid
-                $this->plaintext = $plaintext;
+            // plaintext can be set to anything
+            $this->plaintext = $plaintext;
 
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
         // Getters
