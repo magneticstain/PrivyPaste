@@ -1,5 +1,5 @@
 <?php
-namespace privypaste;
+	namespace PrivyPaste;
 
 	/**
 	 *  PrivyPaste
@@ -11,11 +11,21 @@ namespace privypaste;
 	 *  api/$current_version/paste/add - api feature to insert a new, encrypted paste into the database
 	 */
 
-    echo $_SERVER['DOCUMENT_ROOT'].'<br />';
+	//
+	// CONFIGS AND LIBRARIES
+	//
 
-    echo __DIR__;
+	// global configuration file
+	require_once $_SERVER['DOCUMENT_ROOT'].'/'.__NAMESPACE__.'/v1/conf/global.php';
 
-	// create paste obj
+	// class autoloader
+	require_once BASE_DIR.__NAMESPACE__.'/v1/lib/autoloader.php';
+
+	//
+	// MAIN
+	//
+
+	// create new paste object
     try
     {
         $paste = new Paste();
@@ -26,6 +36,6 @@ namespace privypaste;
     }
     catch (\Exception $e)
     {
-        echo 'ERROR: '.$e;
+        echo 'ERROR: '.$e->getMessage();
     }
 ?>

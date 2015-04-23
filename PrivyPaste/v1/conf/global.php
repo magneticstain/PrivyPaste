@@ -11,6 +11,13 @@
      */
 
     // FILE STRUCTURE
-    $baseDir = $_SERVER['DOCUMENT_ROOT'].'v1/';
+	/*
+	 *  location of privypaste folder/webapp files
+	 *
+	 * Default: $_SERVER['DOCUMENT_ROOT']
+	 */
+    define('BASE_DIR', $_SERVER['DOCUMENT_ROOT'].'/');
+
+	// DB SETTINGS
 
 ?>
