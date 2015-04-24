@@ -40,7 +40,6 @@
 	//
 	// MAIN
 	//
-
 	// check if plaintext was sent
 	$plainText = checkForRawTxt();
 	if($plainText !== '')
