@@ -19,5 +19,7 @@
     define('BASE_DIR', $_SERVER['DOCUMENT_ROOT'].'/');
 
 	// DB SETTINGS
-
+	define('DB_HOST', '');
+	define('DB_USER', '');
+	define('DB_PASS', '');
 ?>

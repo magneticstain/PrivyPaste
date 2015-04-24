@@ -24,7 +24,7 @@
 	        $extractedClassName = strtolower(end($explodedClassName));
 
             // load class from file
-	        require BASE_DIR.__NAMESPACE__.'/v1/lib/'.$extractedClassName.'.php';
+	        require BASE_DIR.__NAMESPACE__.'/lib/'.$extractedClassName.'.php';
         }
     }
 

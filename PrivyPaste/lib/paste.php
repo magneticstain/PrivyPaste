@@ -16,7 +16,7 @@
         protected $pasteId = 0;
         protected $plaintext = '';
 
-        public function __construct($pasteId = 0, $plaintext = '')
+        public function __construct($plaintext = '', $pasteId = 0)
         {
             // set vars
             if(
