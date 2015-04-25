@@ -15,6 +15,7 @@
     {
         protected $pasteId = 0;
         protected $plaintext = '';
+	    protected $ciphertext = '';
 
         public function __construct($plaintext = '', $pasteId = 0)
         {
@@ -79,6 +80,28 @@
             return true;
         }
 
+	    public function setCiphertext($cipherText)
+	    {
+		    /*
+		 *  Params:
+		 *      - $cipherText [STRING]: ciphertext of $plaintext after being encrypted
+		 *
+		 *  Usage:
+		 *      - sets the ciphertext of the paste
+		 *
+		 *  Returns:
+		 *      - boolean
+		 */
+
+		    // normalize to string
+		    $cipherText = (string) $cipherText;
+
+		    // ciphertext can be set to anything
+		    $this->ciphertext = $cipherText;
+
+		    return true;
+	    }
+
         // Getters
         public function getPasteId()
         {
@@ -109,11 +132,45 @@
              *      - string
              */
 
-            return $this->$plaintext;
+            return $this->plaintext;
         }
 
-        // Other functions
+	    public function getCiphertext()
+	    {
+		    /*
+			 *  Params:
+			 *      - NONE
+			 *
+			 *  Usage:
+			 *      - returns ciphertext string
+			 *
+			 *  Returns:
+			 *      - string
+			 */
 
+		    return $this->ciphertext;
+	    }
+
+        // Other functions
+		public function encryptText()
+		{
+			/*
+			 *  Params:
+			 *      - NONE
+			 *
+			 *  Usage:
+			 *      - encrypt whatever is set as $plaintext to $ciphertext
+			 *
+			 *  Returns:
+			 *      - boolean
+			 */
+
+			// get private key
+
+			// create CryptKeeper() with key and plaintext
+
+			// get encrypted text
+		}
     }
 
 ?>

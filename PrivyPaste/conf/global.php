@@ -22,4 +22,7 @@
 	define('DB_HOST', '');
 	define('DB_USER', '');
 	define('DB_PASS', '');
+
+	// PKI
+	define('PRIVATE_KEY', '');
 ?>

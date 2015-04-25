@@ -27,10 +27,10 @@
 	function checkForRawTxt()
 	{
 		// check for raw text sent via GET var
-		if(isset($_GET['text']) && !empty($_GET['text']))
+		if(isset($_POST['text']) && !empty($_POST['text']))
 		{
 			// text var is set an non-empty
-			return $_GET['text'];
+			return $_POST['text'];
 		}
 
 		// in all other cases, return an empty string
@@ -49,6 +49,10 @@
 		try
 		{
 			$paste = new Paste($plainText);
+
+			// encrypt text
+
+			// send text to db
 
 			echo '<pre>';
 			var_dump($paste);
