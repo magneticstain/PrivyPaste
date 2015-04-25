@@ -40,6 +40,9 @@
 	//
 	// MAIN
 	//
+	// initialize output var
+	$jsonOutput = array();
+
 	// check if plaintext was sent
 	$plainText = checkForRawTxt();
 	if($plainText !== '')
@@ -50,16 +53,24 @@
 		{
 			$paste = new Paste($plainText);
 
-			// encrypt text
+			// encrypt plaintext within object
+			if(!$paste->encryptPlaintext())
+			{
+				// encryption unsuccessful, set error
+				$jsonOutput['error'] = 'Text encryption was unsuccessful. Please verify PKI certificates and application configs.';
+			}
 
 			// send text to db
 
-			echo '<pre>';
-			var_dump($paste);
-			echo '</pre>';
+//			echo '<pre>';
+//			var_dump($paste);
+//			echo '</pre>';
 		} catch(\Exception $e)
 		{
-			echo 'ERROR: '.$e->getMessage();
+			$jsonOutput['error'] = $e->getMessage();
 		}
 	}
+
+	// echo out json output
+	echo json_encode($jsonOutput);
 ?>

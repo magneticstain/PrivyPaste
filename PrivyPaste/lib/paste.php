@@ -152,7 +152,7 @@
 	    }
 
         // Other functions
-		public function encryptText()
+		public function encryptPlaintext()
 		{
 			/*
 			 *  Params:
@@ -165,11 +165,29 @@
 			 *      - boolean
 			 */
 
-			// get private key
+			// get public key from file
+			echo "[DEBUG] PUBLIC KEY FILE: ".PUBLIC_KEY."\n";
+			if($publicKey = CryptKeeper::getPublicKey(PUBLIC_KEY))
+			{
+				// public key successfully read, encrypt text using key
+				if($encryptedString = CryptKeeper::encryptString($publicKey, $this->plaintext))
+				{
+					// encryption was successful, set $this->ciphertext
+					$this->setCiphertext($encryptedString);
 
-			// create CryptKeeper() with key and plaintext
+					return true;
+				}
+				else
+				{
+					echo "[DEBUG] ERROR: could not encrypt text with given public key!\n";
+				}
+			}
+			else
+			{
+				echo "[DEBUG] ERROR: could not read public key!\n";
+			}
 
-			// get encrypted text
+			return false;
 		}
     }
 

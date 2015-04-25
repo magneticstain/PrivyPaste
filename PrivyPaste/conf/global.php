@@ -24,5 +24,6 @@
 	define('DB_PASS', '');
 
 	// PKI
-	define('PRIVATE_KEY', '');
+	define('PUBLIC_KEY', '/opt/privypaste/pki/public/public_key.pem');
+	define('PRIVATE_KEY', '/opt/privypaste/pki/private/private_key.pem');
 ?>
