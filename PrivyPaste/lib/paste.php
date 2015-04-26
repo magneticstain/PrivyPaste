@@ -207,7 +207,8 @@
 		    $ciphertext = '';
 
 		    // craft SQL query
-		    $sql = "INSERT INTO pastes (ciphertext) VALUES (:ciphertext)";
+//			$sql = "INSERT INTO pastes (NOW(),NOW(),ciphertext) VALUES (:ciphertext)";
+		    $sql = "INSERT INTO pastes SET created = NOW(), last_modified = NOW(), ciphertext = :ciphertext";
 
 		    // prepare query
 		    $dbStmt = $dbConn->prepare($sql);

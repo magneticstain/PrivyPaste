@@ -96,6 +96,7 @@
 				{
 					// connection is good, insert text
 					$newPasteId = $paste->sendCiphertextToDb($dbConn);
+
 					if($newPasteId > 0)
 					{
 						// paste insertion was a success, return paste id
