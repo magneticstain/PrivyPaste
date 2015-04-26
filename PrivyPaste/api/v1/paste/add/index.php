@@ -85,7 +85,7 @@
 				// create db connection
 				try
 				{
-					$dbConn = new \PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS);
+					$dbConn = new \PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
 				} catch(\PDOException $e)
 				{
 					$jsonOutput['error'] = $e->getMessage();
