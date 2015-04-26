@@ -8,7 +8,7 @@
      */
 
     /*
-     *  lib/Paste - library containing all objects related to pastes (e.g. raw text)
+     *  paste.php - library containing all objects related to pastes (e.g. raw text)
      */
 
     class Paste
@@ -166,29 +166,68 @@
 			 */
 
 			// get public key from file
-			echo "[DEBUG] PUBLIC KEY FILE: ".PUBLIC_KEY."\n";
-			if($publicKey = CryptKeeper::getPublicKey(PUBLIC_KEY))
+//			echo "[DEBUG] PUBLIC KEY FILE: ".PUBLIC_KEY."\n";
+			if($publicKey = CryptKeeper::getPkiKeyFromFile('public', PUBLIC_KEY))
 			{
 				// public key successfully read, encrypt text using key
-				if($encryptedString = CryptKeeper::encryptString($publicKey, $this->plaintext))
+				if($encryptedString = CryptKeeper::encryptString($publicKey, $this->plaintext, true))
 				{
-					// encryption was successful, set $this->ciphertext
+					// encryption was successful, set ciphertext as $this->ciphertext
 					$this->setCiphertext($encryptedString);
 
 					return true;
 				}
-				else
-				{
-					echo "[DEBUG] ERROR: could not encrypt text with given public key!\n";
-				}
+//				else
+//				{
+//					echo "[DEBUG] ERROR: could not encrypt text with given public key!\n";
+//				}
 			}
-			else
-			{
-				echo "[DEBUG] ERROR: could not read public key!\n";
-			}
+//			else
+//			{
+//				echo "[DEBUG] ERROR: could not read public key!\n";
+//			}
 
 			return false;
 		}
+
+	    public function sendCiphertextToDb($dbConn)
+	    {
+			/*
+			*  Params:
+			*      - $dbConn
+			 *          - PDO object that acts as a connection to the backend database
+			*
+			*  Usage:
+			*      - inserts $this->ciphertext into the database as a text record and returns the paste ID
+			*
+			*  Returns:
+			*      - boolean
+			*/
+
+		    $ciphertext = '';
+
+		    // craft SQL query
+		    $sql = "INSERT INTO pastes (ciphertext) VALUES (:ciphertext)";
+
+		    // prepare query
+		    $dbStmt = $dbConn->prepare($sql);
+
+		    // bind params
+		    $dbStmt->bindParam('ciphertext', $ciphertext);
+
+		    // execute query
+		    $ciphertext = $this->ciphertext;
+		    if($dbStmt->execute())
+		    {
+			    // query executed successfully, return paste id
+			    $pasteId = $dbConn->lastInsertId();
+
+			    return $pasteId;
+		    }
+
+		    // if anything fails, return -1 as a string val
+		    return '-1';
+	    }
     }
 
 ?>

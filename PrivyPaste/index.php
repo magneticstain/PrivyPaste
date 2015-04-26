@@ -1,4 +1,6 @@
 <?php
+	namespace PrivyPaste;
+
     /**
      *  PrivyPaste
      *  Author: Josh Carlson

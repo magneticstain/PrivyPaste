@@ -1,4 +1,6 @@
 <?php
+	namespace privypaste;
+
     /**
      *  PrivyPaste
      *  Author: Josh Carlson
@@ -9,111 +11,131 @@
      *  cryptkeeper.php - class for all encryption-related functionality
      */
 
-namespace privypaste;
 
-
-class CryptKeeper
-{
-//	public $plaintext = '';
-//	private $key = '';
-//
-//	public function __construct($plaintext, $key)
-//	{
-//		// set variables, verification happens alter upstream during 'en|de'cryption
-//		$this->plaintext = $plaintext;
-//		$this->key = $key;
-//	}
-
-	// FUNCTIONS
-	public static function getPublicKey($keyFile)
+	class CryptKeeper
 	{
-		/*
-		 *  Params:
-		 *      - NONE
-		 *
-		 *  Usage:
-		 *      - returns public key in OpenSSL key resource form
-		 *
-		 *  Returns:
-		 *      - key resource (later used with other encryption/openssl functions)
-		 *      - FALSE if not able to open or read
-		 */
+	//	public $plaintext = '';
+	//	private $key = '';
+	//
+	//	public function __construct($plaintext, $key)
+	//	{
+	//		// set variables, verification happens alter upstream during 'en|de'cryption
+	//		$this->plaintext = $plaintext;
+	//		$this->key = $key;
+	//	}
 
-		// try to open public key file and return to user
-		if($publicKey = openssl_pkey_get_public($keyFile))
+		// FUNCTIONS
+		public static function getPkiKeyFromFile($keyType, $keyFile)
 		{
-			echo '[DEBUG] Read in public key from file...';
+			/*
+			 *  Params:
+			 *      - $keyType
+			 *          - type of certificate being read in
+			 *          - can be set to 'private' or 'public'
+			 *
+			 *  Usage:
+			 *      - returns key in OpenSSL key resource form
+			 *
+			 *  Returns:
+			 *      - key resource (later used with other encryption/openssl functions)
+			 *      - FALSE if not able to open or read
+			 */
 
-			$publicKeyRaw = '';
-			openssl_pkey_export($publicKey, $publicKeyRaw);
-			echo "[DEBUG] PUBKEY_TEXT: ".$publicKeyRaw."\n";
+			// try to open key file and return to user
+			// format $keyFile to filename format that openssl_pkey_get_X() requires to read in from file
+			$keyFile = 'file://'.$keyFile;
 
+			// function used to read in file is dependent on key type
+
+			// normalize $keyType
+			$keyType = strtolower($keyType);
+
+			$key = '';
+			if($keyType === 'public')
+			{
+				// read in public key
+				$key = openssl_pkey_get_public($keyFile);
+			}
+			elseif($keyType === 'private')
+			{
+				// read in private key
+				$key = openssl_pkey_get_private($keyFile);
+			}
+
+			// see if file read was successful
+			if($key)
+			{
+				return $key;
+			}
+
+			// return blank string if anything goes wrong
+			return '';
 		}
 
-		return $publicKey;
+		public static function encryptString($publicKey, $plaintext, $isBase64Encoded = false)
+		{
+			/*
+			 *  Params:
+			 *      - $publicKey
+			 *          - public key resource, normally read in from user-generated key file
+			 *      - $plaintext
+			 *          - plaintext that will need to be encrypted
+			 *      - $isBase64Encoded
+			 *          - bool to indicate whether data should be returned as raw binary data blob or as Base64 encoded string
+			 *
+			 *  Usage:
+			 *      - encrypts the given plaintext using the provided public key
+			 *
+			 *  Returns:
+			 *      - binary blob OR string
+			 */
+
+			$ciphertext = '';
+
+			// try encrypting data (default padding option is used)
+			// ciphertext is stored by supplying $ciphertext var as function param
+			openssl_public_encrypt($plaintext, $ciphertext, $publicKey);
+
+			// return ciphertext as binary blob or string depending on flag param
+			if($isBase64Encoded === true)
+			{
+				return base64_encode($ciphertext);
+			}
+
+			// default is to return as a binary blob
+			return $ciphertext;
+		}
+
+		public static function decryptString($privateKey, $ciphertext, $isBase64Encoded)
+		{
+			/*
+			 *  Params:
+			 *      - $privateKey
+			 *          - private key resource, normally read in from user-generated key file
+			 *      - $ciphertext
+			 *          - previously-encrypted text that will need to be decrypted using the private key
+			 *
+			 *  Usage:
+			 *      - decrypts the given ciphertext using the provided RSA private key
+			 *
+			 *  Returns:
+			 *      - binary blob
+			 */
+
+			$plaintext = '';
+
+			// check if data was sent in base64 encoding or a binary blob
+			if($isBase64Encoded === true)
+			{
+				// decode
+				$ciphertext = base64_decode($ciphertext);
+			}
+
+			// try decrypting data (default padding option is used)
+			// plaintext is stored by supplying $plaintext var as function param
+			openssl_public_encrypt($ciphertext, $plaintext, $privateKey);
+
+			return $plaintext;
+		}
 	}
-
-	public static function getPrivateKey($keyFile)
-	{
-		/*
-		 *  Params:
-		 *      - NONE
-		 *
-		 *  Usage:
-		 *      - returns private key in XXXXX form
-		 *
-		 *  Returns:
-		 *      - key resource (later used with other encryption/openssl functions)
-		 *      - FALSE if not able to open or read
-		 */
-
-		// try to open private key file and return to user
-		return openssl_pkey_get_private($keyFile);
-	}
-
-	public static function encryptString($publicKey, $plaintext)
-	{
-		/*
-		 *  Params:
-		 *      - $publicKey - public key resource, normally read in from user-generated key file
-		 *      - $plaintext - plaintext that will need to be encrypted
-		 *
-		 *  Usage:
-		 *      - encrypts the given plaintext using the provided public key
-		 *
-		 *  Returns:
-		 *      - string
-		 */
-
-		$ciphertext = '';
-
-		// try encrypting data (default padding option is used)
-		// ciphertext is stored by supplying $ciphertext var as function param
-		openssl_public_encrypt($plaintext, $ciphertext, $publicKey);
-
-		return $ciphertext;
-	}
-
-	public static function decryptString($privateKey, $ciphertext)
-	{
-		/*
-		 *  Params:
-		 *      - $privateKey - private key resource, normally read in from user-generated key file
-		 *      - $ciphertext - previously-encrypted text that will need to be decrypted using the private key
-		 *
-		 *  Usage:
-		 *      - decrypts the given ciphertext using the provided RSA private key
-		 *
-		 *  Returns:
-		 *      - string
-		 */
-
-		$plaintext = '';
-
-		// try decrypting data (default padding option is used)
-		// plaintext is stored by supplying $plaintext var as function param
-		openssl_public_encrypt($ciphertext, $plaintext, $privateKey);
-
-		return $plaintext;
-	}
-}
+?>

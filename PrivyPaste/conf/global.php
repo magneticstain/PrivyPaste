@@ -7,7 +7,7 @@
      */
 
     /*
-     *  conf/global.php - sets variables used by other functions throughout thr project. Meant to be sent by admin.
+     *  conf/global.php - sets variables used by other functions throughout the project.
      */
 
     // FILE STRUCTURE
@@ -20,6 +20,7 @@
 
 	// DB SETTINGS
 	define('DB_HOST', '');
+	define('DB_NAME', '');
 	define('DB_USER', '');
 	define('DB_PASS', '');
 
