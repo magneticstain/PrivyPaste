@@ -1,0 +1,61 @@
+/*
+	Content.css - stylesheet or all content-oriented styles
+*/
+
+/* SECTIONS & DIVS */
+#text, #text textarea
+{
+	height: 100%;
+}
+
+#content
+{
+	clear: both;
+	height: 95%;
+}
+
+#text
+{
+	border: 2px solid #000;
+	overflow: hidden;
+	position: relative;
+}
+
+#textUploadButton
+{
+	background: #333333;
+	border-bottom: 2px solid #000;
+	color: #D1463D;
+	cursor: pointer;
+	font: 2em 'Raleway', sans-serif;
+	height: 100px;
+	opacity: .85;
+	padding: 20px 0;
+	text-align: center;
+}
+
+#text textarea
+{
+	border: none;
+	box-sizing:border-box;
+	outline: 0;
+	padding: 20px 10px;
+	width: 100%;
+}
+
+/* IMGS */
+#textUploadButton img
+{
+	margin: 0 15px;
+	vertical-align: middle;
+}
+
+/* OTHER */
+#textUploadButton hr
+{
+	/*background: #881A14;*/
+	background: #E84B43;
+	border: none;
+	height: 3px;
+	width: 30%;
+}

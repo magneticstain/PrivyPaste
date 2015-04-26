@@ -1,0 +1,11 @@
+# PHPStorm project files folder
+.idea/
+
+# certain docs
+data_layout_notes.txt
+
+# db conf
+db.php
+
+# base conf
+base.php
