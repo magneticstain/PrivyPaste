@@ -123,7 +123,7 @@
 
 			// try decrypting data (default padding option is used)
 			// plaintext is stored by supplying $plaintext var as function param
-			openssl_public_encrypt($ciphertext, $plaintext, $privateKey);
+			openssl_private_decrypt($ciphertext, $plaintext, $privateKey);
 
 			return $plaintext;
 		}
