@@ -217,7 +217,7 @@
 			/*
 			*  Params:
 			*      - $dbConn
-			 *          - PDO object that acts as a connection to the backend database
+			*          - PDO object that acts as a connection to the backend database
 			*
 			*  Usage:
 			*      - inserts $this->ciphertext into the database as a text record and returns the paste ID
@@ -228,40 +228,46 @@
 
 		    $ciphertext = '';
 
-		    // craft SQL query
-		    $sql = "INSERT INTO pastes SET created = NOW(), last_modified = NOW(), ciphertext = :ciphertext";
+		    // get UID
+		    $pasteUid = CryptKeeper::generateUniquePasteID();
 
-		    // prepare query
-		    $dbStmt = $dbConn->prepare($sql);
-
-		    // bind params
-		    $dbStmt->bindParam('ciphertext', $ciphertext);
-		    $ciphertext = $this->ciphertext;
-
-		    // execute query
-		    if($dbStmt->execute())
+		    if($pasteUid !== '')
 		    {
-			    // query executed successfully, return paste id
-			    $pasteId = $dbConn->lastInsertId();
+			    // UID was successfully generated
+			    // craft SQL query
+			    $sql = "INSERT INTO pastes SET uid = :paste_uid, created = NOW(), last_modified = NOW(), ciphertext = :ciphertext";
 
-			    return $pasteId;
+			    // prepare query
+			    $dbStmt = $dbConn->prepare($sql);
+
+			    // bind params
+			    $dbStmt->bindParam('paste_uid', $pasteUid);
+			    $dbStmt->bindParam('ciphertext', $ciphertext);
+			    $ciphertext = $this->ciphertext;
+
+			    // execute query
+			    if($dbStmt->execute())
+			    {
+				    // query executed successfully, return paste UID
+				    return $pasteUid;
+			    }
 		    }
 
 		    // if anything fails, return -1 as a string val
 		    return '-1';
 	    }
 
-	    public function retrieveCiphertextFromDb($dbConn, $pasteId)
+	    public function retrieveCiphertextFromDb($dbConn, $pasteUid)
 	    {
 		    /*
 		     * Params:
 			 *      - $dbConn
 			 *          - PDO object that acts as a connection to the backend database
-			 *      - $pasteId
-		     *          - id of paste to retrieve
+			 *      - $pasteUid
+		     *          - UID of paste to retrieve
 			 *
 			 *  Usage:
-			 *      - gets ciphertext of given paste ID
+			 *      - gets ciphertext of given paste UID
 			 *
 			 *  Returns:
 			 *      - bool
@@ -269,17 +275,14 @@
 
 		    $pasteCiphertext = '';
 
-		    // normalize paste ID to integer
-		    $pasteId = (int) $pasteId;
-
 			// craft select sql query
-		    $sql = "SELECT ciphertext FROM pastes WHERE id = :paste_id LIMIT 1";
+		    $sql = "SELECT ciphertext FROM pastes WHERE uid = :paste_uid LIMIT 1";
 
 		    // prepare query
 		    $dbStmt = $dbConn->prepare($sql);
 
 		    // bind params
-		    $dbStmt->bindParam('paste_id', $pasteId);
+		    $dbStmt->bindParam('paste_uid', $pasteUid);
 
 		    // execute and get result
 		    if($dbStmt->execute())

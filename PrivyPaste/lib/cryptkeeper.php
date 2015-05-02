@@ -127,5 +127,35 @@
 
 			return $plaintext;
 		}
+
+
+
+		public static function generateUniquePasteID()
+		{
+			/*
+			*  Params:
+			*      - NONE
+			*
+			*  Usage:
+			*      - generates an 8 character unique identifier that is correlated to a paste
+			*      - string is generated from a 4-byte random bitstream. This allows for 256^4, or 4294967296, possible permutations
+			*
+			*  Returns:
+			*      - string
+			*/
+
+			$UID = '';
+			$numRandomBytes = 4;
+			$cryptographicallySecureBitStream = true;
+
+			// generate cryptographically-secure bitstream
+			if($binaryString = openssl_random_pseudo_bytes($numRandomBytes, $cryptographicallySecureBitStream))
+			{
+				// convert bitstream to hex
+				$UID = bin2hex($binaryString);
+			}
+
+			return $UID;
+		}
 	}
 ?>

@@ -30,13 +30,13 @@
 	//
 	// FUNCTIONS
 	//
-	function getPasteId()
+	function getPasteUid()
 	{
 		// check for paste ID via GET var
-		if(isset($_GET['id']) && !empty($_GET['id']))
+		if(isset($_GET['uid']) && !empty($_GET['uid']))
 		{
 			// paste id set
-			return $_GET['id'];
+			return $_GET['uid'];
 		}
 
 		// in all other cases, return -1
@@ -50,8 +50,8 @@
 	$jsonOutput = array();
 
 	// check if paste ID was sent
-	$pasteId = getPasteId();
-	if($pasteId > 0)
+	$pasteUid = getPasteUid();
+	if($pasteUid > 0)
 	{
 		// paste ID is set
 		$paste = new Paste();
@@ -71,7 +71,7 @@
 		if($dbConn !== '')
 		{
 			// connection is good, get text
-			if($paste->retrieveCiphertextFromDb($dbConn, $pasteId))
+			if($paste->retrieveCiphertextFromDb($dbConn, $pasteUid))
 			{
 				// paste was retrieved successfully
 				// decrypt the current ciphertext
@@ -89,7 +89,7 @@
 			else
 			{
 				// could not get text with that id from the db, set error
-				$jsonOutput['error'] = 'could not retrieve text with that paste ID';
+				$jsonOutput['error'] = 'could not retrieve text with that paste UID';
 			}
 		}
 	}
