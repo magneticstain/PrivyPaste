@@ -13,7 +13,7 @@ To install PrivyPaste, you must meet the following hardware and software require
 
 ## Installation
 ### Preparation
-1) Generate RSA keys to your liking using openssl
+1) Generate RSA keys to your liking using openssl (if you do not want the installation script to automatically generate them for you)
 
     # generate private key
     openssl genrsa -out private_key.pem 4096
