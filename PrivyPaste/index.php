@@ -20,6 +20,8 @@
 	require_once $_SERVER['DOCUMENT_ROOT'].'/'.__NAMESPACE__.'/conf/global.php';
 	// db
 	require_once BASE_DIR.__NAMESPACE__.'/conf/db.php';
+	// pki
+	require_once BASE_DIR.__NAMESPACE__.'/conf/pki.php';
 
 	// classes
 	// autoloader

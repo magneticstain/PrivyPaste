@@ -1,7 +1,7 @@
 <?php
-	namespace privypaste;
+	namespace PrivyPaste;
 
-	/**
+	/*
 	*  PrivyPaste
 	*  Author: Josh Carlson
 	*  Email: jcarlson(at)carlso(dot)net
@@ -192,6 +192,133 @@
 	    }
 
 	    // OTHER FUNCTIONS
+	    public function getRelativeTimeFromTimestamp($datetime)
+	    {
+		    /*
+             *  Params:
+             *      - $datetime
+		     *          - timestamp to convert in datetime format
+             *
+             *  Usage:
+             *      - converts timestamp in datetime format (1970-01-01 00:00:00) to relative time format (35 years ago)
+		     *      - prefer not to use exact timestamp when displaying timestamp to user as that can create minor security issues
+             *
+             *  Returns:
+             *      - string
+		     *
+		     *  Citation:
+		     *      - StackOverflow
+		     *          - http://stackoverflow.com/a/8244878
+             */
+
+		    // normalize to unix timestamp
+		    if(is_numeric($datetime))
+		    {
+			    $timestamp = $datetime;
+		    }
+		    else
+		    {
+			    $timestamp = strtotime($datetime);
+		    }
+
+		    // get time difference in seconds
+		    $diff = time() - $timestamp;
+
+		    // set time measurements
+		    $min = 60;
+		    $hour = 60 * 60;
+		    $day = 60 * 60 * 24;
+		    $month = $day * 30;
+
+		    if($diff < 60)
+		    {
+			    // under a min
+			    $timeago = $diff.' seconds';
+		    }
+		    elseif($diff < $hour)
+		    {
+			    // under an hour
+			    $timeago = round($diff/$min).' minutes';
+		    }
+		    elseif($diff < $day)
+		    {
+			    // under a day
+			    $timeago = round($diff/$hour).' hours';
+		    }
+		    elseif($diff < $month)
+		    {
+			    // under a month
+			    $timeago = round($diff/$day).' days';
+		    }
+		    else
+		    {
+			    $timeago = round($diff/$month).' months';
+		    }
+
+		    return $timeago;
+	    }
+
+	    public function getMostRecentlyModifiedPastes($numPastes = 5)
+	    {
+		    /*
+             *  Params:
+             *      - $numPastes
+		     *          - number of most recent pastes to retrieve
+             *
+             *  Usage:
+             *      - gets the X most recent pastes from the db along with the timestamp they were last modified
+             *
+             *  Returns:
+             *      - array
+             */
+
+		    // craft sql query
+		    $sql = "SELECT last_modified, ciphertext FROM pastes ORDER BY last_modified DESC LIMIT :num_pastes";
+
+		    // set sql bind var array
+		    $sqlParams = array(
+			    'num_pastes' => array(
+				    $numPastes,
+				    'i'
+			    )
+		    );
+
+		    // connect to db
+		    // if connection was successful, attempt paste insertion
+		    if($this->dbConn->createDbConnection())
+		    {
+			    // connection is good, execute query
+			    $dbResults = $this->dbConn->queryDb($sql, 'select', $sqlParams);
+//			    echo "<br />GOT RESULTS<br />";
+			    if($dbResults)
+			    {
+				    // results returned by query, get decrypted value of each and re-save
+				    $paste = new Paste();
+				    $decryptedResults = array();
+				    $pasteCiphertext = '';
+				    foreach($dbResults as $row)
+				    {
+					    // extract ciphertext from sql result row
+					    $pasteCiphertext = $row['ciphertext'];
+
+					    // set ciphertext of Paste()
+					    $paste->setCiphertext($pasteCiphertext);
+
+					    // decrypt text
+					    $paste->decryptCiphertext();
+
+					    // set last_modified timestamp and decrypted text as array and append to decrypted results array as new entry
+					    array_push($decryptedResults, array($row['last_modified'], $paste->getPlaintext()));
+				    }
+
+				    return $decryptedResults;
+			    }
+		    }
+
+		    // anything goes wrong, return -1
+		    return -1;
+	    }
+
 	    public function getTotalPastes()
 	    {
 		    /*
@@ -245,11 +372,28 @@
 		    $lcSubTitle = strtolower($this->subTitle);
 
 		    // get most recent pastes that will be displayed at the top of the page
-		    // TODO: add function to generate actual recent pastes
-		    $recentPasteHtml = '<strong>Most Recent Pastes:</strong><a href="#">Test Alpha #1</a> &bull; <a href="#">Test Beta #2</a> &bull; <a href="#">Test Gamma #3</a> &bull; <a href="#">Test Gamma #4</a> &bull; <a href="#">Test Gamma #5</a>';
+		    $recentPastes = $this->getMostRecentlyModifiedPastes();
+		    $recentPasteHtml = '<strong>Most Recent Pastes: </strong>';
+		    foreach($recentPastes as $pastNum => $paste)
+		    {
+			    // $paste is in array form
+			    // $paste[0] = last modified timestamp, $paste[1] = paste plaintext
+
+			    // truncate paste and convert last modified timestamp to relative timestamp for display in view
+			    $truncatedPaste = substr($paste[1], 0, 25);
+			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[0]);
+
+			    // build paste link and append to recent paste html
+			    $recentPasteHtml .= '<a href="#" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
+
+			    // append bullet if not last paste
+			    if($pastNum !== (count($recentPastes) - 1))
+			    {
+				    $recentPasteHtml .= ' &bull; ';
+			    }
+		    }
 
 		    // get total number of pastes which will be displayed in the header's subtitle
-		    // TODO: create function to get actual number of pastes in the DB
 		    $totalPastes = $this->getTotalPastes();
 
 		    // build page html
@@ -294,7 +438,7 @@
 								'.$this->content.'
 							</section>
 							<footer>
-								2014 &copy; Joshua Carlson-Purcell | <a target="_blank" href="http://opensource.org/licenses/MIT">The MIT License (MIT)</a>
+								<a target="_blank" href="https://github.com/magneticstain/PrivyPaste">Project on GitHub</a> | <a target="_blank" href="http://opensource.org/licenses/MIT">The MIT License (MIT)</a>
 							</footer>
 						</div>
 					</body>

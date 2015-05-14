@@ -1,5 +1,5 @@
 <?php
-    namespace privypaste;
+    namespace PrivyPaste;
 
     /**
  *  PrivyPaste
@@ -250,6 +250,24 @@
 		    return false;
 	    }
 
+	    public function destroyDbConnection()
+	    {
+		    /*
+		     * Params:
+			 *      - NONE
+			 *
+			 *  Usage:
+			 *      - tries to destroy this objects database connection
+			 *
+			 *  Returns:
+			 *      - bool
+		     */
+
+		    $this->dbConn = NULL;
+
+		    return true;
+	    }
+
 	    public function queryDb($sql, $action = 'select', $sqlParams = [])
 	    {
 		    /*
@@ -261,14 +279,18 @@
 		     *          - can be 'select', 'insert', 'update', or 'delete'
 		     *          - determines what should be done post-query
 		     *      - $sqlParams
-		     *          - associative array of any parameters that need to be binded to the query statement
+		     *          - associative array of any parameters that need to be bound to the query statement
 		     *          - should be setup as:
 		     *              - key = variable name in sql query
-		     *              - value = value to be binded to the variable in sql query
+		     *              - value = array of data related to the key (sqlParamName)
+		     *                  -value to be bound to the variable in sql query
+		     *                  - data type of bind variable
+		     *                      - i = int
+		     *                      - s = string
 		     *              - e.g.
 		     *                  - SQL Query: "SELECT * FROM Test WHERE id = :test_id"
 		     *                  - PARAM ARRAY
-		     *                      - ['test_id','1']
+		     *                      - ['test_id' => '1']
 			 *
 			 *  Usage:
 			 *      - tries to query the PrivyPaste db
@@ -279,7 +301,8 @@
 		     */
 
 		    // normalize params
-		    $action = strtolower($action);
+		    $action = strtolower((string) $action);
+//		    echo "<br />ACTION: ".$action."<br />";
 
 		    // prepare db statement
 		    $dbStmt = $this->dbConn->prepare($sql);
@@ -292,9 +315,30 @@
 				{
 //					echo "PARAM_NAME: ".$sqlParamName."\n";
 //					echo "PARAM: ".$bindVal."\n";
-					$dbStmt->bindValue($sqlParamName, $bindVal);
+					// check if data type of bind value was set and is valid
+					if(isset($bindVal[1]) && ($bindVal[1] === 'i' || $bindVal[1] === 's'))
+					{
+						// data type was explicitly set, binding value based on data type
+						if($bindVal[1] === 'i')
+						{
+							// bind as integer
+							$dbStmt->bindValue($sqlParamName, $bindVal[0], \PDO::PARAM_INT);
+						}
+						elseif($bindVal[1] === 's')
+						{
+							// bind as string
+							$dbStmt->bindValue($sqlParamName, $bindVal[0], \PDO::PARAM_STR);
+						}
+					}
+					else
+					{
+						// no explicit data type set, assuming default
+						$dbStmt->bindValue($sqlParamName, $bindVal);
+					}
 				}
 		    }
+
+//		    var_dump($sqlParams);
 
 		    // execute and get result
 		    if($dbStmt->execute())
@@ -324,8 +368,14 @@
 				    }
 			    }
 
-			    // query produced results, return it
+			    // query produced results, return them to user
 			    return $dbResults;
+		    }
+		    else
+		    {
+			    $dbStmtErrorInfo = $dbStmt->errorInfo();
+			    error_log('BAD SQL QUERY: '.$dbStmtErrorInfo[2]);
+			    error_log('QUERY: '.$sql);
 		    }
 
 		    return false;
