@@ -12,6 +12,14 @@ $(document).ready(function(){
     /*
         VIEW-ORIENTED LOGIC
      */
+
+    // set error message box element for use with errorator.js functions
+    var errorMsgDiv = $('#errorMsg');
+
+    // display error message if it contains text
+    checkForErrorMsg(errorMsgDiv);
+    toggleErrorMsgBox(errorMsgDiv, 'show');
+
     // focus on main textarea on load of page
     setFocusToMainTextarea();
 

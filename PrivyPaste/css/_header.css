@@ -6,13 +6,39 @@
 {
 	background: #333;
 	color: #999;
-	font: 1.2em 'Raleway', sans-serif;
+	font: 16px 'Raleway', sans-serif;
 	line-height: 30px;
-	margin-bottom: 5px;
+	/*margin-bottom: 5px;*/
 	overflow: hidden;
 	text-align: center;
 	height: 30px;
 	width: 100%;
+}
+
+#errorMsgWrapper
+{
+    /* Needed so that #errorMsg can be absolute positioned, but still horizontally centered and use percentage widths for responsive design */
+    position: absolute;
+    width: 100%;
+}
+
+#errorMsg
+{
+    background: #999999;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    color: #911002;
+    display: none;
+    font: 20px 'Roboto Condensed', sans-serif;
+    /*height: 40px;*/
+    /*margin-left: -300px; *//* always needs to be set to half the width to have div remain horizontally centered */
+    margin: 0 auto;
+    padding: 5px 10px;
+    /*position: absolute;*/
+    /*left: 50%;*/
+    text-align: center;
+    /*width: 600px;*/
+    width: 40%;
 }
 
 /*.tickerModule*/
@@ -64,5 +90,5 @@ header p
 {
 	float: right;
     font: italic 1.2em 'Quicksand', sans-serif;
-	margin: 10px 15px;
+	margin: 50px 15px 0;
 }

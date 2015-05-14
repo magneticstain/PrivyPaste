@@ -25,6 +25,8 @@
 	// autoloader
 	require_once BASE_DIR.__NAMESPACE__.'/lib/autoloader.php';
 
+	$errorMsg = '';
+
 	// set page-specific variables
 	$content = '
 								<div id="text">
@@ -37,8 +39,24 @@
 								</div>
 	';
 
+	// create db connection required for PrivyPaste()
+	$dbConn = '';
+	try
+	{
+		$dbConn = new \PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
+	} catch(\PDOException $e)
+	{
+		$errorMsg = "could not connect to PrivyPaste database!";
+	}
+
+	// format error message if not blank
+	if($errorMsg !== '')
+	{
+		$errorMsg = 'ERROR: '.$errorMsg;
+	}
+
 	// create PrivyPaste() object and echo out page HTML
-	$privypaste = new PrivyPaste($content);
+	$privypaste = new PrivyPaste($dbConn, $content, $errorMsg);
 
 	echo $privypaste;
 ?>

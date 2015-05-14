@@ -51,27 +51,28 @@
 
 	// check if paste ID was sent
 	$pasteUid = getPasteUid();
-	if($pasteUid > 0)
+	if($pasteUid !== -1)
 	{
 		// paste ID is set
 		$paste = new Paste();
 
 		// get paste ciphertext from db
-		// create db connection
-		$dbConn = '';
+		// create Db() object for db connection
+		$db = '';
 		try
 		{
-			$dbConn = new \PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
-		} catch(\PDOException $e)
+			$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
+		} catch(\Exception $e)
 		{
 			$jsonOutput['error'] = $e->getMessage();
 		}
 
+		// connect to db
 		// if connection was successful, try to retrieve encrypted paste
-		if($dbConn !== '')
+		if($db->createDbConnection())
 		{
 			// connection is good, get text
-			if($paste->retrieveCiphertextFromDb($dbConn, $pasteUid))
+			if($paste->retrieveCiphertextFromDb($db, $pasteUid))
 			{
 				// paste was retrieved successfully
 				// decrypt the current ciphertext
@@ -91,6 +92,11 @@
 				// could not get text with that id from the db, set error
 				$jsonOutput['error'] = 'could not retrieve text with that paste UID';
 			}
+		}
+		else
+		{
+			// could not connect to the database
+			$jsonOutput['error'] = 'could not connect to database';
 		}
 	}
 

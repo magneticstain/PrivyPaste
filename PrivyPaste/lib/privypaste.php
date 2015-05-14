@@ -16,8 +16,9 @@
 		private $errorMsg = '';
 	    private $subTitle = '';
 	    private $content = '';
+	    private $dbConn;
 
-	    public function __construct($content, $subTitle = 'Home', $errorMsg = '')
+	    public function __construct($dbConn, $content, $errorMsg = '', $subTitle = 'Home')
 	    {
 		    if(
 			    !$this->setErrorMsg($errorMsg)
@@ -103,6 +104,25 @@
 		    return false;
 	    }
 
+	    public function setDbConn($dbConn)
+	    {
+		    /*
+             *  Params:
+             *      - $dbConn
+		     *          - database connection in the form of a PDO object
+             *
+             *  Usage:
+             *      - verifies and sets the database connection object
+             *
+             *  Returns:
+             *      - boolean
+             */
+
+		    // currently, we're just setting it outright since validation of it connection should already have been done
+		    // if it hasn't been done, running any queries should generate an error and self-validate
+		    $this->dbConn = $dbConn;
+	    }
+
 	    // GETTERS
 	    public function getErrorMsg()
 	    {
@@ -152,7 +172,58 @@
 		    return $this->content;
 	    }
 
+	    public function getDbConn()
+	    {
+		    /*
+             *  Params:
+             *      - NONE
+             *
+             *  Usage:
+             *      - returns the database connection object (PDO)
+             *
+             *  Returns:
+             *      - PDO
+             */
+
+		    return $this->dbConn;
+	    }
+
 	    // OTHER FUNCTIONS
+	    public function getTotalPastes()
+	    {
+		    /*
+             *  Params:
+             *      - NONE
+             *
+             *  Usage:
+             *      - gets the total number of pastes currently stored in the db
+             *
+             *  Returns:
+             *      - int
+             */
+
+		    // craft SQL query
+		    $sql = "SELECT count(*) as cnt FROM pastes";
+
+		    // prepare query
+		    $dbStmt = $this->dbConn->prepare($sql);
+
+		    // execute and get result
+		    if($dbStmt->execute())
+		    {
+			    // query was executed successfully
+			    $dbResults = $dbStmt->fetchAll();
+			    if(count($dbResults) === 1)
+			    {
+				    // query produced results, return count
+				    return $dbResults[0]['cnt'];
+			    }
+		    }
+
+		    // anything goes wrong, return -1
+		    return -1;
+	    }
+
 	    public function generateHtmlPage()
 	    {
 		    /*
@@ -173,10 +244,12 @@
 		    $lcSubTitle = strtolower($this->subTitle);
 
 		    // get most recent pastes that will be displayed at the top of the page
+		    // TODO: add function to generate actual recent pastes
 		    $recentPasteHtml = '<strong>Most Recent Pastes:</strong><a href="#">Test Alpha #1</a> &bull; <a href="#">Test Beta #2</a> &bull; <a href="#">Test Gamma #3</a> &bull; <a href="#">Test Gamma #4</a> &bull; <a href="#">Test Gamma #5</a>';
 
 		    // get total number of pastes which will be displayed in the header's subtitle
-		    $totalPastes = 5;
+		    // TODO: create function to get actual number of pastes in the DB
+		    $totalPastes = $this->getTotalPastes();
 
 		    // build page html
 		    $html = '
@@ -193,6 +266,7 @@
 						<!-- js -->
 						<script src="js/jquery-1.11.1.min.js"></script>
 						<script src="js/jquery.global.js"></script>
+						<script src="js/jquery.errorator.js"></script>
 						<script src="js/jquery.textual.js"></script>
 						<script src="js/jquery.controller.js"></script>
 						<script src="js/jquery.js"></script>
@@ -201,6 +275,11 @@
 						<div id="ticker">
 							'.$recentPasteHtml.'
 						</div>
+						<div id="errorMsgWrapper">
+							<div id="errorMsg">
+								<p>'.$this->errorMsg.'</p>
+							</div>
+						</div>
 						<div id="container">
 							<header>
 								<!--<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="signout.php" title="Sign Out of Your Account">Sign Out</a></p>-->
@@ -208,7 +287,7 @@
 									<img src="media/icons/paper_airplane.png" alt="Welcome to PrivyPaste!" />
 									<h1 class="accent">Privy</h1><h1>Paste</h1>
 								</div>
-				                <p id="subtitle">Currently serving '.(string) $totalPastes.' encrypted pastes!.</p>
+				                <p id="subtitle">Currently serving '.(string) $totalPastes.' encrypted pastes!</p>
 							</header>
 							<section id="content">
 								'.$this->content.'

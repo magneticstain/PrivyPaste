@@ -84,15 +84,15 @@
 	    public function setCiphertext($cipherText)
 	    {
 		    /*
-		 *  Params:
-		 *      - $cipherText [STRING]: ciphertext of $plaintext after being encrypted
-		 *
-		 *  Usage:
-		 *      - sets the ciphertext of the paste
-		 *
-		 *  Returns:
-		 *      - boolean
-		 */
+			*  Params:
+			*      - $cipherText [STRING]: ciphertext of $plaintext after being encrypted
+			*
+			*  Usage:
+			*      - sets the ciphertext of the paste
+			*
+			*  Returns:
+			*      - boolean
+			*/
 
 		    // normalize to string
 		    $cipherText = (string) $cipherText;
@@ -212,7 +212,7 @@
 		    return false;
 	    }
 
-	    public function sendCiphertextToDb($dbConn)
+	    public function sendCiphertextToDb($db)
 	    {
 			/*
 			*  Params:
@@ -237,16 +237,17 @@
 			    // craft SQL query
 			    $sql = "INSERT INTO pastes SET uid = :paste_uid, created = NOW(), last_modified = NOW(), ciphertext = :ciphertext";
 
-			    // prepare query
-			    $dbStmt = $dbConn->prepare($sql);
+			    // set sql param array
+			    $sqlParams = array(
+				    'paste_uid' => $pasteUid,
+				    'ciphertext' => $this->ciphertext
+			    );
 
-			    // bind params
-			    $dbStmt->bindParam('paste_uid', $pasteUid);
-			    $dbStmt->bindParam('ciphertext', $ciphertext);
-			    $ciphertext = $this->ciphertext;
+			    // execute and get result
+			    $sqlResults = $db->queryDb($sql, 'insert', $sqlParams);
 
 			    // execute query
-			    if($dbStmt->execute())
+			    if($sqlResults >= 1)
 			    {
 				    // query executed successfully, return paste UID
 				    return $pasteUid;
@@ -257,7 +258,7 @@
 		    return '-1';
 	    }
 
-	    public function retrieveCiphertextFromDb($dbConn, $pasteUid)
+	    public function retrieveCiphertextFromDb($db, $pasteUid)
 	    {
 		    /*
 		     * Params:
@@ -273,29 +274,23 @@
 			 *      - bool
 		     */
 
-		    $pasteCiphertext = '';
-
 			// craft select sql query
 		    $sql = "SELECT ciphertext FROM pastes WHERE uid = :paste_uid LIMIT 1";
 
-		    // prepare query
-		    $dbStmt = $dbConn->prepare($sql);
-
-		    // bind params
-		    $dbStmt->bindParam('paste_uid', $pasteUid);
+		    // set sql param array
+		    $sqlParams = array(
+			    'paste_uid' => $pasteUid
+		    );
 
 		    // execute and get result
-		    if($dbStmt->execute())
+		    $sqlResults = $db->queryDb($sql, 'select', $sqlParams);
+		    if($sqlResults !== false && count($sqlResults) === 1)
 		    {
-			    // query was executed successfully
-			    $dbResults = $dbStmt->fetchAll();
-			    if(count($dbResults) === 1)
-			    {
-				    // query produced results, set ciphertext
-				    $this->setCiphertext($dbResults[0]['ciphertext']);
+				// got results
+			    // set result as ciphertext object var and return true
+			    $this->ciphertext = $sqlResults[0]['ciphertext'];
 
-				    return true;
-			    }
+			    return true;
 		    }
 
 		    return false;

@@ -80,24 +80,25 @@
 			else
 			{
 				// send text to db
-				// create db connection
-				$dbConn = '';
+				// create Db() object for db connection
+				$db = '';
 				try
 				{
-					$dbConn = new \PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
-				} catch(\PDOException $e)
+					$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
+				} catch(\Exception $e)
 				{
 					$jsonOutput['error'] = $e->getMessage();
 				}
 
+				// connect to db
 				// if connection was successful, attempt paste insertion
-				if($dbConn !== '')
+				if($db->createDbConnection())
 				{
 					// connection is good, insert text
-					$newPasteId = $paste->sendCiphertextToDb($dbConn);
+					$newPasteId = $paste->sendCiphertextToDb($db);
 
 					// any error with the query will generate a paste ID of -1
-					if($newPasteId > 0)
+					if($newPasteId !== -1)
 					{
 						// paste insertion was a success, return paste id
 						$jsonOutput['paste_id'] = $newPasteId;
