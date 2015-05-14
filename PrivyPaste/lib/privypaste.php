@@ -24,10 +24,11 @@
 			    !$this->setErrorMsg($errorMsg)
 			    || !$this->setSubTitle($subTitle)
 			    || !$this->setContent($content)
+			    || !$this->setDbConn($dbConn)
 		    )
 		    {
 			    // something went wrong
-			    throw new \Exception('could not set error message!');
+			    throw new \Exception('could not set main privypaste object');
 		    }
 	    }
 
@@ -121,6 +122,8 @@
 		    // currently, we're just setting it outright since validation of it connection should already have been done
 		    // if it hasn't been done, running any queries should generate an error and self-validate
 		    $this->dbConn = $dbConn;
+
+		    return true;
 	    }
 
 	    // GETTERS
@@ -205,17 +208,15 @@
 		    // craft SQL query
 		    $sql = "SELECT count(*) as cnt FROM pastes";
 
-		    // prepare query
-		    $dbStmt = $this->dbConn->prepare($sql);
-
-		    // execute and get result
-		    if($dbStmt->execute())
+		    // connect to db
+		    // if connection was successful, attempt paste insertion
+		    if($this->dbConn->createDbConnection())
 		    {
-			    // query was executed successfully
-			    $dbResults = $dbStmt->fetchAll();
-			    if(count($dbResults) === 1)
+			    // connection is good, execute query
+			    $dbResults = $this->dbConn->queryDb($sql, 'select');
+			    if($dbResults)
 			    {
-				    // query produced results, return count
+				    // results returned by query, return results to user
 				    return $dbResults[0]['cnt'];
 			    }
 		    }

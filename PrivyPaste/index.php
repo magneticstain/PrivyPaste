@@ -40,10 +40,10 @@
 	';
 
 	// create db connection required for PrivyPaste()
-	$dbConn = '';
+	$db = '';
 	try
 	{
-		$dbConn = new \PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
+		$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
 	} catch(\PDOException $e)
 	{
 		$errorMsg = "could not connect to PrivyPaste database!";
@@ -56,7 +56,7 @@
 	}
 
 	// create PrivyPaste() object and echo out page HTML
-	$privypaste = new PrivyPaste($dbConn, $content, $errorMsg);
+	$privypaste = new PrivyPaste($db, $content, $errorMsg);
 
 	echo $privypaste;
 ?>
