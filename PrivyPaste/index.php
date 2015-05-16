@@ -29,6 +29,9 @@
 
 	$errorMsg = '';
 
+	// get URL for links
+	$fullUrl = PrivyPaste::getServerUrl(BASE_URL_DIR);
+
 	// set page-specific variables
 	$content = '
 								<div id="text">
@@ -37,9 +40,21 @@
 											<img src="media/icons/upload.png" alt="Upload your text" /> Upload Text
 										</div>
 									</div>
+	';
+	// check if paste UID was sent
+	if(isset($_GET['p']) && $_GET['p'] !== '')
+	{
+		// generate paste display content and append to $content
+		
+	}
+	else
+	{
+		// append default content HTML (paste textbox)
+		$content .= '
 									<textarea id="mainText">Enter your text here!</textarea>
 								</div>
-	';
+		';
+	}
 
 	// create db connection required for PrivyPaste()
 	$db = '';
@@ -58,7 +73,7 @@
 	}
 
 	// create PrivyPaste() object and echo out page HTML
-	$privypaste = new PrivyPaste($db, $content, $errorMsg);
+	$privypaste = new PrivyPaste($db, $content, $errorMsg, $fullUrl);
 
 	echo $privypaste;
 ?>

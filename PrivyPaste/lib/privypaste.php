@@ -13,15 +13,17 @@
 
     class PrivyPaste 
     {
+	    private $url = '';
 		private $errorMsg = '';
 	    private $subTitle = '';
 	    private $content = '';
 	    private $dbConn;
 
-	    public function __construct($dbConn, $content, $errorMsg = '', $subTitle = 'Home')
+	    public function __construct($dbConn, $content, $errorMsg = '', $url = 'http://www.example.org/', $subTitle = 'Home')
 	    {
 		    if(
-			    !$this->setErrorMsg($errorMsg)
+			    !$this->setUrl($url)
+			    ||  !$this->setErrorMsg($errorMsg)
 			    || !$this->setSubTitle($subTitle)
 			    || !$this->setContent($content)
 			    || !$this->setDbConn($dbConn)
@@ -126,6 +128,32 @@
 		    return true;
 	    }
 
+	    public function setUrl($url)
+	    {
+		    /*
+             *  Params:
+             *      - $url
+		     *          - full URL to access PrivyPaste
+             *
+             *  Usage:
+             *      - verifies and sets the URL of the PrivyPaste site
+             *
+             *  Returns:
+             *      - boolean
+             */
+
+		    // $url must be in a valid format. whether it's the correct URL will be validated during testing by the user
+		    if(filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false)
+		    {
+			    // valid URL
+			    $this->url = $url;
+
+			    return true;
+		    }
+
+		    return false;
+	    }
+
 	    // GETTERS
 	    public function getErrorMsg()
 	    {
@@ -191,7 +219,65 @@
 		    return $this->dbConn;
 	    }
 
+	    public function getUrl()
+	    {
+		    /*
+             *  Params:
+             *      - NONE
+             *
+             *  Usage:
+             *      - returns the full base URL of the PrivyPaste site
+             *
+             *  Returns:
+             *      - string
+             */
+
+		    return $this->url;
+	    }
+
 	    // OTHER FUNCTIONS
+	    public static function getServerUrl($basePath)
+	    {
+		    /*
+             *  Params:
+		     *      - $basePath
+		     *          - base path of URL
+		     *          - set in global config
+             *
+             *  Usage:
+             *      - generates the base URL of the PrivyPaste server
+		     *      - should be in the format of [PROTOCOL]://[DOMAIN NAME][BASE_PATH]
+             *
+             *  Returns:
+             *      - string
+             */
+
+		    // check if base path was set and not empty
+		    if(isset($basePath) && !empty($basePath))
+		    {
+			    // all requirements satisfied
+			    // set protocol (HTTP or HTTPS)
+			    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+			    {
+				    // use TLS
+				    $protocol = 'https';
+			    }
+			    else
+			    {
+				    // use normal HTTP
+				    $protocol = 'http';
+			    }
+
+			    // get domain name
+			    $domainName = $_SERVER['SERVER_NAME'];
+
+			    // build and return URL
+			    return $protocol.'://'.$domainName.$basePath;
+		    }
+
+		    return '';
+	    }
+
 	    public function getRelativeTimeFromTimestamp($datetime)
 	    {
 		    /*
@@ -208,6 +294,7 @@
 		     *
 		     *  Citation:
 		     *      - StackOverflow
+		     *          - https://stackoverflow.com/users/1011145/nick
 		     *          - http://stackoverflow.com/a/8244878
              */
 
@@ -233,29 +320,29 @@
 		    if($diff < 60)
 		    {
 			    // under a min
-			    $timeago = $diff.' seconds';
+			    $timeAgo = $diff.' seconds';
 		    }
 		    elseif($diff < $hour)
 		    {
 			    // under an hour
-			    $timeago = round($diff/$min).' minutes';
+			    $timeAgo = round($diff/$min).' minutes';
 		    }
 		    elseif($diff < $day)
 		    {
 			    // under a day
-			    $timeago = round($diff/$hour).' hours';
+			    $timeAgo = round($diff/$hour).' hours';
 		    }
 		    elseif($diff < $month)
 		    {
 			    // under a month
-			    $timeago = round($diff/$day).' days';
+			    $timeAgo = round($diff/$day).' days';
 		    }
 		    else
 		    {
-			    $timeago = round($diff/$month).' months';
+			    $timeAgo = round($diff/$month).' months';
 		    }
 
-		    return $timeago;
+		    return $timeAgo;
 	    }
 
 	    public function getMostRecentlyModifiedPastes($numPastes = 5)
@@ -273,7 +360,7 @@
              */
 
 		    // craft sql query
-		    $sql = "SELECT last_modified, ciphertext FROM pastes ORDER BY last_modified DESC LIMIT :num_pastes";
+		    $sql = "SELECT uid, last_modified, ciphertext FROM pastes ORDER BY last_modified DESC LIMIT :num_pastes";
 
 		    // set sql bind var array
 		    $sqlParams = array(
@@ -288,8 +375,7 @@
 		    if($this->dbConn->createDbConnection())
 		    {
 			    // connection is good, execute query
-			    $dbResults = $this->dbConn->queryDb($sql, 'select', $sqlParams);
-//			    echo "<br />GOT RESULTS<br />";
+			    $dbResults = $this->dbConn->queryDb($sql, 'select', $sqlParams);;
 			    if($dbResults)
 			    {
 				    // results returned by query, get decrypted value of each and re-save
@@ -308,7 +394,7 @@
 					    $paste->decryptCiphertext();
 
 					    // set last_modified timestamp and decrypted text as array and append to decrypted results array as new entry
-					    array_push($decryptedResults, array($row['last_modified'], $paste->getPlaintext()));
+					    array_push($decryptedResults, array($row['uid'], $row['last_modified'], $paste->getPlaintext()));
 				    }
 
 				    return $decryptedResults;
@@ -377,14 +463,14 @@
 		    foreach($recentPastes as $pastNum => $paste)
 		    {
 			    // $paste is in array form
-			    // $paste[0] = last modified timestamp, $paste[1] = paste plaintext
+			    // $paste[0] = uid, $paste[1] = last modified timestamp, $paste[2] = paste plaintext
 
 			    // truncate paste and convert last modified timestamp to relative timestamp for display in view
-			    $truncatedPaste = substr($paste[1], 0, 25);
-			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[0]);
+			    $truncatedPaste = substr($paste[2], 0, 25);
+			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
 
 			    // build paste link and append to recent paste html
-			    $recentPasteHtml .= '<a href="#" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
+			    $recentPasteHtml .= '<a href="'.$this->url.'?p='.$paste[0].'" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
 
 			    // append bullet if not last paste
 			    if($pastNum !== (count($recentPastes) - 1))
