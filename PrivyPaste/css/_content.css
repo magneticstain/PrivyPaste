@@ -3,20 +3,16 @@
 */
 
 /* SECTIONS & DIVS */
-#text, #text textarea
-{
-	height: 100%;
-}
-
 #content
 {
 	clear: both;
-	height: 95%;
+	/*height: 95%;*/
 }
 
 #text
 {
 	border: 2px solid #000;
+    height: 100%;
 	overflow: hidden;
 	position: relative;
 }
@@ -34,13 +30,51 @@
 	text-align: center;
 }
 
-#text textarea
+#textContainer
+{
+    position: relative;
+}
+
+#mainText, #pastePlaintext
 {
 	border: none;
 	box-sizing:border-box;
 	outline: 0;
 	padding: 20px 10px;
-	width: 100%;
+    width: 100%;
+}
+
+#mainText
+{
+    height: 600px;
+}
+
+#textHtml
+{
+    height: 400px;
+    overflow: auto;
+    padding: 10px 15px;
+    width: auto;
+}
+
+#textMetadata, #plaintextHeading
+{
+    background: #C7C7C7;
+}
+
+#textMetadata
+{
+    padding: 20px;
+}
+
+#plaintextHeading
+{
+    padding: 15px;
+}
+
+#pastePlaintext
+{
+    height: 200px;
 }
 
 /* IMGS */
@@ -48,6 +82,45 @@
 {
 	margin: 0 15px;
 	vertical-align: middle;
+}
+
+/* TEXT */
+#textMetadata h2, #plaintextHeading h3
+{
+    color: #D1463D;
+    font-family: 'Droid Sans', sans-serif;
+    letter-spacing: 2px;
+}
+
+#textMetadata h2
+{
+    font-size: 32px;
+    margin: 10px 0;
+}
+
+#textMetadata .metadataCells
+{
+    background: #999;
+    border: 2px dashed #D1463D;
+    font: 12px 'Open Sans', sans-serif;
+    margin: 0 5px 0 0;
+    padding: 5px;
+}
+
+#textMetadata .metadataCells, #textMetadata .metadataCells p
+{
+    display: inline;
+}
+
+#textMetadata .metadataCells p:first-child
+{
+    /* metadata key */
+    font-weight: bolder;
+}
+
+#plaintextHeading h3
+{
+    font-size: 18px;
 }
 
 /* OTHER */

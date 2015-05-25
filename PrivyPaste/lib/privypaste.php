@@ -438,6 +438,88 @@
 		    return -1;
 	    }
 
+	    public function generatePasteContentHtml($pasteUid)
+	    {
+		    /*
+             *  Params:
+             *      - $pasteUid
+		     *          - UID of paste to wrap HTML around
+             *
+             *  Usage:
+             *      - generates HTML to be used to display a paste to the user
+             *
+             *  Returns:
+             *      - string
+             */
+
+		    $pasteHtml = '';
+
+		    // get paste from API
+		    // set API URL
+		    $apiUrl = $this->url.'api/v1/paste/get/?uid='.$pasteUid;
+
+		    // query API and decode JSON to array
+		    $pasteJson = json_decode(file_get_contents($apiUrl));
+
+		    // see if API query was successful
+		    if(isset($pasteJson->paste_text))
+		    {
+			    // API returned text, generate HTML with it
+			    // generate paste title
+			    $pasteTitle = substr($pasteJson->paste_text, 0, 20);
+			    // if paste is longer than 20 characters, add elipses
+			    if(strlen($pasteJson->paste_text) > 20)
+			    {
+				    $pasteTitle = $pasteTitle.'...';
+			    }
+
+			    // generate timestamps for paste time metadata
+			    $pasteCreation = $this->getRelativeTimeFromTimestamp($pasteJson->creation_time);
+			    $pasteLastModified = $this->getRelativeTimeFromTimestamp($pasteJson->last_modified_time);
+
+			    // process paste to HTML
+			    // replace newlines with <br /> and escape HTML
+			    $pasteTextHtml = nl2br(htmlentities($pasteJson->paste_text));
+
+			    $pasteHtml = '
+		                    <div id="textContainer">
+		                        <div id="textMetadata">
+		                            <h2>'.$pasteTitle.'</h2>
+		                            <div class="metadataCells created">
+		                                <p>Created:</p>
+		                                <p>'.$pasteCreation.' ago</p>
+		                            </div>
+		                            <div class="metadataCells lastModified">
+		                                <p>Last Modified:</p>
+		                                <p>'.$pasteLastModified.' ago</p>
+		                            </div>
+		                        </div>
+		                        <div id="textHtml">
+		                            '.$pasteTextHtml.'
+		                        </div>
+		                        <div id="plaintextHeading">
+		                            <h3>Paste Plaintext</h3>
+		                        </div>
+		                        <textarea id="pastePlaintext">'.$pasteJson->paste_text.'</textarea>
+		                    </div>
+			    ';
+		    }
+		    else
+		    {
+			    // generate HTML for paste not found
+			    // API returned text, generate HTML with it
+			    $pasteHtml = '
+		                    <div id="textContainer">
+		                        <div id="textHtml">
+									<p>Paste not found!</p>
+		                        </div>
+		                    </div>
+			    ';
+		    }
+
+		    return $pasteHtml;
+	    }
+
 	    public function generateHtmlPage()
 	    {
 		    /*
@@ -524,7 +606,7 @@
 								'.$this->content.'
 							</section>
 							<footer>
-								<a target="_blank" href="https://github.com/magneticstain/PrivyPaste">Project on GitHub</a> | <a target="_blank" href="http://opensource.org/licenses/MIT">The MIT License (MIT)</a>
+								<a target="_blank" href="https://github.com/magneticstain/PrivyPaste">Project Home</a> | <a target="_blank" href="http://opensource.org/licenses/MIT">The MIT License (MIT)</a>
 							</footer>
 						</div>
 					</body>

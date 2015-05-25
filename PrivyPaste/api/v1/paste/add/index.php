@@ -46,8 +46,10 @@
 	//
 	// MAIN
 	//
-	// initialize output var
-	$jsonOutput = array();
+	// initialize output array w/ success variable which is included with all queries
+	$jsonOutput = array(
+		'success' => 0
+	);;
 
 	// check if plaintext was sent
 	$plainText = checkForRawTxt();
@@ -95,12 +97,13 @@
 				if($db->createDbConnection())
 				{
 					// connection is good, insert text
-					$newPasteId = $paste->sendCiphertextToDb($db);
+					$newPasteId = $paste->sendPasteDataToDb($db);
 
 					// any error with the query will generate a paste ID of -1
 					if($newPasteId !== -1)
 					{
-						// paste insertion was a success, return paste id
+						// paste insertion was a success, change success flag to true and return paste id
+						$jsonOutput['success'] = 1;
 						$jsonOutput['paste_id'] = $newPasteId;
 					} else
 					{

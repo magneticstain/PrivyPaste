@@ -8,7 +8,7 @@
 	 */
 
 	/*
-	 *  api/$current_version/paste/get/ - api feature to get decrypted paste from the database
+	 *  api/$current_version/paste/get/ - api feature to get decrypted paste and its metadata from the database
 	 */
 
 	//
@@ -46,8 +46,10 @@
 	//
 	// MAIN
 	//
-	// initialize output var
-	$jsonOutput = array();
+	// initialize output array w/ success variable which is included with all queries
+	$jsonOutput = array(
+		'success' => 0
+	);
 
 	// check if paste ID was sent
 	$pasteUid = getPasteUid();
@@ -72,14 +74,17 @@
 		if($db->createDbConnection())
 		{
 			// connection is good, get text
-			if($paste->retrieveCiphertextFromDb($db, $pasteUid))
+			if($paste->retrievePasteDataFromDb($db, $pasteUid))
 			{
 				// paste was retrieved successfully
 				// decrypt the current ciphertext
 				if($paste->decryptCiphertext())
 				{
-					// ciphertext was successfully decrypted, return new plaintext to user
+					// ciphertext was successfully decrypted, return new plaintext and paste metadata to user
+					$jsonOutput['success'] = 1;
 					$jsonOutput['paste_text'] = $paste->getPlaintext();
+					$jsonOutput['creation_time'] = $paste->getCreationTime();
+					$jsonOutput['last_modified_time'] = $paste->getLastModifiedTime();
 				}
 				else
 				{

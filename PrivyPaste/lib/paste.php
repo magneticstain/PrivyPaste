@@ -14,14 +14,20 @@
     class Paste
     {
         protected $pasteId = 0;
+	    public $pasteUid = '';
+	    public $creationTime = 0;
+	    public $lastModifiedTime = 0;
         protected $plaintext = '';
 	    protected $ciphertext = '';
 
-        public function __construct($plaintext = '', $ciphertext = '', $pasteId = 0)
+        public function __construct($plaintext = '', $ciphertext = '', $pasteUid = '00000000', $creationTime = 0, $lastModifiedTime = 0, $pasteId = 0)
         {
             // set vars
             if(
                 !$this->setPasteId($pasteId)
+                || !$this->setPasteUid($pasteUid)
+                || !$this->setCreationTime($creationTime)
+                || !$this->setLastModifiedTime($lastModifiedTime)
                 || !$this->setPlaintext($plaintext)
 	            || !$this->setCiphertext($ciphertext)
             )
@@ -58,6 +64,96 @@
 
             return false;
         }
+
+	    public function setPasteUid($pasteUid)
+	    {
+		    /*
+			 *  Params:
+			 *      - $pasteUid [STRING]
+			 *          - unique identifier for each paste
+			 *
+			 *  Usage:
+			 *      - verifies and sets the paste UID
+			 *
+			 *  Returns:
+			 *      - boolean
+			 */
+
+		    // normalize to string
+		    $pasteUid = (string) $pasteUid;
+
+		    // UID is an alphanumeric string
+		    // normally 8 chars, but adjustments may be made to accomedate larger installs
+		    if(ctype_alnum($pasteUid) && strlen($pasteUid) === 8)
+		    {
+			    // valid UID
+			    $this->pasteUid = $pasteUid;
+
+			    return true;
+		    }
+
+		    return false;
+	    }
+
+	    public function setCreationTime($creationTimestamp)
+	    {
+		    /*
+			 *  Params:
+			 *      - $creationTimestamp [INT]
+			 *          - time of creation in epoch time
+			 *
+			 *  Usage:
+			 *      - verifies and sets the creation date
+			 *
+			 *  Returns:
+			 *      - boolean
+			 */
+
+		    // normalize to int
+		    $creationTimestamp = (int) $creationTimestamp;
+
+		    // timestamp should be before now
+		    $currentTime = time();
+		    if($creationTimestamp <= $currentTime)
+		    {
+			    // valid creation time
+			    $this->creationTime = $creationTimestamp;
+
+			    return true;
+		    }
+
+		    return false;
+	    }
+
+	    public function setLastModifiedTime($lastModifiedTimestamp)
+	    {
+		    /*
+			 *  Params:
+			 *      - $lastModifiedTimestamp [INT]
+			 *          - time of last modification in epoch time
+			 *
+			 *  Usage:
+			 *      - verifies and sets the last modified date
+			 *
+			 *  Returns:
+			 *      - boolean
+			 */
+
+		    // normalize to int
+		    $lastModifiedTimestamp = (int) $lastModifiedTimestamp;
+
+		    // timestamp should be before now
+		    $currentTime = time();
+		    if($lastModifiedTimestamp <= $currentTime)
+		    {
+			    // valid last modified time
+			    $this->lastModifiedTime = $lastModifiedTimestamp;
+
+			    return true;
+		    }
+
+		    return false;
+	    }
 
         public function setPlaintext($plaintext)
         {
@@ -119,6 +215,54 @@
 
             return $this->pasteId;
         }
+
+	    public function getPasteUid()
+	    {
+		    /*
+		 *  Params:
+		 *      - NONE
+		 *
+		 *  Usage:
+		 *      - returns the paste UID
+		 *
+		 *  Returns:
+		 *      - string
+		 */
+
+		    return $this->pasteUid;
+	    }
+
+	    public function getCreationTime()
+	    {
+		    /*
+		 *  Params:
+		 *      - NONE
+		 *
+		 *  Usage:
+		 *      - returns the creation time in epoch time format
+		 *
+		 *  Returns:
+		 *      - int
+		 */
+
+		    return $this->creationTime;
+	    }
+
+	    public function getLastModifiedTime()
+	    {
+		    /*
+		 *  Params:
+		 *      - NONE
+		 *
+		 *  Usage:
+		 *      - returns the last modified time in epoch time format
+		 *
+		 *  Returns:
+		 *      - int
+		 */
+
+		    return $this->lastModifiedTime;
+	    }
 
         public function getPlaintext()
         {
@@ -212,7 +356,7 @@
 		    return false;
 	    }
 
-	    public function sendCiphertextToDb($db)
+	    public function sendPasteDataToDb($db)
 	    {
 			/*
 			*  Params:
@@ -258,7 +402,7 @@
 		    return '-1';
 	    }
 
-	    public function retrieveCiphertextFromDb($db, $pasteUid)
+	    public function retrievePasteDataFromDb($db, $pasteUid)
 	    {
 		    /*
 		     * Params:
@@ -275,7 +419,7 @@
 		     */
 
 			// craft select sql query
-		    $sql = "SELECT ciphertext FROM pastes WHERE uid = :paste_uid LIMIT 1";
+		    $sql = "SELECT id, uid, created, last_modified, ciphertext FROM pastes WHERE uid = :paste_uid LIMIT 1";
 
 		    // set sql param array
 		    $sqlParams = array(
@@ -287,7 +431,11 @@
 		    if($sqlResults !== false && count($sqlResults) === 1)
 		    {
 				// got results
-			    // set result as ciphertext object var and return true
+			    // set result as respective object var and return true
+			    $this->pasteId = $sqlResults[0]['id'];
+			    $this->pasteUid = $sqlResults[0]['uid'];
+			    $this->creationTime = strtotime($sqlResults[0]['created']);
+			    $this->lastModifiedTime = strtotime($sqlResults[0]['last_modified']);
 			    $this->ciphertext = $sqlResults[0]['ciphertext'];
 
 			    return true;
