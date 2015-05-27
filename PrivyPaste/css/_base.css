@@ -20,6 +20,13 @@ body
 	width: 98%;
 }
 
+#vars
+{
+    /* CONTAINS VALUES USED BY JS
+        SHOULD REMAIN HIDDEN AT ALL TIMES */
+    display: none;
+}
+
 /* TEXT */
 .accent
 {

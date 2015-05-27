@@ -14,6 +14,9 @@ var mainTextarea = null,
     uploadButton = null;
 
 $(document).ready(function(){
+    // [index] error messgae container
+    errorMsgDiv = $('#errorMsg');
+
     // [index] upload button
     uploadButton = $('#textUploadButton');
 

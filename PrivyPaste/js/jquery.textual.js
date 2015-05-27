@@ -65,12 +65,14 @@ function checkMainTextarea()
         defaultText = 'Enter your text here!',
         newText = '';
 
-    // check if the text is blank
-    if(currentText === '')
+    if(currentText === defaultText)
     {
-        // no input, replace with default text
-        newText = defaultText;
+        // clear main text area
+        sendToMainTextarea('');
     }
-
-    sendToMainTextarea(newText);
+    else if(currentText === '')
+    {
+        // replace with default text
+        sendToMainTextarea(defaultText);
+    }
 }

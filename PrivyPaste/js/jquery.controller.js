@@ -9,7 +9,7 @@
  */
 
 /* USER VISIBLE */
-function changeUploadButton(newUploadButtonHTML, doFade)
+function changeUploadButton(newUploadButtonHTML, doFade, f)
 {
     // change html inside upload button div to given text, with or without fading
 //    console.log('NEW HTML:' + newUploadButtonHTML);
@@ -33,6 +33,12 @@ function changeUploadButton(newUploadButtonHTML, doFade)
             uploadButton.html(newUploadButtonHTML);
         }
 
+        // check for callback function
+        if (typeof f == "function")
+        {
+            f();
+        }
+
         return true;
     }
 
@@ -40,14 +46,66 @@ function changeUploadButton(newUploadButtonHTML, doFade)
 }
 
 /* BACKEND */
+function getBaseUrl()
+{
+    // gets base URL string from HTML element
+    return $('.base_url').text();
+}
+
 function sentTextToAPI(text)
 {
-    // sends a given text string to the paste creation api via ajax
+    var pasteData = '';
 
+    // sends a given text string to the paste creation api via ajax
+    var baseUrl = getBaseUrl(),
+        textData = {
+            'text': text
+        };
+
+    // send ajax request
+    $.ajax({
+        type: 'POST',
+        url: baseUrl + 'api/v1/paste/add/',
+        data: textData,
+        dataType: 'json',
+        success:
+            function(pasteData)
+            {
+                // see if paste was successfully inserted
+                if(pasteData.success)
+                {
+                    // update upload button w/ url or display error
+                    if(pasteData.error)
+                    {
+                        // display error
+                        updateError('The API seems to be having a problem. ERROR: ' + pasteData.error);
+
+                        return false;
+                    }
+                    else
+                    {
+                        // redirect to paste URL
+                        //var pasteUrl = getBaseUrl() + '?p=' + pasteData.paste_id;
+                        window.location.href = getBaseUrl() + '?p=' + pasteData.paste_id;
+                    }
+                }
+            },
+        error:
+            function()
+            {
+                // update user w/ error
+                updateError('Uh oh! We couldn\'t reach the API. Please contact your system administrator.');
+
+                return false;
+            }
+    });
 }
 
 function uploadText()
 {
+    // save default html
+    var defaultHtml = uploadButton.html();
+
     // sends text data to api via ajax call
     var mainText = getMainTextareaVal();
 
@@ -62,8 +120,13 @@ function uploadText()
         changeUploadButton(uploadButtonMsgHTML, true);
 
         // send to api
-
-        // update user if there's any error, else redirect to new paste
-
+        if(!sentTextToAPI(mainText))
+        {
+            // need to implement a timeout before updating the timeout in case the upload button is still in it's fade action when the API returns
+            setTimeout(function() {
+                // reset upload button
+                changeUploadButton(defaultHtml, false);
+            }, 1000);
+        }
     }
 }

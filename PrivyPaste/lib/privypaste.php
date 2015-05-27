@@ -585,6 +585,9 @@
 						<script src="js/jquery.js"></script>
 					</head>
 					<body id="'.$lcSubTitle.'">
+						<div id="vars">
+							<span class="base_url">'.$this->url.'</span>
+						</div>
 						<div id="ticker">
 							'.$recentPasteHtml.'
 						</div>
