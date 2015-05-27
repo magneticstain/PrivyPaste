@@ -438,7 +438,7 @@
 		    return -1;
 	    }
 
-	    public function generatePasteContentHtml($pasteUid)
+	    public function generatePasteContentHtml($pasteUid, $updateTitle = false)
 	    {
 		    /*
              *  Params:
@@ -507,14 +507,23 @@
 		    else
 		    {
 			    // generate HTML for paste not found
-			    // API returned text, generate HTML with it
+			    $pasteTitle = 'Paste Not Found!';
 			    $pasteHtml = '
 		                    <div id="textContainer">
+		                    	<div id="textMetadata">
+		                            <h2>Paste Not Found!</h2>
+		                        </div>
 		                        <div id="textHtml">
-									<p>Paste not found!</p>
+									<p>Paste could not be found. Please check your URL and try again.</p>
 		                        </div>
 		                    </div>
 			    ';
+		    }
+
+		    // see if title should be updated
+		    if($updateTitle)
+		    {
+			    $this->setSubTitle($pasteTitle);
 		    }
 
 		    return $pasteHtml;
@@ -600,8 +609,10 @@
 							<header>
 								<!--<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="signout.php" title="Sign Out of Your Account">Sign Out</a></p>-->
 								<div id="logo">
-									<img src="media/icons/paper_airplane.png" alt="Welcome to PrivyPaste!" />
-									<h1 class="accent">Privy</h1><h1>Paste</h1>
+									<a href="'.$this->url.'">
+										<img src="media/icons/paper_airplane.png" alt="Welcome to PrivyPaste!" />
+										<h1 class="accent">Privy</h1><h1>Paste</h1>
+									</a>
 								</div>
 				                <p id="subtitle">Currently serving '.(string) $totalPastes.' encrypted pastes!</p>
 							</header>

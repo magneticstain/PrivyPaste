@@ -92,3 +92,10 @@ header p
     font: italic 1.2em 'Quicksand', sans-serif;
 	margin: 50px 15px 0;
 }
+
+/* LINKS */
+#logo a:hover, #logo a:active
+{
+    border: none;
+    background: none;
+}

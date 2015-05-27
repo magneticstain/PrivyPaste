@@ -61,7 +61,7 @@
 	if(isset($_GET['p']) && $_GET['p'] !== '')
 	{
 		// generate paste display content and append to $content
-		$content .= $privypaste->generatePasteContentHtml($_GET['p']);
+		$content .= $privypaste->generatePasteContentHtml($_GET['p'], true);
 	}
 	else
 	{
