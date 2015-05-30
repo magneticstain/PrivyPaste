@@ -1,7 +1,7 @@
 <?php
 	namespace PrivyPaste;
 
-	/**
+	/*
 	 *  PrivyPaste
 	 *  Author: Josh Carlson
 	 *  Email: jcarlson(at)carlso(dot)net
@@ -49,7 +49,7 @@
 	// initialize output array w/ success variable which is included with all queries
 	$jsonOutput = array(
 		'success' => 0
-	);;
+	);
 
 	// check if plaintext was sent
 	$plainText = checkForRawTxt();
@@ -61,10 +61,6 @@
 		try
 		{
 			$paste = new Paste($plainText);
-
-//			echo '<pre>';
-//			var_dump($paste);
-//			echo '</pre>';
 		} catch(\Exception $e)
 		{
 			$jsonOutput['error'] = $e->getMessage();
@@ -74,13 +70,9 @@
 		if($paste !== '')
 		{
 			// encrypt plaintext within object
-			if(!$paste->encryptPlaintext())
+			if($paste->encryptPlaintext())
 			{
-				// encryption unsuccessful, set error
-				$jsonOutput['error'] = 'Text encryption was unsuccessful. Please verify PKI certificates and application configs.';
-			}
-			else
-			{
+				// text encryption was successful
 				// send text to db
 				// create Db() object for db connection
 				$db = '';
@@ -103,14 +95,27 @@
 					if($newPasteId !== -1)
 					{
 						// paste insertion was a success, change success flag to true and return paste id
-						$jsonOutput['success'] = 1;
-						$jsonOutput['paste_id'] = $newPasteId;
-					} else
+						$jsonOutput = array(
+							'success' => 1,
+							'paste_id' => $newPasteId
+						);
+					}
+					else
 					{
 						// something went wrong with the db query, set an error
 						$jsonOutput['error'] = 'paste failed to be inserted into the database';
 					}
 				}
+				else
+				{
+					// could not connect to PP database, set an error
+					$jsonOutput['error'] = 'could not connect to backend database';
+				}
+			}
+			else
+			{
+				// encryption unsuccessful, set error
+				$jsonOutput['error'] = 'Text encryption was unsuccessful. Please verify PKI certificates and application configs.';
 			}
 		}
 	}

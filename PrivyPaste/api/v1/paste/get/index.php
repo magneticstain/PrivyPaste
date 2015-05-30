@@ -36,11 +36,12 @@
 		if(isset($_GET['uid']) && !empty($_GET['uid']))
 		{
 			// paste id set
-			return $_GET['uid'];
+			// normalize and return it
+			return trim(strtolower($_GET['uid']));
 		}
 
-		// in all other cases, return -1
-		return -1;
+		// in all other cases, return blank string
+		return '';
 	}
 
 	//
@@ -53,7 +54,7 @@
 
 	// check if paste ID was sent
 	$pasteUid = getPasteUid();
-	if($pasteUid !== -1)
+	if($pasteUid !== '')
 	{
 		// paste ID is set
 		$paste = new Paste();
@@ -81,27 +82,29 @@
 				if($paste->decryptCiphertext())
 				{
 					// ciphertext was successfully decrypted, return new plaintext and paste metadata to user
-					$jsonOutput['success'] = 1;
-					$jsonOutput['paste_text'] = $paste->getPlaintext();
-					$jsonOutput['creation_time'] = $paste->getCreationTime();
-					$jsonOutput['last_modified_time'] = $paste->getLastModifiedTime();
+					$jsonOutput = array(
+						'success' => 1,
+						'paste_text' => $paste->getPlaintext(),
+						'creation_time' => $paste->getCreationTime(),
+						'last_modified_time' => $paste->getLastModifiedTime()
+					);
 				}
 				else
 				{
 					// couldn't decrypt ciphertext, set error
-					$jsonOutput['error'] = 'could not decrypt text';
+					$jsonOutput['error'] = 'Could not decrypt text. Please verify PKI certificates and application configs.';
 				}
 			}
 			else
 			{
 				// could not get text with that id from the db, set error
-				$jsonOutput['error'] = 'could not retrieve text with that paste UID';
+				$jsonOutput['error'] = 'Could not retrieve text with that paste UID';
 			}
 		}
 		else
 		{
 			// could not connect to the database
-			$jsonOutput['error'] = 'could not connect to database';
+			$jsonOutput['error'] = 'Could not connect to database';
 		}
 	}
 
