@@ -11,8 +11,8 @@
      */
 
 	// DB SETTINGS
-	define('DB_HOST', 'localhost');
-	define('DB_NAME', 'privypaste');
-	define('DB_USER', 'privypaste');
-	define('DB_PASS', 'xb4To14XHK2IhY2j');
+	define('DB_HOST', '');
+	define('DB_NAME', '');
+	define('DB_USER', '');
+	define('DB_PASS', '');
 ?>
