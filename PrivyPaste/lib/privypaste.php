@@ -561,7 +561,7 @@
 			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
 
 			    // build paste link and append to recent paste html
-			    $recentPasteHtml .= '<a href="'.$this->url.'?p='.$paste[0].'" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
+			    $recentPasteHtml .= '<a href="'.$this->url.'paste/'.$paste[0].'" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
 
 			    // append bullet if not last paste
 			    if($pastNum !== (count($recentPastes) - 1))
@@ -583,15 +583,15 @@
 						<title>'.$htmlTitle.'</title>
 
 						<!-- CSS -->
-						<link rel="stylesheet" type="text/css" href="css/master.css" />
+						<link rel="stylesheet" type="text/css" href="'.BASE_URL_DIR.'css/master.css" />
 
 						<!-- js -->
-						<script src="js/jquery-1.11.1.min.js"></script>
-						<script src="js/jquery.global.js"></script>
-						<script src="js/jquery.errorator.js"></script>
-						<script src="js/jquery.textual.js"></script>
-						<script src="js/jquery.controller.js"></script>
-						<script src="js/jquery.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery-1.11.1.min.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.global.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.errorator.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.textual.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.controller.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.js"></script>
 					</head>
 					<body id="'.$lcSubTitle.'">
 						<div id="vars">
@@ -610,7 +610,7 @@
 								<!--<p id="accountInfo">Josh Carlson &lt;magneticstain@gmail.com&gt; | <a href="pastes.php" title="View Your Pastes">Pastes</a> | <a href="account.php" title="Update Your Account">Account</a> | <a href="signout.php" title="Sign Out of Your Account">Sign Out</a></p>-->
 								<div id="logo">
 									<a href="'.$this->url.'">
-										<img src="media/icons/paper_airplane.png" alt="Welcome to PrivyPaste!" />
+										<img src="'.BASE_URL_DIR.'media/icons/paper_airplane.png" alt="Welcome to PrivyPaste!" />
 										<h1 class="accent">Privy</h1><h1>Paste</h1>
 									</a>
 								</div>

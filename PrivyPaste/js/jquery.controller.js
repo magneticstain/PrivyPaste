@@ -87,6 +87,8 @@ function sentTextToAPI(text)
                         // redirect to paste URL
                         //var pasteUrl = getBaseUrl() + '?p=' + pasteData.paste_id;
                         window.location.href = getBaseUrl() + '?p=' + pasteData.paste_id;
+
+                        return true;
                     }
                 }
             },
