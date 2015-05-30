@@ -4,24 +4,40 @@
 
 /* INFO TICKER */
 /* https://www.google.com/fonts#UsePlace:use/Collection:Raleway */
-@import url(http://fonts.googleapis.com/css?family=Raleway);
+/*@import url(http://fonts.googleapis.com/css?family=Raleway);*/
+@font-face {
+    font-family: 'Raleway';
+    src: url('/PrivyPaste/css/fonts/Raleway.ttf');
+}
 
 /* HEADING ERROR MESSAGE */
 /* https://www.google.com/fonts#UsePlace:use/Collection:Roboto+Condensed */
-@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
+/*@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed); */
+@font-face {
+    font-family: 'Roboto Condensed';
+    src: url('/PrivyPaste/css/fonts/RobotoCondensed.ttf');
+}
 
 /* TITLE */
 /* https://www.google.com/fonts#UsePlace:use/Collection:Quicksand */
-@import url(http://fonts.googleapis.com/css?family=Quicksand);
+/*@import url(http://fonts.googleapis.com/css?family=Quicksand);*/
+@font-face {
+    font-family: 'Quicksand';
+    src: url('/PrivyPaste/css/fonts/Quicksand.ttf');
+}
 
 /* BODY */
 /* https://www.google.com/fonts#UsePlace:use/Collection:Open+Sans */
-@import url(http://fonts.googleapis.com/css?family=Open+Sans);
-
-/* Upload Button & Other Headings */
-/* https://www.google.com/fonts#UsePlace:use/Collection:Raleway:400,300 */
-@import url(http://fonts.googleapis.com/css?family=Raleway:400,300);
+/*@import url(http://fonts.googleapis.com/css?family=Open+Sans);*/
+@font-face {
+    font-family: 'Open Sans';
+    src: url('/PrivyPaste/css/fonts/OpenSans.ttf');
+}
 
 /* PASTE TITLE */
 /* https://www.google.com/fonts#UsePlace:use/Collection:Droid+Sans */
-@import url(http://fonts.googleapis.com/css?family=Droid+Sans);
+/*@import url(http://fonts.googleapis.com/css?family=Droid+Sans);*/
+@font-face {
+    font-family: 'Droid Sans';
+    src: url('/PrivyPaste/css/fonts/DroidSans.ttf');
+}
