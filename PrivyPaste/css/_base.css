@@ -4,6 +4,7 @@
 
 html, body, div#container
 {
+    /* make sure content container takes up entire page */
 	height: 100%;
 }
 
@@ -16,6 +17,7 @@ body
 /* DIVS */
 #container
 {
+    /* center container to page */
 	margin: 0 auto;
 	width: 98%;
 }
@@ -35,6 +37,7 @@ body
 
 .statusMsg
 {
+    /* text that displays in upload button that shows upload progress */
 	margin: 15px;
 }
 

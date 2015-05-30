@@ -55,7 +55,7 @@
 	// set content
 	// must be set after in case a paste UID is sent as a GET var. In that case, we need PrivyPaste->url set before we query the API for the paste plaintext
 	$content = '
-								<div id="text">
+								<div id="mainTextWorkspace">
 	';
 	// check if paste UID was sent
 	if(isset($_GET['p']) && $_GET['p'] !== '')
@@ -67,19 +67,22 @@
 	{
 		// append default content HTML (paste textbox)
 		$content .= '
-									<div id="textUploadButton">
+									<div id="newPasteTextUploadButton">
 										<div>
 											<img src="media/icons/upload.png" alt="Upload your text" /> Upload Text
 										</div>
 									</div>
-									<textarea id="mainText">Enter your text here!</textarea>
+									<textarea id="newPasteText">Enter your text here!</textarea>
 		';
 	}
 	// close #text div
 	$content .= '
 								</div>
 	';
+
+	// set context after it's been updated to reflect the paste UID GET variable
 	$privypaste->setContent($content);
 
+	// echo out the html
 	echo $privypaste;
 ?>

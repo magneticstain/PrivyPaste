@@ -482,26 +482,24 @@
 			    $pasteTextHtml = nl2br(htmlentities($pasteJson->paste_text));
 
 			    $pasteHtml = '
-		                    <div id="textContainer">
-		                        <div id="textMetadata">
-		                            <h2>'.$pasteTitle.'</h2>
-		                            <div class="metadataCells created">
-		                                <p>Created:</p>
-		                                <p>'.$pasteCreation.' ago</p>
-		                            </div>
-		                            <div class="metadataCells lastModified">
-		                                <p>Last Modified:</p>
-		                                <p>'.$pasteLastModified.' ago</p>
-		                            </div>
-		                        </div>
-		                        <div id="textHtml">
-		                            '.$pasteTextHtml.'
-		                        </div>
-		                        <div id="plaintextHeading">
-		                            <h3>Paste Plaintext</h3>
-		                        </div>
-		                        <textarea id="pastePlaintext">'.$pasteJson->paste_text.'</textarea>
-		                    </div>
+	                        <div id="pasteTextHtmlHeading">
+	                            <h2>'.$pasteTitle.'</h2>
+	                            <div class="metadataCells created">
+	                                <p>Created:</p>
+	                                <p>'.$pasteCreation.' ago</p>
+	                            </div>
+	                            <div class="metadataCells lastModified">
+	                                <p>Last Modified:</p>
+	                                <p>'.$pasteLastModified.' ago</p>
+	                            </div>
+	                        </div>
+	                        <div id="pasteTextHtml">
+	                            '.$pasteTextHtml.'
+	                        </div>
+	                        <div id="pastePlaintextHeading">
+	                            <h3>Paste Plaintext</h3>
+	                        </div>
+	                        <textarea id="pastePlaintext">'.$pasteJson->paste_text.'</textarea>
 			    ';
 		    }
 		    else
@@ -509,14 +507,12 @@
 			    // generate HTML for paste not found
 			    $pasteTitle = 'Paste Not Found!';
 			    $pasteHtml = '
-		                    <div id="textContainer">
-		                    	<div id="textMetadata">
-		                            <h2>Paste Not Found!</h2>
-		                        </div>
-		                        <div id="textHtml">
-									<p>Paste could not be found. Please check your URL and try again.</p>
-		                        </div>
-		                    </div>
+	                        <div id="pasteTextHtmlHeading">
+	                            <h2>Paste Not Found!</h2>
+	                        </div>
+	                        <div id="pasteTextHtml">
+								<p>Paste could not be found! Please check your URL and try again.</p>
+	                        </div>
 			    ';
 		    }
 
@@ -545,17 +541,11 @@
 		    // set title
 		    $htmlTitle = 'PrivyPaste | Store your text securely and safely! | '.$this->subTitle;
 
-		    // normalize subtitle to all lowercase so it can be used as the body id
-		    $lcSubTitle = strtolower($this->subTitle);
-
 		    // get most recent pastes that will be displayed at the top of the page
 		    $recentPastes = $this->getMostRecentlyModifiedPastes();
 		    $recentPasteHtml = '<strong>Most Recent Pastes: </strong>';
 		    foreach($recentPastes as $pastNum => $paste)
 		    {
-			    // $paste is in array form
-			    // $paste[0] = uid, $paste[1] = last modified timestamp, $paste[2] = paste plaintext
-
 			    // truncate paste and convert last modified timestamp to relative timestamp for display in view
 			    $truncatedPaste = substr($paste[2], 0, 25);
 			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
@@ -593,7 +583,7 @@
 						<script src="'.BASE_URL_DIR.'js/jquery.controller.js"></script>
 						<script src="'.BASE_URL_DIR.'js/jquery.js"></script>
 					</head>
-					<body id="'.$lcSubTitle.'">
+					<body id="index">
 						<div id="vars">
 							<span class="base_url">'.$this->url.'</span>
 						</div>

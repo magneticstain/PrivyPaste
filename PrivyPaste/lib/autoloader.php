@@ -8,7 +8,7 @@
      */
 
     /*
-     *  lib/autoloader.php - logic for autoloading classes
+     *  autoloader.php - logic for autoloading classes
      *
      *  Requires:
      *      * conf/global.php
@@ -19,7 +19,7 @@
         public static function loadClass($className)
         {
 	        // extract class name
-	        // - it is the last string delimited by '\' and we must make sure to normalize the class name to all lowercase to match fil e naming conventions
+	        // - it is the last string delimited by '\' and we must make sure to normalize the class name to all lowercase to match file naming conventions
 	        // - we also must get last string of the array separately to comply with php strict coding standards (cannot pass reference as variable)
 	        $explodedClassName = explode('\\',$className);
 	        $extractedClassName = strtolower(end($explodedClassName));

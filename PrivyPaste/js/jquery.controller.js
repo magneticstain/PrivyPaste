@@ -5,7 +5,7 @@
  */
 
 /*
-    Controller.js - The 'controller' portion of the underlying MVC framework. Responsible for manipulating data
+    controller.js - The 'controller' portion of the underlying MVC framework. Responsible for manipulating and sending data
  */
 
 /* USER VISIBLE */
@@ -54,10 +54,9 @@ function getBaseUrl()
 
 function sentTextToAPI(text)
 {
-    var pasteData = '';
-
     // sends a given text string to the paste creation api via ajax
-    var baseUrl = getBaseUrl(),
+    var pasteData = '',
+        baseUrl = getBaseUrl(),
         textData = {
             'text': text
         };
@@ -72,63 +71,73 @@ function sentTextToAPI(text)
             function(pasteData)
             {
                 // see if paste was successfully inserted
-                if(pasteData.success)
+                if(pasteData.success) {
+                    // redirect to paste URL
+                    window.location.href = getBaseUrl() + 'paste/' + pasteData.paste_id;
+
+                    return true;
+                }
+                else
                 {
-                    // update upload button w/ url or display error
+                    // something went wrong
+                    // check if error message was set
                     if(pasteData.error)
                     {
-                        // display error
-                        updateError('The API seems to be having a problem. ERROR: ' + pasteData.error);
-
-                        return false;
+                        // return api error for error message
+                        updateError('The API seems to be having a problem. ' + pasteData.error);
                     }
                     else
                     {
-                        // redirect to paste URL
-                        //var pasteUrl = getBaseUrl() + '?p=' + pasteData.paste_id;
-                        window.location.href = getBaseUrl() + '?p=' + pasteData.paste_id;
-
-                        return true;
+                        // return generalized error message
+                        updateError('Something went catastrophically wrong with the API. Please contact your system administrator.');
                     }
                 }
             },
         error:
             function()
             {
-                // update user w/ error
+                // return error message noting the API was unreachable
                 updateError('Uh oh! We couldn\'t reach the API. Please contact your system administrator.');
-
-                return false;
             }
     });
+
+    // if we get here without redirecting to a new paste, something went wrong
+    return false;
 }
 
 function uploadText()
 {
-    // save default html
+    // sends text data to api via ajax call
+    // save default html for upload button
     var defaultHtml = uploadButton.html();
 
-    // sends text data to api via ajax call
+    // get text from new text textarea
     var mainText = getMainTextareaVal();
 
+    // see if valid text was submitted
     if(isValidText(mainText))
     {
         var uploadButtonMsgHTML = '' +
-            '<img src="media/icons/text_send.gif" alt="Uploading you text, please wait..." />' +
+            '<img src="/PrivyPaste/media/icons/text_send.gif" alt="Uploading you text, please wait..." />' +
             '<hr />' +
             '<p class="statusMsg">Uploading text, please wait...</p>';
 
-        // update upload button
+        // update upload button with status message
         changeUploadButton(uploadButtonMsgHTML, true);
 
-        // send to api
-        if(!sentTextToAPI(mainText))
+        // send text to api
+        var apiQueryResponse = sentTextToAPI(mainText);
+        if(!apiQueryResponse)
         {
-            // need to implement a timeout before updating the timeout in case the upload button is still in it's fade action when the API returns
+            // need to implement a timeout before updating the upload status message in case the upload button is still in it's fade action when the API returns
             setTimeout(function() {
                 // reset upload button
                 changeUploadButton(defaultHtml, false);
             }, 1000);
+
+            // any error messages will be updated in sendTextToAPI() due to async properties of ajax
         }
+
+        // if there were no errors when uploading text, then the page should automatically forward to the new text
     }
 }

@@ -4,11 +4,11 @@
 
 #ticker
 {
+    /* styles for info ticket at the top of the page */
 	background: #333;
 	color: #999;
 	font: 16px 'Raleway', sans-serif;
 	line-height: 30px;
-	/*margin-bottom: 5px;*/
 	overflow: hidden;
 	text-align: center;
 	height: 30px;
@@ -24,43 +24,20 @@
 
 #errorMsg
 {
-    background: #999999;
+    /* error message box that displays errors to the user */
+    background: #999;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     color: #911002;
     display: none;
     font: 20px 'Roboto Condensed', sans-serif;
-    /*height: 40px;*/
-    /*margin-left: -300px; *//* always needs to be set to half the width to have div remain horizontally centered */
     margin: 0 auto;
     padding: 5px 10px;
-    /*position: absolute;*/
-    /*left: 50%;*/
     text-align: center;
-    /*width: 600px;*/
-    width: 40%;
+    width: 35%;
 }
 
-/*.tickerModule*/
-/*{*/
-	/*margin: 0 5px;*/
-/*}*/
-
-/*.tickerModule:first-of-type*/
-/*{*/
-	/*float: left;*/
-/*}*/
-
-/*.tickerModule:nth-of-type(2)*/
-/*{*/
-	/*float: right;*/
-/*}*/
-
-header
-{
-	/*height: 80px;*/
-}
-
+/* styles for header text and content (e.g. title, logo, subtitle, etc) */
 header h1, header p
 {
 	display: inline;
@@ -94,6 +71,7 @@ header p
 }
 
 /* LINKS */
+/* logo link cannot have bottom border or styles when actively clicked like default links do */
 #logo a:hover, #logo a:active
 {
     border: none;

@@ -302,7 +302,6 @@
 
 		    // normalize params
 		    $action = strtolower((string) $action);
-//		    echo "<br />ACTION: ".$action."<br />";
 
 		    // prepare db statement
 		    $dbStmt = $this->dbConn->prepare($sql);
@@ -313,8 +312,6 @@
 			    // params were sent, start binding
 				foreach($sqlParams as $sqlParamName => $bindVal)
 				{
-//					echo "PARAM_NAME: ".$sqlParamName."\n";
-//					echo "PARAM: ".$bindVal."\n";
 					// check if data type of bind value was set and is valid
 					if(isset($bindVal[1]) && ($bindVal[1] === 'i' || $bindVal[1] === 's'))
 					{
@@ -337,8 +334,6 @@
 					}
 				}
 		    }
-
-//		    var_dump($sqlParams);
 
 		    // execute and get result
 		    if($dbStmt->execute())
@@ -373,6 +368,7 @@
 		    }
 		    else
 		    {
+			    // log error
 			    $dbStmtErrorInfo = $dbStmt->errorInfo();
 			    error_log('BAD SQL QUERY: '.$dbStmtErrorInfo[2]);
 			    error_log('QUERY: '.$sql);

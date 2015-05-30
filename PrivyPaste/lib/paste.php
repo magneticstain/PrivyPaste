@@ -8,7 +8,7 @@
      */
 
     /*
-     *  lib/paste.php - library containing all objects related to pastes (e.g. raw text)
+     *  paste.php - library containing all objects related to pastes (e.g. raw text)
      */
 
     class Paste
@@ -22,7 +22,7 @@
 
         public function __construct($plaintext = '', $ciphertext = '', $pasteUid = '00000000', $creationTime = 0, $lastModifiedTime = 0, $pasteId = 0)
         {
-            // set vars
+            // set object vars
             if(
                 !$this->setPasteId($pasteId)
                 || !$this->setPasteUid($pasteUid)
@@ -346,7 +346,7 @@
 			    // private key successfully read, decrypt text
 			    if($decryptedString = CryptKeeper::decryptString($privateKey, $this->ciphertext, true))
 			    {
-				    // decyption was successful, set plaintext as $this->plaintext
+				    // decryption was successful, set plaintext as $this->plaintext
 				    $this->setPlaintext($decryptedString);
 
 				    return true;
@@ -369,8 +369,6 @@
 			*  Returns:
 			*      - integer
 			*/
-
-		    $ciphertext = '';
 
 		    // get UID
 		    $pasteUid = CryptKeeper::generateUniquePasteID();

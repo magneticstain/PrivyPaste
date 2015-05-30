@@ -5,17 +5,15 @@
  */
 
 /*
-    Main jQuery - the starting point or all jquery actions
+    jquery.js - the starting point or all jquery actions
  */
 
-$(document).ready(function(){
+$(document).ready(function() {
     /*
         VIEW-ORIENTED LOGIC
      */
-
     // display error message if it contains text
-    checkForErrorMsg(errorMsgDiv);
-    toggleErrorMsgBox(errorMsgDiv, 'show');
+    checkForErrorMsg();
 
     // focus on main textarea on load of page
     setFocusToMainTextarea();

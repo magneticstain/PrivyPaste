@@ -8,7 +8,7 @@
      */
 
     /*
-     *  lib/cryptkeeper.php - class for all encryption-related functionality
+     *  cryptkeeper.php - class for all encryption-related functionality
      */
 
 

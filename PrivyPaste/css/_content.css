@@ -5,19 +5,20 @@
 /* SECTIONS & DIVS */
 #content
 {
+    /* make sure main content stays below floated header content */
 	clear: both;
-	/*height: 95%;*/
 }
 
-#text
+#mainTextWorkspace
 {
+    /* main text workspace, both for displaying and uploading text */
 	border: 2px solid #000;
     height: 100%;
 	overflow: hidden;
 	position: relative;
 }
 
-#textUploadButton
+#newPasteTextUploadButton
 {
 	background: #333333;
 	border-bottom: 2px solid #000;
@@ -30,13 +31,9 @@
 	text-align: center;
 }
 
-#textContainer
+#newPasteText, #pastePlaintext
 {
-    position: relative;
-}
-
-#mainText, #pastePlaintext
-{
+    /* encompases both textareas for typing in new text (#mainText) and displaying the plaintext in an easily editable form (#pastePlaintext) */
 	border: none;
 	box-sizing:border-box;
 	outline: 0;
@@ -44,30 +41,31 @@
     width: 100%;
 }
 
-#mainText
+#newPasteText
 {
     height: 600px;
 }
 
-#textHtml
+#pasteTextHtmlHeading, #pastePlaintextHeading
 {
-    height: 400px;
-    overflow: auto;
-    padding: 10px 15px;
-    width: auto;
-}
-
-#textMetadata, #plaintextHeading
-{
+    /* both the headings for the html text and plaintext will use similar styles */
     background: #C7C7C7;
 }
 
-#textMetadata
+#pasteTextHtmlHeading
 {
     padding: 20px;
 }
 
-#plaintextHeading
+#pasteTextHtml
+{
+    /* styles for the html representation of an uploaded text */
+    min-height: 400px;
+    padding: 10px 15px;
+    width: auto;
+}
+
+#pastePlaintextHeading
 {
     padding: 15px;
 }
@@ -78,27 +76,35 @@
 }
 
 /* IMGS */
-#textUploadButton img
+#newPasteTextUploadButton img
 {
 	margin: 0 15px;
 	vertical-align: middle;
 }
 
 /* TEXT */
-#textMetadata h2, #plaintextHeading h3
+/* HEADINGS */
+/* headings for both the html and plain text of a paste */
+#pasteTextHtmlHeading h2, #pastePlaintextHeading h3
 {
     color: #D1463D;
     font-family: 'Droid Sans', sans-serif;
     letter-spacing: 2px;
 }
 
-#textMetadata h2
+#pasteTextHtmlHeading h2
 {
     font-size: 48px;
     margin: 0 0 15px;
 }
 
-#textMetadata .metadataCells
+#pastePlaintextHeading h3
+{
+    font-size: 18px;
+}
+
+/* styles for metadata elements (i.e. creation time, last modified time, etc) */
+#pasteTextHtmlHeading .metadataCells
 {
     background: #999;
     border: 2px dashed #D1463D;
@@ -107,26 +113,20 @@
     padding: 5px;
 }
 
-#textMetadata .metadataCells, #textMetadata .metadataCells p
+#pasteTextHtmlHeading .metadataCells, #pasteTextHtmlHeading .metadataCells p
 {
     display: inline;
 }
 
-#textMetadata .metadataCells p:first-child
+#pasteTextHtmlHeading .metadataCells p:first-child
 {
     /* metadata key */
     font-weight: bolder;
 }
 
-#plaintextHeading h3
-{
-    font-size: 18px;
-}
-
 /* OTHER */
-#textUploadButton hr
+#newPasteTextUploadButton hr
 {
-	/*background: #881A14;*/
 	background: #E84B43;
 	border: none;
 	height: 3px;

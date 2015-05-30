@@ -5,8 +5,8 @@
  */
 
 /*
- Global.js - storage place or all global vars/functions, normally used for select shortcuts
- */
+    global.js - storage place or all global vars/functions, normally used for select shortcuts
+*/
 
 // must declare a blank string variable as variable prototypes to satisfy functions that use this, as well as wait until
 // the DOM is loaded so that the proper elements can be selected
@@ -18,8 +18,8 @@ $(document).ready(function(){
     errorMsgDiv = $('#errorMsg');
 
     // [index] upload button
-    uploadButton = $('#textUploadButton');
+    uploadButton = $('#newPasteTextUploadButton');
 
     // [index] main text area
-    mainTextarea = $('#mainText');
+    mainTextarea = $('#newPasteText');
 });

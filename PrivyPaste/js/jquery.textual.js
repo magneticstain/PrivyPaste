@@ -5,8 +5,17 @@
  */
 
 /*
-    Textual - a jQuery library used in PrivyPaste or any text-related manipulations to the view
- */
+    textual.js - a jQuery library used in PrivyPaste or any text-related manipulations to the view
+*/
+
+function setFocusToMainTextarea()
+{
+    // puts th focus on the main textarea on the index page
+    mainTextarea.focus();
+
+    // make sure to update the main text based on what's in it (usually clearing it if it's the initial load of the page)
+    checkMainTextarea();
+}
 
 function isValidText(rawText)
 {
@@ -24,15 +33,6 @@ function isValidText(rawText)
 
     // invalid
     return false;
-}
-
-function setFocusToMainTextarea()
-{
-    // puts th focus on the main textarea on the index page
-    mainTextarea.focus();
-
-    // make sure to update the main text based on what's in it (usually clearing it if it's the initial load of the page)
-    checkMainTextarea();
 }
 
 function getMainTextareaVal()
@@ -59,8 +59,8 @@ function sendToMainTextarea(newText)
 
 function checkMainTextarea()
 {
-    // update the main text area with the default text or no text, depending on the current text. usually performed on
-    // focus or blur of textarea
+    // update the main text area with the default text or no text, depending on if the current text has been modified or is blank
+    // usually performed on focus or blur of textarea
     var currentText = getMainTextareaVal(),
         defaultText = 'Enter your text here!',
         newText = '';
@@ -75,4 +75,6 @@ function checkMainTextarea()
         // replace with default text
         sendToMainTextarea(defaultText);
     }
+
+    // if the textarea value isn't the default text or blank, we don't need to touch it
 }

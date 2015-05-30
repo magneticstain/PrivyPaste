@@ -5,7 +5,7 @@
  */
 
 /*
-    Errorator - a jQuery library that includes functions or handling and displaying errors, both system and user-facing
+    errorator.js - a jQuery library that includes functions or handling and displaying errors, both system and user-facing
  */
 
 function toggleErrorMsgBox(action) {
