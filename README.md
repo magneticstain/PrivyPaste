@@ -23,6 +23,12 @@ To install PrivyPaste, you must meet the following hardware and software require
 ```
 
 ## Usage
+Once you have the PrivyPaste webapp completely installed, browse to the URL that you have configured and you should see the home page. This is where new pastes are submitted, along with other various info.
+
+To submit a new paste, enter your text into the main textarea, and once you've added all your text, press the "Upload Text" button right above it. If all goes well, it should redirect you to your new paste where you can grab the URL for sharing. 
+If any errors occur, you will be notified via the error message box at the top of the page (below the information ticker).
+
+To view a previous uploaded page, simply enter the URL into your browser. It will automatically display the text - both in HTML and plaintext format - along with the paste's metadata.
 
 ## Contributing
 We would love it if you decided to help contribute to PrivyPaste! Whether it's by fixing/creating bug reports, suggesting ideas, improving documentation - whatever it is you're good at.
