@@ -3,6 +3,8 @@
 ## Description
 PrivyPaste is a standalone, private pastebin solution that utilizes encryption to increase privacy and security.
 
+PrivyPaste can be easily scaled, making it a great option for both SMB's and enterprise users alike.
+
 ## Requirements
 To install PrivyPaste, you must meet the following hardware and software requirements:
 
@@ -21,6 +23,11 @@ To install PrivyPaste, you must meet the following hardware and software require
     # derive public key
     openssl rsa -pubout -in private_key.pem -out public_key.pem
 ```
+
+### Installing
+Once the public and private keys have been created, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. 
+
+The installation script can be found at *TODO: ADD INSTALL SCRIPT LOCATION*
 
 ## Usage
 Once you have the PrivyPaste webapp completely installed, browse to the URL that you have configured and you should see the home page. This is where new pastes are submitted, along with other various info.
