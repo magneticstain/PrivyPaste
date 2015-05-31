@@ -63,6 +63,13 @@ header h1, header p
 }
 
 /* TEXT */
+#ticker p
+{
+    /* any messages displaying in the ticket should use this style */
+    color: #CC2014;
+    display: inline;
+}
+
 header p
 {
 	float: right;

@@ -399,6 +399,11 @@
 
 				    return $decryptedResults;
 			    }
+			    else
+			    {
+				    // nothing returned from db, return empty array for function
+				    return array();
+			    }
 		    }
 
 		    // anything goes wrong, return -1
@@ -423,19 +428,28 @@
 
 		    // generate and return html
 		    $recentPasteHtml = '<strong>Most Recent Pastes: </strong>';
-		    foreach($recentPastes as $pastNum => $paste)
+		    // check if there were any pastes returned or
+		    if(count($recentPastes) < 1)
 		    {
-			    // truncate and sanatize paste and convert last modified timestamp to relative timestamp for display in view
-			    $truncatedPaste = htmlentities(substr($paste[2], 0, 25));
-			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
-
-			    // build paste link and append to recent paste html
-			    $recentPasteHtml .= '<a href="'.$this->url.'paste/'.$paste[0].'" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
-
-			    // append bullet if not last paste
-			    if($pastNum !== (count($recentPastes) - 1))
+			    // no pastes created yet
+			    $recentPasteHtml .= '<p>No pastes have been created yet!</p>';
+		    }
+		    else
+		    {
+			    foreach($recentPastes as $pastNum => $paste)
 			    {
-				    $recentPasteHtml .= ' &bull; ';
+				    // truncate and sanatize paste and convert last modified timestamp to relative timestamp for display in view
+				    $truncatedPaste = htmlentities(substr($paste[2], 0, 25));
+				    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
+
+				    // build paste link and append to recent paste html
+				    $recentPasteHtml .= '<a href="'.$this->url.'paste/'.$paste[0].'" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
+
+				    // append bullet if not last paste
+				    if($pastNum !== (count($recentPastes) - 1))
+				    {
+					    $recentPasteHtml .= ' &bull; ';
+				    }
 			    }
 		    }
 
