@@ -13,7 +13,7 @@ To install PrivyPaste, you must meet the following hardware and software require
 * MySQL or MariaDB, v 5.1<=
 * OpenSSL 1.0.1<=
 
-## Installation
+## Getting Started
 ### Preparation
 1. Generate RSA keys to your liking using openssl (if you do not want the installation script to automatically generate them for you)
 ```bash
@@ -24,7 +24,7 @@ To install PrivyPaste, you must meet the following hardware and software require
     openssl rsa -pubout -in private_key.pem -out public_key.pem
 ```
 
-### Installing
+### Installation
 Once the public and private keys have been created, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. 
 
 The installation script can be found at *TODO: ADD INSTALL SCRIPT LOCATION*
