@@ -405,6 +405,43 @@
 		    return -1;
 	    }
 
+	    public function generateMostRecentlyModifiedPastesHtml()
+	    {
+		    /*
+             *  Params:
+             *      - NONE
+             *
+             *  Usage:
+             *      - generates HTML for last X modified pastes
+             *
+             *  Returns:
+             *      - string
+             */
+
+			// get most recent pastes from db
+		    $recentPastes = $this->getMostRecentlyModifiedPastes();
+
+		    // generate and return html
+		    $recentPasteHtml = '<strong>Most Recent Pastes: </strong>';
+		    foreach($recentPastes as $pastNum => $paste)
+		    {
+			    // truncate and sanatize paste and convert last modified timestamp to relative timestamp for display in view
+			    $truncatedPaste = htmlentities(substr($paste[2], 0, 25));
+			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
+
+			    // build paste link and append to recent paste html
+			    $recentPasteHtml .= '<a href="'.$this->url.'paste/'.$paste[0].'" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
+
+			    // append bullet if not last paste
+			    if($pastNum !== (count($recentPastes) - 1))
+			    {
+				    $recentPasteHtml .= ' &bull; ';
+			    }
+		    }
+
+		    return $recentPasteHtml;
+	    }
+
 	    public function getTotalPastes()
 	    {
 		    /*
@@ -542,23 +579,7 @@
 		    $htmlTitle = 'PrivyPaste | Store your text securely and safely! | '.$this->subTitle;
 
 		    // get most recent pastes that will be displayed at the top of the page
-		    $recentPastes = $this->getMostRecentlyModifiedPastes();
-		    $recentPasteHtml = '<strong>Most Recent Pastes: </strong>';
-		    foreach($recentPastes as $pastNum => $paste)
-		    {
-			    // truncate and sanatize paste and convert last modified timestamp to relative timestamp for display in view
-			    $truncatedPaste = htmlentities(substr($paste[2], 0, 25));
-			    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
-
-			    // build paste link and append to recent paste html
-			    $recentPasteHtml .= '<a href="'.$this->url.'paste/'.$paste[0].'" title="Last modified '.$relativeLastModifiedTime.' ago">'.$truncatedPaste.'</a>';
-
-			    // append bullet if not last paste
-			    if($pastNum !== (count($recentPastes) - 1))
-			    {
-				    $recentPasteHtml .= ' &bull; ';
-			    }
-		    }
+		    $lastModifiedPastesHTML = $this->generateMostRecentlyModifiedPastesHtml();
 
 		    // get total number of pastes which will be displayed in the header's subtitle
 		    $totalPastes = $this->getTotalPastes();
@@ -588,7 +609,7 @@
 							<span class="base_url">'.$this->url.'</span>
 						</div>
 						<div id="ticker">
-							'.$recentPasteHtml.'
+							'.$lastModifiedPastesHTML.'
 						</div>
 						<div id="errorMsgWrapper">
 							<div id="errorMsg">
