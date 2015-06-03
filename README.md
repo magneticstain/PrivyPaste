@@ -8,7 +8,7 @@ PrivyPaste can be easily scaled, making it a great option for both SMB's and ent
 ## Requirements
 To install PrivyPaste, you must meet the following hardware and software requirements:
 
-* Apache or nginx (latest version is preferable)
+* Apache (latest version is preferable)
 * PHP 5.3<=
 * MySQL or MariaDB, v 5.1<=
 * OpenSSL 1.0.1<=
@@ -23,9 +23,64 @@ To install PrivyPaste, you must meet the following hardware and software require
     # derive public key
     openssl rsa -pubout -in private_key.pem -out public_key.pem
 ```
+2. After installing all prerequisite software, create the database and database service account.
+```bash
+    # best practice is to set the host field to the narrowest subset possible
+    mysql -e "CREATE USER 'privypaste'@'%' IDENTIFIED BY '<password>';"
+    
+    # create database
+    mysql -e "CREATE DATABASE privypaste;"
+    
+    # set permissions for database service account
+    mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'%'; FLUSH PRIVILEGES;"
+```
 
+3. Configure Apache how you would like. You can set it up as virtual hosts, SSL or non-SSL (we recommend SSL), etc.
+  * The only requirements are that
+    * the DocumentRoot directive must be set to the application file directory (/opt/privypaste/web by default)
+    * the directory section for the application files has the `AllowOverride All` directive. [More info on that directive can be found here.](https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride)
+  * An example Apache config is show below, and should work with most installations.
+```
+<IfModule mod_ssl.c>
+	<VirtualHost _default_:443>
+	    # this is important, and must point towards this directory
+		DocumentRoot /opt/privypaste/web
+
+		LogLevel warn
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+		SSLEngine on
+
+        # Replace these with your own TLS certificate
+		SSLCertificateFile	/etc/ssl/certs/ssl-cert-snakeoil.pem
+		SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+		<FilesMatch "\.(cgi|shtml|phtml|php)$">
+				SSLOptions +StdEnvVars
+		</FilesMatch>
+
+		BrowserMatch "MSIE [2-6]" \
+				nokeepalive ssl-unclean-shutdown \
+				downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		# Cipherlist [ via cipherli.st ]
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLHonorCipherOrder On
+		# Requires Apache >= 2.4
+		SSLCompression off 
+	</VirtualHost>
+</IfModule>
+```
+
+4. Verify that PHP is installed along with the proper packages for it to work with Apache, and we should be set to install the application files.
+  
 ### Installation
-Once the public and private keys have been created, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. 
+Once the public and private keys have been created, and the prereq software installed, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. 
 
 The installation script can be found at *TODO: ADD INSTALL SCRIPT LOCATION*
 
