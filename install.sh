@@ -18,7 +18,16 @@ function createCerts
 	# creates PKI certificates
 	echo "$medHr"
 	echo "Creating certs..."
+	echo "NOTE: make sure not to set a password for the private key!"
 	echo "$medHr"
+
+	# private key
+	openssl genrsa -out private_key.pem 4096
+
+	# public key
+	openssl rsa -pubout -in private_key.pem -out public_key.pem
+
+	return 0
 }
 
 function installApplicationFiles
@@ -34,7 +43,7 @@ function installApplicationFiles
 	cp ./PrivyPaste/* /opt/privypaste/web/
 
 	# set perms
-    chown -R root:root /opt/privypaste/
+	chown -R root:root /opt/privypaste/
 	chmod -R 0744 /opt/privypaste/
 	chown -R www-data:www-data /opt/privypaste/web/
 	chmod -R 0750 /opt/privypaste/web/
@@ -79,15 +88,19 @@ fi
 # move application files
 # create directories
 mkdir /opt/privypaste/ /dev/null 2>&1
+mkdir /opt/privypaste/certs/ /dev/null 2>&1
 mkdir /opt/privypaste/src/ /dev/null 2>&1
 mkdir /opt/privypaste/web/ /dev/null 2>&1
 
 # move to application directory
 cp ./* /opt/privypaste/src/
+cp *.pem /opt/privypaste/certs/
 cp ./PrivyPaste/* /opt/privypaste/web/
 
 # set perms
 chown -R root:root /opt/privypaste/
 chmod -R 0744 /opt/privypaste/
+chown -R root:www-data /opt/privypaste/certs/
+chmod -R 0740 /opt/privypaste/certs/
 chown -R www-data:www-data /opt/privypaste/web/
 chmod -R 0750 /opt/privypaste/web/
