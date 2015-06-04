@@ -38,9 +38,10 @@
 	try
 	{
 		$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
-	} catch(\PDOException $e)
+	} catch(\Exception $e)
 	{
 		$errorMsg = "could not connect to PrivyPaste database!";
+		die('FATAL ERROR: unable to connect to database!');
 	}
 
 	// format error message if not blank

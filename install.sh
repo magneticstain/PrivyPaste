@@ -34,19 +34,23 @@ function installApplicationFiles
 {
 	# creates the proper directories and installs the application files
 	# create directories
-	mkdir /opt/privypaste/ /dev/null 2>&1
-	mkdir /opt/privypaste/src/ /dev/null 2>&1
-	mkdir /opt/privypaste/web/ /dev/null 2>&1
+    mkdir /opt/privypaste/ > /dev/null 2>&1
+    mkdir /opt/privypaste/certs/ > /dev/null 2>&1
+    mkdir /opt/privypaste/src/ > /dev/null 2>&1
+    mkdir /opt/privypaste/web/ > /dev/null 2>&1
 
-	# move to application directory
-	cp ./* /opt/privypaste/src/
-	cp ./PrivyPaste/* /opt/privypaste/web/
+    # move to application directory
+    cp -r ./* /opt/privypaste/src/ > /dev/null 2>&1
+    cp -r *.pem /opt/privypaste/certs/ > /dev/null 2>&1
+    cp -r ./PrivyPaste/ /opt/privypaste/web/ > /dev/null 2>&1
 
-	# set perms
-	chown -R root:root /opt/privypaste/
-	chmod -R 0744 /opt/privypaste/
-	chown -R www-data:www-data /opt/privypaste/web/
-	chmod -R 0750 /opt/privypaste/web/
+    # set perms
+    chown -R root:root /opt/privypaste/
+    chmod -R 0755 /opt/privypaste/
+    chown -R root:www-data /opt/privypaste/certs/
+    chmod -R 0740 /opt/privypaste/certs/
+    chown -R www-data:www-data /opt/privypaste/web/
+    chmod -R 0751 /opt/privypaste/web/
 
 	return 0
 }
@@ -86,21 +90,6 @@ else
 fi
 
 # move application files
-# create directories
-mkdir /opt/privypaste/ /dev/null 2>&1
-mkdir /opt/privypaste/certs/ /dev/null 2>&1
-mkdir /opt/privypaste/src/ /dev/null 2>&1
-mkdir /opt/privypaste/web/ /dev/null 2>&1
+installApplicationFiles
 
-# move to application directory
-cp ./* /opt/privypaste/src/
-cp *.pem /opt/privypaste/certs/
-cp ./PrivyPaste/* /opt/privypaste/web/
-
-# set perms
-chown -R root:root /opt/privypaste/
-chmod -R 0744 /opt/privypaste/
-chown -R root:www-data /opt/privypaste/certs/
-chmod -R 0740 /opt/privypaste/certs/
-chown -R www-data:www-data /opt/privypaste/web/
-chmod -R 0750 /opt/privypaste/web/
+echo "Installation complete!"

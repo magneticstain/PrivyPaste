@@ -26,11 +26,11 @@ To install PrivyPaste, you must meet the following hardware and software require
 ```
 2. After installing all prerequisite software, create the database and database service account.
 ```bash
-    # best practice is to set the host field to the narrowest subset possible
-    mysql -e "CREATE USER 'privypaste'@'%' IDENTIFIED BY '<password>';"
-    
     # create database
     mysql -e "CREATE DATABASE privypaste;"
+    
+    # best practice is to set the host field to the narrowest subset possible
+    mysql -e "CREATE USER 'privypaste'@'%' IDENTIFIED BY '<password>';"
     
     # set permissions for database service account
     mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'%'; FLUSH PRIVILEGES;"
@@ -40,12 +40,21 @@ To install PrivyPaste, you must meet the following hardware and software require
   * The only requirements are that
     * the DocumentRoot directive must be set to the application file directory (/opt/privypaste/web by default)
     * the directory section for the application files has the `AllowOverride All` directive. [More info on that directive can be found here.](https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride)
+    * mod_rewrite is turned on
   * An example Apache config is show below, and should work with most installations.
 ```
 <IfModule mod_ssl.c>
 	<VirtualHost _default_:443>
-	    # this is important, and must point towards this directory
+        # this is important, and must point towards this directory
 		DocumentRoot /opt/privypaste/web
+
+        <Directory /opt/privypaste/web/>
+			Options Indexes FollowSymLinks
+			AllowOverride All
+			Order allow,deny
+			Allow from all
+			Require all granted
+		</Directory>
 
 		LogLevel warn
 
@@ -59,12 +68,12 @@ To install PrivyPaste, you must meet the following hardware and software require
 		SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 
 		<FilesMatch "\.(cgi|shtml|phtml|php)$">
-				SSLOptions +StdEnvVars
+            SSLOptions +StdEnvVars
 		</FilesMatch>
 
 		BrowserMatch "MSIE [2-6]" \
-				nokeepalive ssl-unclean-shutdown \
-				downgrade-1.0 force-response-1.0
+            nokeepalive ssl-unclean-shutdown \
+            downgrade-1.0 force-response-1.0
 		# MSIE 7 and newer should be able to use keepalive
 		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
 
@@ -83,7 +92,22 @@ To install PrivyPaste, you must meet the following hardware and software require
 ### Installation
 Once the public and private keys have been created, and the prereq software installed, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. 
 
-The installation script can be found at *TODO: ADD INSTALL SCRIPT LOCATION*
+The installation script can be found in the root folder of the application files and is called `install.sh`.
+
+### Configuration
+After the application has been installed, we can configure it.
+
+As of right now, the only thing that needs configuration by the user with this application are the database settings. The file for this is located at `/opt/privypaste/web/PrivyPaste/conf/db.php`.
+Open up this file for editing and add in each field with the values for your installation. An example is included below:
+```
+        // DB SETTINGS
+        define('DB_HOST', 'localhost');
+        define('DB_NAME', 'privypaste');
+        define('DB_USER', 'privypaste');
+        define('DB_PASS', 'testpassword1');
+```
+
+Once this is complete, you should be able to point your browser at this server and access the application. The URL will be in the format `http(s)://pp.example.com/PrivyPaste/`.
 
 ## Usage
 Once you have the PrivyPaste webapp completely installed, browse to the URL that you have configured and you should see the home page. This is where new pastes are submitted, along with other various info.
