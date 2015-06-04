@@ -15,7 +15,7 @@ To install PrivyPaste, you must meet the following hardware and software require
 
 ## Getting Started
 ### Preparation
-1. Generate RSA keys to your liking using openssl (if you do not want the installation script to automatically generate them for you)
+Generate RSA keys to your liking using openssl (if you do not want the installation script to automatically generate them for you)
   * Make sure **NOT** set a password for the private key
 ```bash
     # generate private key
@@ -24,7 +24,7 @@ To install PrivyPaste, you must meet the following hardware and software require
     # derive public key
     openssl rsa -pubout -in private_key.pem -out public_key.pem
 ```
-2. After installing all prerequisite software, create the database and database service account.
+After installing all prerequisite software, create the database and database service account.
 ```bash
     # create database
     mysql -e "CREATE DATABASE privypaste;"
@@ -36,7 +36,7 @@ To install PrivyPaste, you must meet the following hardware and software require
     mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'%'; FLUSH PRIVILEGES;"
 ```
 
-3. Configure Apache how you would like. You can set it up as virtual hosts, SSL or non-SSL (we recommend SSL), etc.
+Configure Apache how you would like. You can set it up as virtual hosts, SSL or non-SSL (we recommend SSL), etc.
   * The only requirements are that
     * the DocumentRoot directive must be set to the application file directory (/opt/privypaste/web by default)
     * the directory section for the application files has the `AllowOverride All` directive. [More info on that directive can be found here.](https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride)
@@ -87,7 +87,7 @@ To install PrivyPaste, you must meet the following hardware and software require
 </IfModule>
 ```
 
-4. Verify that PHP is installed along with the proper packages for it to work with Apache, and we should be set to install the application files.
+Verify that PHP is installed along with the proper packages for it to work with Apache, and we should be set to install the application files.
   
 ### Installation
 Once the public and private keys have been created, and the prereq software installed, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. 
