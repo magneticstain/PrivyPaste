@@ -11,6 +11,6 @@
      */
 
 	// CERTIFICATES
-	define('PUBLIC_KEY', '/opt/privypaste/pki/public/public_key.pem');
-	define('PRIVATE_KEY', '/opt/privypaste/pki/private/private_key.pem');
+	define('PUBLIC_KEY', '/opt/privypaste/certs/public_key.pem');
+	define('PRIVATE_KEY', '/opt/privypaste/certs/private_key.pem');
 ?>

@@ -84,7 +84,7 @@ function sentTextToAPI(text)
                     if(pasteData.error)
                     {
                         // return api error for error message
-                        updateError('The API seems to be having a problem. ' + pasteData.error);
+                        updateError('The API seems to be having a problem. API returned error: ' + pasteData.error);
                     }
                     else
                     {

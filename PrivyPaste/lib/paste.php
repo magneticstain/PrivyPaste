@@ -311,7 +311,6 @@
 			 */
 
 			// get public key from file
-//			echo "[DEBUG] PUBLIC KEY FILE: ".PUBLIC_KEY."\n";
 			if($publicKey = CryptKeeper::getPkiKeyFromFile('public', PUBLIC_KEY))
 			{
 				// public key successfully read, encrypt text using key

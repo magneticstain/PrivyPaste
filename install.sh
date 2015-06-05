@@ -48,7 +48,7 @@ function installApplicationFiles
     chown -R root:root /opt/privypaste/
     chmod -R 0755 /opt/privypaste/
     chown -R root:www-data /opt/privypaste/certs/
-    chmod -R 0740 /opt/privypaste/certs/
+    chmod -R 0750 /opt/privypaste/certs/
     chown -R www-data:www-data /opt/privypaste/web/
     chmod -R 0751 /opt/privypaste/web/
 

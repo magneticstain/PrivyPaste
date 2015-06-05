@@ -97,7 +97,8 @@ The installation script can be found in the root folder of the application files
 ### Configuration
 After the application has been installed, we can configure it.
 
-As of right now, the only thing that needs configuration by the user with this application are the database settings. The file for this is located at `/opt/privypaste/web/PrivyPaste/conf/db.php`.
+#### Database Settings
+One thing that needs configuration by the user with this application are the database settings. The file for this is located at `/opt/privypaste/web/PrivyPaste/conf/db.php`.
 Open up this file for editing and add in each field with the values for your installation. An example is included below:
 ```
         // DB SETTINGS
@@ -107,7 +108,14 @@ Open up this file for editing and add in each field with the values for your ins
         define('DB_PASS', 'testpassword1');
 ```
 
-Once this is complete, you should be able to point your browser at this server and access the application. The URL will be in the format `http(s)://pp.example.com/PrivyPaste/`.
+#### PKI Settings
+*NOTE: this step is only needed if you generated your own certificates. If you generated them via the installer, everything is already setup.*
+If you generated the certificates on your own, move them to the certificate folder for PrivyPaste (`/opt/privypaste/certs/`) and set the correct permissions. After that, you can either rename them
+to `public_key.pem` and `private_key.pem` and no additional configuration is needed or you can update the PKI configuration file with the names of your certificates.
+
+The PKI config file is located at `/opt/privypaste/web/PrivyPaste/conf/pki.php`. Update each filename string to reflect your certificates and PKI configuration should be complete.
+
+At this point, you should be able to point your browser at this server and access the application. The URL will be in the format `http(s)://pp.example.com/PrivyPaste/`.
 
 ## Usage
 Once you have the PrivyPaste webapp completely installed, browse to the URL that you have configured and you should see the home page. This is where new pastes are submitted, along with other various info.

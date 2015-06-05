@@ -510,7 +510,22 @@
 		    $apiUrl = $this->url.'api/v1/paste/get/?uid='.$pasteUid;
 
 		    // query API and decode JSON to array
-		    $pasteJson = json_decode(file_get_contents($apiUrl));
+		    $rawPasteData = file_get_contents($apiUrl);
+		    if($rawPasteData === false)
+		    {
+			    // fallback to disabling certificate verification
+			    // this can happen a lot if the user is using an internal or built-in cert
+			    // see this stackoverflow article for more info: http://stackoverflow.com/q/26148701/2625915
+			    $fileGetContentsOptions=array(
+				    "ssl"=>array(
+					    "verify_peer"=>false,
+					    "verify_peer_name"=>false,
+				    ),
+			    );
+
+			    $rawPasteData = file_get_contents($apiUrl, false, stream_context_create($fileGetContentsOptions));
+		    }
+		    $pasteJson = json_decode($rawPasteData);
 
 		    // see if API query was successful
 		    if(isset($pasteJson->paste_text))
