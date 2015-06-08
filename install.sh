@@ -46,9 +46,9 @@ function installApplicationFiles
     # set perms
     # check which distro we're using
     apacheUser='www-data'
-    if [ -f "cat /etc/redhat-release" ]
+    if [ -f "/etc/redhat-release" ]
     then
-        $apacheUser='apache'
+        apacheUser='apache'
     fi
 
     chown -R root:root /opt/privypaste/
