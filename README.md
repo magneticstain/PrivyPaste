@@ -16,7 +16,6 @@ To install PrivyPaste, you must meet the following hardware and software require
 ## Getting Started
 ### Preparation
 Generate RSA keys to your liking using openssl (if you do not want the installation script to automatically generate them for you)
-  * Make sure **NOT** set a password for the private key
 ```bash
     # generate private key
     openssl genrsa -out private_key.pem 4096
@@ -63,7 +62,7 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
 
 		SSLEngine on
 
-        # Replace these with your own TLS certificate
+        # Replace these with your own TLS certificates
 		SSLCertificateFile	/etc/ssl/certs/ssl-cert-snakeoil.pem
 		SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
 

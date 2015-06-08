@@ -18,7 +18,6 @@ function createCerts
 	# creates PKI certificates
 	echo "$medHr"
 	echo "Creating certs..."
-	echo "NOTE: make sure not to set a password for the private key!"
 	echo "$medHr"
 
 	# private key
