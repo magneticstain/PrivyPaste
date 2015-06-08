@@ -54,7 +54,9 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
     * the DocumentRoot directive must be set to the application file directory (/opt/privypaste/web by default)
     * the directory section for the application files has the `AllowOverride All` directive. [More info on that directive can be found here.](https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride)
     * mod_rewrite is turned on
-  * An example Apache config is show below, and should work with most installations.
+  * Example Apache configs are show below, and should work with most installations.
+
+#### Debian-based OS
 ```
 <IfModule mod_ssl.c>
 	<VirtualHost _default_:443>
@@ -98,6 +100,66 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
 		SSLCompression off 
 	</VirtualHost>
 </IfModule>
+```
+
+#### CentOS-based OS
+```
+Listen 443 https
+
+SSLSessionCache         shmcb:/run/httpd/sslcache(512000)
+SSLSessionCacheTimeout  300
+
+SSLRandomSeed startup file:/dev/urandom  256
+SSLRandomSeed connect builtin
+#SSLRandomSeed startup file:/dev/random  512
+#SSLRandomSeed connect file:/dev/random  512
+#SSLRandomSeed connect file:/dev/urandom 512
+
+SSLCryptoDevice builtin
+
+##
+## SSL Virtual Host Context
+##
+
+<VirtualHost _default_:443>
+	# this is important, and must point towards this directory
+        DocumentRoot /opt/privypaste/web
+
+        <Directory /opt/privypaste/web/>
+            Options Indexes FollowSymLinks
+            AllowOverride All
+            Order allow,deny
+            Allow from all
+            Require all granted
+        </Directory>
+
+	ErrorLog logs/ssl_error_log
+	TransferLog logs/ssl_access_log
+	LogLevel warn
+
+        SSLEngine on
+
+        # Replace these with your own TLS certificates
+        SSLCertificateFile  /etc/pki/tls/certs/ca.crt
+        SSLCertificateKeyFile /etc/pki/tls/private/ca.key
+
+        <FilesMatch "\.(cgi|shtml|phtml|php)$">
+            SSLOptions +StdEnvVars
+        </FilesMatch>
+
+        BrowserMatch "MSIE [2-6]" \
+            nokeepalive ssl-unclean-shutdown \
+            downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+        # Cipherlist [ via cipherli.st ]
+        SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+        SSLProtocol All -SSLv2 -SSLv3
+        SSLHonorCipherOrder On
+        # Requires Apache >= 2.4
+        SSLCompression off 
+</VirtualHost>
 ```
 
 Verify that PHP is installed along with the proper packages for it to work with Apache, and we should be set to install the application files.

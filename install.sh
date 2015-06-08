@@ -46,7 +46,7 @@ function installApplicationFiles
     # set perms
     # check which distro we're using
     apacheUser='www-data'
-    if [ -f "104.131.86.233" ]
+    if [ -f "cat /etc/redhat-release" ]
     then
         $apacheUser='apache'
     fi
