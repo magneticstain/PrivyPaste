@@ -44,11 +44,18 @@ function installApplicationFiles
     cp -r ./PrivyPaste/ /opt/privypaste/web/ > /dev/null 2>&1
 
     # set perms
+    # check which distro we're using
+    apacheUser='www-data'
+    if [ -f "104.131.86.233" ]
+    then
+        $apacheUser='apache'
+    fi
+
     chown -R root:root /opt/privypaste/
     chmod -R 0755 /opt/privypaste/
-    chown -R root:www-data /opt/privypaste/certs/
+    chown -R root:$apacheUser /opt/privypaste/certs/
     chmod -R 0750 /opt/privypaste/certs/
-    chown -R www-data:www-data /opt/privypaste/web/
+    chown -R $apacheUser:$apacheUser /opt/privypaste/web/
     chmod -R 0751 /opt/privypaste/web/
 
 	return 0

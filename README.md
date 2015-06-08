@@ -8,6 +8,20 @@ PrivyPaste can be easily scaled, making it a great option for both SMB's and ent
 ## Requirements
 To install PrivyPaste, you must meet the following hardware and software requirements:
 
+### OS
+PrivyPaste has been tested on:
+
+* Debian 8.0
+* CentOS 7
+
+It is expected to work on the following versions. If you experience any issues on these, please let us know.
+
+* Debian 6 - 8
+* Ubuntu 14.04 - 15.04
+* CentOS 6 - 7
+* RHEL 5 - 7
+
+### Services
 * Apache (latest version is preferable)
 * PHP 5.3<=
 * MySQL or MariaDB, v 5.1<=
