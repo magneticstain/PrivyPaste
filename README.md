@@ -109,6 +109,7 @@ Open up this file for editing and add in each field with the values for your ins
 
 #### PKI Settings
 *NOTE: this step is only needed if you generated your own certificates. If you generated them via the installer, everything is already setup.*
+
 If you generated the certificates on your own, move them to the certificate folder for PrivyPaste (`/opt/privypaste/certs/`) and set the correct permissions. After that, you can either rename them
 to `public_key.pem` and `private_key.pem` and no additional configuration is needed or you can update the PKI configuration file with the names of your certificates.
 
