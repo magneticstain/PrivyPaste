@@ -67,8 +67,12 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
 			Options Indexes FollowSymLinks
 			AllowOverride All
 			Order allow,deny
-			Allow from all
-			Require all granted
+            <IfVersion < 2.4>
+                Allow from all
+            </IfVersion>
+            <IfVersion >= 2.4>
+                Require all granted
+            </IfVersion>
 		</Directory>
 
 		LogLevel warn
@@ -129,7 +133,6 @@ SSLCryptoDevice builtin
             Options Indexes FollowSymLinks
             AllowOverride All
             Order allow,deny
-            Allow from all
             <IfVersion < 2.4>
                 Allow from all
             </IfVersion>
