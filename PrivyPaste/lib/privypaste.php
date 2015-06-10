@@ -406,8 +406,9 @@
 			    }
 		    }
 
-		    // anything goes wrong, return -1
-		    return -1;
+		    // anything goes wrong, set error and return 0
+		    $this->errorMsg = 'Unable to access paste database. Please contact your system administrator.';
+		    return 0;
 	    }
 
 	    public function generateMostRecentlyModifiedPastesHtml()
@@ -433,6 +434,11 @@
 		    {
 			    // no pastes created yet
 			    $recentPasteHtml .= '<p>No pastes have been created yet!</p>';
+		    }
+		    elseif($recentPastes === 0)
+		    {
+			    // couldn't get pastes for whatever reason
+			    $recentPasteHtml .= '<p>No pastes could be found!</p>';
 		    }
 		    else
 		    {
@@ -485,8 +491,9 @@
 			    }
 		    }
 
-		    // anything goes wrong, return -1
-		    return -1;
+		    // anything goes wrong, set error message and return 0
+		    $this->errorMsg = 'Unable to access paste database. Please contact your system administrator.';
+		    return 0;
 	    }
 
 	    public function generatePasteContentHtml($pasteUid, $updateTitle = false)
