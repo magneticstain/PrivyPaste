@@ -130,7 +130,12 @@ SSLCryptoDevice builtin
             AllowOverride All
             Order allow,deny
             Allow from all
-            Require all granted
+            <IfVersion < 2.4>
+                Allow from all
+            </IfVersion>
+            <IfVersion >= 2.4>
+                Require all granted
+            </IfVersion>
         </Directory>
 
 	ErrorLog logs/ssl_error_log
