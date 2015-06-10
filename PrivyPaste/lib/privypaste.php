@@ -445,11 +445,19 @@
 			    foreach($recentPastes as $pastNum => $paste)
 			    {
 				    // truncate and sanatize paste and convert last modified timestamp to relative timestamp for display in view
-				    echo "RAW PASTE: ".$paste[2];
+				    $rawPaste = htmlspecialchars($paste[2]);
 
-				    // see if paste is utf-8 encoded
-				    $truncatedPaste = htmlspecialchars(substr($paste[2], 0, 25));
-				    echo "TRUNCATED_PASTE: ".$truncatedPaste;
+				    // check encoding of raw paste
+				    if(mb_check_encoding($rawPaste, 'UTF-8'))
+				    {
+					    // string is in UTF-8 format, use mb_substr()
+					    $truncatedPaste = mb_substr($rawPaste, 0, 25, 'UTF-8');
+				    }
+				    else
+				    {
+					    // normal ASCII, use substr()
+					    $truncatedPaste = substr($rawPaste, 0, 25);
+				    }
 				    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
 
 				    // build paste link and append to recent paste html
@@ -542,8 +550,20 @@
 		    if(isset($pasteJson->paste_text))
 		    {
 			    // API returned text, generate HTML with it
+			    $htmlTranslatedPaste = htmlspecialchars($pasteJson->paste_text);
+
 			    // generate paste title
-			    $pasteTitle = htmlspecialchars(substr($pasteJson->paste_text, 0, 20));
+			    // check encoding of raw paste
+			    if(mb_check_encoding($htmlTranslatedPaste, 'UTF-8'))
+			    {
+				    // string is in UTF-8 format, use mb_substr()
+				    $pasteTitle = mb_substr($htmlTranslatedPaste, 0, 20, 'UTF-8');
+			    }
+			    else
+			    {
+				    // normal ASCII, use substr()
+				    $pasteTitle = substr($htmlTranslatedPaste, 0, 20);
+			    }
 			    // if paste is longer than 20 characters, add elipses
 			    if(strlen($pasteJson->paste_text) > 20)
 			    {
@@ -556,7 +576,7 @@
 
 			    // process paste to HTML
 			    // replace newlines with <br /> and escape HTML
-			    $pasteTextHtml = nl2br(htmlspecialchars($pasteJson->paste_text));
+			    $pasteTextHtml = nl2br($htmlTranslatedPaste);
 
 			    $pasteHtml = '
 	                        <div id="pasteTextHtmlHeading">
