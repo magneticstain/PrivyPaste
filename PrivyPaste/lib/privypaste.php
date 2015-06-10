@@ -445,7 +445,11 @@
 			    foreach($recentPastes as $pastNum => $paste)
 			    {
 				    // truncate and sanatize paste and convert last modified timestamp to relative timestamp for display in view
-				    $truncatedPaste = htmlentities(substr($paste[2], 0, 25));
+				    echo "RAW PASTE: ".$paste[2];
+
+				    // see if paste is utf-8 encoded
+				    $truncatedPaste = htmlspecialchars(substr($paste[2], 0, 25));
+				    echo "TRUNCATED_PASTE: ".$truncatedPaste;
 				    $relativeLastModifiedTime = $this->getRelativeTimeFromTimestamp($paste[1]);
 
 				    // build paste link and append to recent paste html
@@ -539,7 +543,7 @@
 		    {
 			    // API returned text, generate HTML with it
 			    // generate paste title
-			    $pasteTitle = htmlentities(substr($pasteJson->paste_text, 0, 20));
+			    $pasteTitle = htmlspecialchars(substr($pasteJson->paste_text, 0, 20));
 			    // if paste is longer than 20 characters, add elipses
 			    if(strlen($pasteJson->paste_text) > 20)
 			    {
@@ -552,7 +556,7 @@
 
 			    // process paste to HTML
 			    // replace newlines with <br /> and escape HTML
-			    $pasteTextHtml = nl2br(htmlentities($pasteJson->paste_text));
+			    $pasteTextHtml = nl2br(htmlspecialchars($pasteJson->paste_text));
 
 			    $pasteHtml = '
 	                        <div id="pasteTextHtmlHeading">
