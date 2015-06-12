@@ -37,11 +37,12 @@ function installApplicationFiles
     mkdir /opt/privypaste/certs/ > /dev/null 2>&1
     mkdir /opt/privypaste/src/ > /dev/null 2>&1
     mkdir /opt/privypaste/web/ > /dev/null 2>&1
+    mkdir /opt/privypaste/web/PrivyPaste/ > /dev/null 2>&1
 
     # move to application directory
     cp -r ./* /opt/privypaste/src/ > /dev/null 2>&1
     cp -r *.pem /opt/privypaste/certs/ > /dev/null 2>&1
-    cp -r ./PrivyPaste/ /opt/privypaste/web/ > /dev/null 2>&1
+    rsync -av PrivyPaste-master/PrivyPaste/ /opt/privypaste/web/PrivyPaste/ --exclude 'src' --exclude 'tests' > /dev/null 2>&1
 
     # set perms
     # check which distro we're using
