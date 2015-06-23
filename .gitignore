@@ -30,3 +30,6 @@ crashlytics-build.properties
 # Project-specifc files
 # DB config
 db.php
+
+# phpunit XML config
+PrivyPaste/tests/phpunit.xml

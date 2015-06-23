@@ -36,7 +36,6 @@
 			$keyFile = 'file://'.$keyFile;
 
 			// function used to read in file is dependent on key type
-
 			// normalize $keyType
 			$keyType = strtolower($keyType);
 
@@ -59,7 +58,7 @@
 			}
 
 			// return blank string if anything goes wrong
-			return '';
+			return false;
 		}
 
 		public static function encryptString($publicKey, $plaintext, $isBase64Encoded = false)
@@ -127,8 +126,6 @@
 
 			return $plaintext;
 		}
-
-
 
 		public static function generateUniquePasteID()
 		{

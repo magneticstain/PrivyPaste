@@ -33,7 +33,7 @@
             )
             {
                 // something went wrong
-                throw new \Exception('bad paste ID, ciphertext or plaintext supplied!');
+                throw new \Exception('bad paste data supplied!');
             }
         }
 
@@ -429,11 +429,11 @@
 		    {
 				// got results
 			    // set result as respective object var and return true
-			    $this->pasteId = $sqlResults[0]['id'];
-			    $this->pasteUid = $sqlResults[0]['uid'];
-			    $this->creationTime = strtotime($sqlResults[0]['created']);
-			    $this->lastModifiedTime = strtotime($sqlResults[0]['last_modified']);
-			    $this->ciphertext = $sqlResults[0]['ciphertext'];
+			    $this->setPasteId($sqlResults[0]['id']);
+			    $this->setPasteUid($sqlResults[0]['uid']);
+			    $this->setCreationTime(strtotime($sqlResults[0]['created']));
+			    $this->setLastModifiedTime(strtotime($sqlResults[0]['last_modified']));
+			    $this->setCiphertext($sqlResults[0]['ciphertext']);
 
 			    return true;
 		    }
