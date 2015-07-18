@@ -23,14 +23,14 @@
 	    {
 		    if(
 			    !$this->setUrl($url)
-			    ||  !$this->setErrorMsg($errorMsg)
+			    || !$this->setErrorMsg($errorMsg)
 			    || !$this->setSubTitle($subTitle)
 			    || !$this->setContent($content)
 			    || !$this->setDbConn($dbConn)
 		    )
 		    {
 			    // something went wrong
-			    throw new \Exception('could not set main privypaste object');
+			    throw new \Exception('could not set main privypaste object!');
 		    }
 	    }
 
@@ -96,7 +96,7 @@
              */
 
 		    // the only limitation is that the content cannot be blank/null
-		    if($content !== '' || $content !== null)
+		    if(isset($content) && !empty($content))
 		    {
 			    // content is good
 			    $this->content = $content;
@@ -121,7 +121,7 @@
              *      - boolean
              */
 
-		    // currently, we're just setting it outright since validation of it connection should already have been done
+		    // currently, we're just setting it outright since validation of the connection should already have been done
 		    // if it hasn't been done, running any queries should generate an error and self-validate
 		    $this->dbConn = $dbConn;
 
@@ -303,6 +303,10 @@
 		    {
 			    $timestamp = $datetime;
 		    }
+		    elseif(empty($datetime))
+		    {
+			    $timestamp = time();
+		    }
 		    else
 		    {
 			    $timestamp = strtotime($datetime);
@@ -358,6 +362,9 @@
              *  Returns:
              *      - array
              */
+
+		    // normalize $numberPastes
+		    $numPastes = (int)$numPastes;
 
 		    // craft sql query
 		    $sql = "SELECT uid, last_modified, ciphertext FROM pastes ORDER BY last_modified DESC LIMIT :num_pastes";
@@ -575,7 +582,7 @@
 			    $pasteLastModified = $this->getRelativeTimeFromTimestamp($pasteJson->last_modified_time);
 
 			    // process paste to HTML
-			    // replace newlines with <br /> and escape HTML
+			    // replace newlines in escaped HTML with <br />
 			    $pasteTextHtml = nl2br($htmlTranslatedPaste);
 
 			    $pasteHtml = '

@@ -86,5 +86,5 @@
 			$this->assertFalse($paste->decryptCiphertext());
 		}
 
-		// TODO: add tests for Paste::sendPasteDataToDb() and Paste::retrievePasteDataFromDb()
+		// needed: add tests for Paste::sendPasteDataToDb() and Paste::retrievePasteDataFromDb()
 	}

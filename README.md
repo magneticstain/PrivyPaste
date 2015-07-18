@@ -1,7 +1,7 @@
 # PrivyPaste
 
 ## Description
-PrivyPaste is a standalone, private pastebin solution that utilizes encryption to increase privacy and security.
+PrivyPaste is a standalone, private pastebin solution that utilizes encryption both while transmitting and storing data at rest to increase privacy and security.
 
 PrivyPaste can be easily scaled, making it a great option for both SMB's and enterprise users alike.
 
