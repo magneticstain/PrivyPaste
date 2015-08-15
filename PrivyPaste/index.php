@@ -48,10 +48,10 @@
 	{
 		$errorMsg = 'ERROR: '.$errorMsg;
 	}
-	else
-	{
-		$errorMsg = 'This is a demo of PrivyPaste. Application files will automatically be reset within 10 minutes.';
-	}
+//	else
+//	{
+//		$errorMsg = 'This is a demo of PrivyPaste. Application files will automatically be reset within 10 minutes.';
+//	}
 
 	// create PrivyPaste() object and echo out page HTML
 	try
