@@ -40,7 +40,6 @@
 		$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
 	} catch(\Exception $e)
 	{
-		$errorMsg = "could not connect to PrivyPaste database!";
 		die('FATAL ERROR: unable to connect to database!');
 	}
 
@@ -51,7 +50,13 @@
 	}
 
 	// create PrivyPaste() object and echo out page HTML
-	$privypaste = new PrivyPaste($db, $content, $errorMsg, $fullUrl);
+	try
+	{
+		$privypaste = new PrivyPaste($db, $content, $errorMsg, $fullUrl);
+	} catch(\Exception $e)
+	{
+		die('FATAL ERROR: unable to start app engine!');
+	}
 
 	// set content
 	// must be set after in case a paste UID is sent as a GET var. In that case, we need PrivyPaste->url set before we query the API for the paste plaintext

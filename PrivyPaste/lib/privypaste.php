@@ -29,6 +29,11 @@
 			    || !$this->setDbConn($dbConn)
 		    )
 		    {
+//			    echo "URL: ".$url.'<br />';
+//			    echo "EM: ".$errorMsg.'<br />';
+//			    echo "ST: ".$subTitle.'<br />';
+//			    echo "CT: ".$content.'<br />';
+//			    echo "DB: ".$dbConn->getPassword().'<br />';
 			    // something went wrong
 			    throw new \Exception('could not set main privypaste object!');
 		    }
@@ -95,16 +100,10 @@
              *      - boolean
              */
 
-		    // the only limitation is that the content cannot be blank/null
-		    if(isset($content) && !empty($content))
-		    {
-			    // content is good
-			    $this->content = $content;
+		    // no limitation on content as it's sometimes set after object creation
+		    $this->content = $content;
 
-			    return true;
-		    }
-
-		    return false;
+		    return true;
 	    }
 
 	    public function setDbConn($dbConn)
