@@ -1,5 +1,8 @@
 # PrivyPaste
 
+## Demo
+https://dev.carlso.net/PrivyPaste/
+
 ## Description
 PrivyPaste is a standalone, private pastebin solution that utilizes encryption both while transmitting and storing data at rest to increase privacy and security.
 
