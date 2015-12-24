@@ -18,6 +18,7 @@
 	    protected $host = '';
 	    protected $dbName = '';
 	    private $dbConn;
+	    private $logger;
 
 	    public function __construct($username, $password, $hostname, $dbName)
 	    {
@@ -38,6 +39,9 @@
 			 *  Returns:
 			 *      - NONE
 		     */
+
+		    # start logging
+		    $this->logger = new Logger('');
 
 			if(
 				!$this->setUsername($username)
@@ -236,6 +240,11 @@
 			    $dbConn = new \PDO('mysql:host='.$this->host.';dbname='.$this->dbName, $this->username, $this->password);
 		    } catch(\PDOException $e)
 		    {
+			    $this->logger->setLogMsg('could not create new PDO() object :: '.$e->getMessage());
+			    $this->logger->setLogSrcFunction('Databaser() -> createDbConnection()');
+			    $this->logger->writeLog();
+//			    $this->logger->setLogMsg('mysql:host='.$this->host.' :: dbname='.$this->dbName.' :: '.$this->username.' :: '.$this->password);
+//			    $this->logger->writeLog();
 			    return false;
 		    }
 
@@ -370,8 +379,11 @@
 		    {
 			    // log error
 			    $dbStmtErrorInfo = $dbStmt->errorInfo();
-			    error_log('BAD SQL QUERY: '.$dbStmtErrorInfo[2]);
-			    error_log('QUERY: '.$sql);
+			    $this->logger->setLogMsg('BAD SQL QUERY: '.$dbStmtErrorInfo[2]);
+			    $this->logger->setLogSrcFunction('Databaser() -> queryDb()');
+			    $this->logger->writeLog();
+			    $this->logger->setLogMsg('QUERY: '.$sql);
+			    $this->logger->writeLog();
 		    }
 
 		    return false;

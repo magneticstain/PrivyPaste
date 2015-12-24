@@ -19,10 +19,13 @@
 	    public $lastModifiedTime = 0;
         protected $plaintext = '';
 	    protected $ciphertext = '';
+	    private $logger;
 
         public function __construct($plaintext = '', $ciphertext = '', $pasteUid = '00000000', $creationTime = 0, $lastModifiedTime = 0, $pasteId = 0)
         {
             // set object vars
+	        $this->logger = new Logger();
+
             if(
                 !$this->setPasteId($pasteId)
                 || !$this->setPasteUid($pasteUid)

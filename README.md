@@ -58,6 +58,52 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
     * the directory section for the application files has the `AllowOverride All` directive. [More info on that directive can be found here.](https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride)
     * mod_rewrite is turned on
   * Example Apache configs are show below, and should work with most installations.
+  
+#### Ubunti-based OS
+```
+<IfModule mod_ssl.c>
+	<VirtualHost _default_:443>
+        # this is important, and must point towards this directory
+		DocumentRoot /opt/privypaste/web
+
+        <Directory /opt/privypaste/web/>
+			Options Indexes FollowSymLinks
+			AllowOverride All
+			Order allow,deny
+            Allow from all
+            Require all granted
+		</Directory>
+
+		LogLevel warn
+
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+		SSLEngine on
+
+        # Replace these with your own TLS certificates
+		SSLCertificateFile	/etc/ssl/certs/ssl-cert-snakeoil.pem
+		SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+		<FilesMatch "\.(cgi|shtml|phtml|php)$">
+            SSLOptions +StdEnvVars
+		</FilesMatch>
+
+		BrowserMatch "MSIE [2-6]" \
+            nokeepalive ssl-unclean-shutdown \
+            downgrade-1.0 force-response-1.0
+		# MSIE 7 and newer should be able to use keepalive
+		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+		# Cipherlist [ via cipherli.st ]
+		SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+		SSLProtocol All -SSLv2 -SSLv3
+		SSLHonorCipherOrder On
+		# Requires Apache >= 2.4
+		SSLCompression off 
+	</VirtualHost>
+</IfModule>
+```
 
 #### Debian-based OS
 ```

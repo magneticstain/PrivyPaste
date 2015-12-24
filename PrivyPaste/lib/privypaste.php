@@ -18,9 +18,13 @@
 	    private $subTitle = '';
 	    private $content = '';
 	    private $dbConn;
+	    private $logger;
 
 	    public function __construct($dbConn, $content, $errorMsg = '', $url = 'http://www.example.org/', $subTitle = 'Home')
 	    {
+		    // start logging
+		    $this->logger = new Logger();
+
 		    if(
 			    !$this->setUrl($url)
 			    || !$this->setErrorMsg($errorMsg)
@@ -29,11 +33,6 @@
 			    || !$this->setDbConn($dbConn)
 		    )
 		    {
-//			    echo "URL: ".$url.'<br />';
-//			    echo "EM: ".$errorMsg.'<br />';
-//			    echo "ST: ".$subTitle.'<br />';
-//			    echo "CT: ".$content.'<br />';
-//			    echo "DB: ".$dbConn->getPassword().'<br />';
 			    // something went wrong
 			    throw new \Exception('could not set main privypaste object!');
 		    }
@@ -410,6 +409,13 @@
 				    // nothing returned from db, return empty array for function
 				    return array();
 			    }
+		    }
+		    else
+		    {
+			    # log error
+			    $this->logger->setLogMsg('could not connect to database :: using user ['.$this->dbConn->getUsername().']');
+			    $this->logger->setLogSrcFunction('PrivyPaste() -> getMostRecentlyModifiedPastes()');
+			    $this->logger->writeLog();
 		    }
 
 		    // anything goes wrong, set error and return 0

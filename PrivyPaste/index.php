@@ -33,25 +33,39 @@
 	// get URL for links
 	$fullUrl = PrivyPaste::getServerUrl(BASE_URL_DIR);
 
+	// create logging object
+	try
+	{
+		# try to start a logging object
+		$logger = new Logger();
+	} catch(\Exception $e)
+	{
+		die('FATAL ERROR: unable to start logging functionality');
+	}
+
 	// create db connection required for PrivyPaste()
 	$db = '';
 	try
 	{
+		# try to start a db connection
 		$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
 	} catch(\Exception $e)
 	{
-		die('FATAL ERROR: unable to connect to database!');
+		$logMessage = 'unable to create database object';
+
+		$logger->setLogMsg('[FATAL] :: '.$logMessage.' :: Please check database availability!');
+		$logger->setLogSrcFunction('main()');
+		$logger->writeLog();
+
+		# kill everything
+		die('FATAL ERROR: '.$logMessage);
 	}
 
-	// format error message if not blank
+	// format user-facing error message if not blank
 	if($errorMsg !== '')
 	{
 		$errorMsg = 'ERROR: '.$errorMsg;
 	}
-//	else
-//	{
-//		$errorMsg = 'This is a demo of PrivyPaste. Application files will automatically be reset within 10 minutes.';
-//	}
 
 	// create PrivyPaste() object and echo out page HTML
 	try
@@ -59,7 +73,14 @@
 		$privypaste = new PrivyPaste($db, $content, $errorMsg, $fullUrl);
 	} catch(\Exception $e)
 	{
-		die('FATAL ERROR: unable to start app engine!');
+		$logMessage = 'unable to start app engine';
+
+		$logger->setLogMsg('[FATAL] :: '.$logMessage.' :: Please check application availability!');
+		$logger->setLogSrcFunction('main()');
+		$logger->writeLog();
+
+		# kill everything
+		die('FATAL ERROR: '.$logMessage);
 	}
 
 	// set content
