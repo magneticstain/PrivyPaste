@@ -20,7 +20,7 @@
 	    private $dbConn;
 	    private $logger;
 
-	    public function __construct($username, $password, $hostname, $dbName)
+	    public function __construct($username, $password, $hostname, $dbName, $logger = '')
 	    {
 		    /*
 		     * Params:
@@ -40,14 +40,18 @@
 			 *      - NONE
 		     */
 
-		    # start logging
-		    $this->logger = new Logger('');
+		    # start logging if a previous Logger() instance was not provided
+		    if(empty($logger) || !isset($logger))
+		    {
+			    $logger = new Logger('');
+		    }
 
 			if(
 				!$this->setUsername($username)
 				|| !$this->setPassword($password)
 				|| !$this->setHost($hostname)
 				|| !$this->setDbName($dbName)
+				|| !$this->setLogger($logger)
 			)
 			{
 				throw new \Exception('invalid database info supplied!');
@@ -155,6 +159,31 @@
 		    return false;
 	    }
 
+	    public function setLogger($logger)
+	    {
+		    /*
+		     * Params:
+			 *      - $logger
+			 *          - Logging object used for logging messages to syslog
+			 *
+			 *  Usage:
+			 *      - sets logging object
+			 *
+			 *  Returns:
+			 *      - bool
+		     */
+
+		    // no restraints as any errors will be shown once the variable tries to be used
+		    if(!is_null($logger))
+		    {
+			    $this->logger = $logger;
+
+			    return true;
+		    }
+
+		    return false;
+	    }
+
 	    // GETTERS
 	    public function getUsername()
 	    {
@@ -218,6 +247,22 @@
 		     */
 
 		    return $this->username;
+	    }
+
+	    public function getLogger()
+	    {
+		    /*
+		     * Params:
+			 *      - NONE
+			 *
+			 *  Usage:
+			 *      - gets logging object
+			 *
+			 *  Returns:
+			 *      - Logger()
+		     */
+
+		    return $this->logger;
 	    }
 
 	    // OTHER FUNCTIONS

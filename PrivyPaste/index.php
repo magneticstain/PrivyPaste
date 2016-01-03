@@ -30,9 +30,6 @@
 	$errorMsg = '';
 	$content = '';
 
-	// get URL for links
-	$fullUrl = PrivyPaste::getServerUrl(BASE_URL_DIR);
-
 	// create logging object
 	try
 	{
@@ -42,6 +39,17 @@
 	{
 		die('FATAL ERROR: unable to start logging functionality');
 	}
+
+	// get URL for links
+//	try
+//	{
+		$fullUrl = PrivyPaste::getServerUrl(BASE_URL_DIR);
+//	} catch(\Exception $e)
+//	{
+//		$logger->setLogMsg('could not get server URL :: using base URL dir ['.BASE_URL_DIR.']');
+//		$logger->setLogSrcFunction('main()');
+//		$logger->writeLog();
+//	}
 
 	// create db connection required for PrivyPaste()
 	$db = '';

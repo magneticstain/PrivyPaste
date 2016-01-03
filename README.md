@@ -59,7 +59,7 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
     * mod_rewrite is turned on
   * Example Apache configs are show below, and should work with most installations.
   
-#### Ubunti-based OS
+#### Ubuntu-based OS
 ```
 <IfModule mod_ssl.c>
 	<VirtualHost _default_:443>
@@ -76,8 +76,8 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
 
 		LogLevel warn
 
-		ErrorLog ${APACHE_LOG_DIR}/error.log
-		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		ErrorLog /opt/privypaste/logs/web-errors.log
+		CustomLog /opt/privypaste/logs/web-access_log combined
 
 		SSLEngine on
 
@@ -126,8 +126,8 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
 
 		LogLevel warn
 
-		ErrorLog ${APACHE_LOG_DIR}/error.log
-		CustomLog ${APACHE_LOG_DIR}/access.log combined
+		ErrorLog /opt/privypaste/logs/web-errors.log
+		CustomLog /opt/privypaste/logs/web-access_log combined
 
 		SSLEngine on
 
@@ -190,8 +190,8 @@ SSLCryptoDevice builtin
             </IfVersion>
         </Directory>
 
-	ErrorLog logs/ssl_error_log
-	TransferLog logs/ssl_access_log
+	ErrorLog /opt/privypaste/logs/web-errors.log
+	TransferLog /opt/privypaste/logs/web-access_log
 	LogLevel warn
 
         SSLEngine on

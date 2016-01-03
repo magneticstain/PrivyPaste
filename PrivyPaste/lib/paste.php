@@ -324,7 +324,20 @@
 
 					return true;
 				}
+				else
+				{
+					// set error msg
+					$this->logger->setLogMsg('could not encrypt paste using given public key ['.PUBLIC_KEY.']');
+				}
 			}
+			else
+			{
+				$this->logger->setLogMsg('could not read in public key from file ['.PUBLIC_KEY.']');
+			}
+
+			// log an error
+			$this->logger->setLogSrcFunction('Paste() -> encryptPlaintext()');
+			$this->logger->writeLog();
 
 			return false;
 		}
@@ -353,7 +366,20 @@
 
 				    return true;
 			    }
+			    else
+			    {
+				    // set error msg
+				    $this->logger->setLogMsg('could not decrypt paste using given private key ['.PRIVATE_KEY.']');
+			    }
 		    }
+		    else
+		    {
+			    $this->logger->setLogMsg('could not read in private key from file ['.PRIVATE_KEY.']');
+		    }
+
+		    // log an error
+		    $this->logger->setLogSrcFunction('Paste() -> decryptCiphertext()');
+		    $this->logger->writeLog();
 
 		    return false;
 	    }
@@ -396,7 +422,20 @@
 				    // query executed successfully, return paste UID
 				    return $pasteUid;
 			    }
+			    else
+			    {
+				    // set error msg
+				    $this->logger->setLogMsg('could not insert paste into database [PUID: '.$pasteUid.']');
+			    }
 		    }
+		    else
+		    {
+			    $this->logger->setLogMsg('could not generate a paste ID');
+		    }
+
+		    // log an error
+		    $this->logger->setLogSrcFunction('Paste() -> sendPasteDataToDb()');
+		    $this->logger->writeLog();
 
 		    // if anything fails, return -1 as a string val
 		    return '-1';
@@ -439,6 +478,15 @@
 			    $this->setCiphertext($sqlResults[0]['ciphertext']);
 
 			    return true;
+		    }
+		    else
+		    {
+			    // set error msg
+			    $this->logger->setLogMsg('could not retrieve paste from database [PUID: '.$pasteUid.']');
+
+			    // log an error
+			    $this->logger->setLogSrcFunction('Paste() -> retrievePasteDataFromDb()');
+			    $this->logger->writeLog();
 		    }
 
 		    return false;

@@ -9,8 +9,17 @@
 #
 #########################################################################################
 
+# CONSTANTS
+# Formatting
 lgHr="#################################################################################"
 medHr="############################################"
+# I/O
+ROOT_APP_DIR='/opt/privypaste/'
+APP_CERTS_DIR='/opt/privypaste/certs/'
+APP_LOGS_DIR='/opt/privypaste/logs/'
+APP_SRC_DIR='/opt/privypaste/src/'
+WEB_DIR='/opt/privypaste/web/'
+WEB_DIR_ROOT="$WEB_DIR/PrivyPaste/"
 
 # FUNCTIONS
 function createCerts
@@ -32,17 +41,19 @@ function createCerts
 function installApplicationFiles
 {
 	# creates the proper directories and installs the application files
+
 	# create directories
-    mkdir /opt/privypaste/ > /dev/null 2>&1
-    mkdir /opt/privypaste/certs/ > /dev/null 2>&1
-    mkdir /opt/privypaste/src/ > /dev/null 2>&1
-    mkdir /opt/privypaste/web/ > /dev/null 2>&1
-    mkdir /opt/privypaste/web/PrivyPaste/ > /dev/null 2>&1
+    mkdir $ROOT_APP_DIR > /dev/null 2>&1
+    mkdir $APP_CERTS_DIR > /dev/null 2>&1
+    mkdir $APP_LOGS_DIR > /dev/null 2>&1
+    mkdir $APP_SRC_DIR > /dev/null 2>&1
+    mkdir $WEB_DIR > /dev/null 2>&1
+    mkdir $WEB_DIR_ROOT > /dev/null 2>&1
 
     # move to application directory
-    cp -r ./* /opt/privypaste/src/ > /dev/null 2>&1
-    cp -r *.pem /opt/privypaste/certs/ > /dev/null 2>&1
-    rsync -av ./PrivyPaste/ /opt/privypaste/web/PrivyPaste/ --exclude 'src' --exclude 'tests' > /dev/null 2>&1
+    cp -r ./* $APP_SRC_DIR > /dev/null 2>&1
+    cp -r *.pem APP_CERTS_DIR > /dev/null 2>&1
+    rsync -av ./PrivyPaste/ $WEB_DIR_ROOT --exclude 'src' --exclude 'tests' > /dev/null 2>&1
 
     # set perms
     # check which distro we're using
@@ -52,12 +63,14 @@ function installApplicationFiles
         apacheUser='apache'
     fi
 
-    chown -R root:root /opt/privypaste/
-    chmod -R 0755 /opt/privypaste/
-    chown -R root:$apacheUser /opt/privypaste/certs/
-    chmod -R 0750 /opt/privypaste/certs/
-    chown -R $apacheUser:$apacheUser /opt/privypaste/web/
-    chmod -R 0751 /opt/privypaste/web/
+    chown -R root:root $ROOT_APP_DIR
+    chmod -R 0755 $ROOT_APP_DIR
+    chown -R root:$apacheUser $APP_CERTS_DIR
+    chmod -R 0750 $APP_CERTS_DIR
+    chown -R root:$apacheUser $APP_LOGS_DIR
+    chmod -R 0750 $APP_LOGS_DIR
+    chown -R $apacheUser:$apacheUser $WEB_DIR
+    chmod -R 0751 $WEB_DIR
 
 	return 0
 }
@@ -98,5 +111,6 @@ fi
 
 # move application files
 installApplicationFiles
+echo "Application files and directories installed succesfully!"
 
 echo "Installation complete!"
