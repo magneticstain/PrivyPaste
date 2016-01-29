@@ -83,7 +83,18 @@
 
 			// try encrypting data (default padding option is used)
 			// ciphertext is stored by supplying $ciphertext var as function param
-			openssl_public_encrypt($plaintext, $ciphertext, $publicKey);
+			if(!openssl_public_encrypt($plaintext, $ciphertext, $publicKey))
+			{
+				$errorMsg = 'PrivyPaste :: CryptKepper() -> encryptString() :: OpenSSL Error';
+
+				# check if openssl returned an error
+				while($openSSLErrorMsg = openssl_error_string())
+				{
+					$errorMsg .= ":: [ $openSSLErrorMsg ]";
+				}
+
+				error_log($errorMsg);
+			}
 
 			// return ciphertext as binary blob or string depending on flag param
 			if($isBase64Encoded === true)
@@ -122,7 +133,18 @@
 
 			// try decrypting data (default padding option is used)
 			// plaintext is stored by supplying $plaintext var as function param
-			openssl_private_decrypt($ciphertext, $plaintext, $privateKey);
+			if(!openssl_private_decrypt($ciphertext, $plaintext, $privateKey))
+			{
+				$errorMsg = 'PrivyPaste :: CryptKepper() -> decryptString() :: OpenSSL Error';
+
+				# check if openssl returned an error
+				while($openSSLErrorMsg = openssl_error_string())
+				{
+					$errorMsg .= ":: [ $openSSLErrorMsg ]";
+				}
+
+				error_log($errorMsg);
+			}
 
 			return $plaintext;
 		}
