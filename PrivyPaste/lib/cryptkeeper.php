@@ -15,6 +15,63 @@
 	class CryptKeeper
 	{
 		// FUNCTIONS
+		public static function generateKey($keySize = 32, $useCryptographicallyStrongAlgorithm = true)
+		{
+			/*
+			 *  Params:
+			 *      - $keySize
+			 *          - size of key to be generated (in bytes)
+			 *          - default = 32, generating a 256-bit key
+			 *
+			 *      - $useCryptographicallyStrongAlgorithm
+			 *          - sets option to use cryptographically-strong algorithm when generating a key
+			 *          - default = true
+			 *
+			 *  Usage:
+			 *      - generate cryptographically-secure set of random bytes to be used as AES key
+			 *
+			 *  Returns:
+			 *      - binary key
+			 *      - false if key generation failed
+			 */
+
+			// uses the OpenSSL random numbers algorithm :: https://wiki.openssl.org/index.php/Random_Numbers
+			// http://php.net/manual/en/function.openssl-random-pseudo-bytes.php
+			$key = openssl_random_pseudo_bytes($keySize, $useCryptographicallyStrongAlgorithm);
+
+			return $key;
+		}
+
+		public static function writeKeyToFile($key, $filename)
+		{
+			/*
+			 *  Params:
+			 *      - $key
+			 *          - binary key data
+			 *          - should be generated using generateKey()
+			 *
+			 *      - $filename
+			 *          - filename where key data is stored
+			 *
+			 *  Usage:
+			 *      - writes given binary key data to file
+			 *
+			 *  Returns:
+			 *      - true if write suceeded, false if it fails
+			 */
+
+			// generate file handle
+			if($fileHandle = fopen($filename, 'w'))
+			{
+				// attempt to write to file
+				return fwrite($fileHandle,$key);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		public static function getPkiKeyFromFile($keyType, $keyFile)
 		{
 			/*

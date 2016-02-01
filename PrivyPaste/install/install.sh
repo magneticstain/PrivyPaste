@@ -15,25 +15,21 @@ lgHr="##########################################################################
 medHr="############################################"
 # I/O
 ROOT_APP_DIR='/opt/privypaste/'
-APP_CERTS_DIR='/opt/privypaste/certs/'
+APP_PKI_DIR='/opt/privypaste/pki/'
 APP_LOGS_DIR='/opt/privypaste/logs/'
 APP_SRC_DIR='/opt/privypaste/src/'
 WEB_DIR='/opt/privypaste/web/'
 WEB_DIR_ROOT="$WEB_DIR/PrivyPaste/"
 
 # FUNCTIONS
-function createCerts
+function createKey
 {
 	# creates PKI certificates
 	echo "$medHr"
-	echo "Creating certs..."
+	echo "Creating encryption key..."
 	echo "$medHr"
 
-	# private key
-	openssl genrsa -out private_key.pem 4096
-
-	# public key
-	openssl rsa -pubout -in private_key.pem -out public_key.pem
+	./generate_key.php
 
 	return 0
 }
@@ -44,7 +40,7 @@ function installApplicationFiles
 
 	# create directories
     mkdir $ROOT_APP_DIR > /dev/null 2>&1
-    mkdir $APP_CERTS_DIR > /dev/null 2>&1
+    mkdir $APP_PKI_DIR > /dev/null 2>&1
     mkdir $APP_LOGS_DIR > /dev/null 2>&1
     mkdir $APP_SRC_DIR > /dev/null 2>&1
     mkdir $WEB_DIR > /dev/null 2>&1
@@ -65,8 +61,8 @@ function installApplicationFiles
 
     chown -R root:root $ROOT_APP_DIR
     chmod -R 0755 $ROOT_APP_DIR
-    chown -R root:$apacheUser $APP_CERTS_DIR
-    chmod -R 0750 $APP_CERTS_DIR
+    chown -R root:$apacheUser $APP_PKI_DIR
+    chmod -R 0750 $APP_PKI_DIR
     chown -R root:$apacheUser $APP_LOGS_DIR
     chmod -R 0750 $APP_LOGS_DIR
     chown -R $apacheUser:$apacheUser $WEB_DIR
@@ -88,11 +84,11 @@ echo "$lgHr"
 echo "	PrivyPaste Installer v1.0 "
 echo "$lgHr"
 
-# check for certs
-hasCerts=$(promptUser 'Create certificates? [y/n]: ')
-if [[ "$hasCerts" == "y" || "$hasCerts" == "Y" ]]
+# prompt for key generation
+createKey=$(promptUser 'Create key? [y/n]: ')
+if [[ "$createKey" == "y" || "$createKey" == "Y" ]]
 then
-	createCerts
+	createKey
 fi
 
 # install db schema
