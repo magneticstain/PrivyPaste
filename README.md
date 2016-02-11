@@ -4,7 +4,7 @@
 https://dev.carlso.net/PrivyPaste/
 
 ## Description
-PrivyPaste is a standalone, private pastebin solution that utilizes encryption both while transmitting and storing data at rest to increase privacy and security.
+PrivyPaste is a standalone, private pastebin solution that utilizes end-to-end encryption.
 
 PrivyPaste can be easily scaled, making it a great option for both SMB's and enterprise users alike.
 
@@ -32,14 +32,6 @@ It is expected to work on the following versions. If you experience any issues o
 
 ## Getting Started
 ### Preparation
-Generate RSA keys to your liking using openssl (if you do not want the installation script to automatically generate them for you)
-```bash
-    # generate private key
-    openssl genrsa -out private_key.pem 4096
-
-    # derive public key
-    openssl rsa -pubout -in private_key.pem -out public_key.pem
-```
 After installing all prerequisite software, create the database and database service account.
 ```bash
     # create database
@@ -241,12 +233,12 @@ Open up this file for editing and add in each field with the values for your ins
 ```
 
 #### PKI Settings
-*NOTE: this step is only needed if you generated your own certificates. If you generated them via the installer, everything is already setup.*
+*NOTE: this step is only needed if you are using your own or previously-generated keys. If you generated them via the installer, everything is already setup.*
 
-If you generated the certificates on your own, move them to the certificate folder for PrivyPaste (`/opt/privypaste/certs/`) and set the correct permissions. After that, you can either rename them
-to `public_key.pem` and `private_key.pem` and no additional configuration is needed or you can update the PKI configuration file with the names of your certificates.
+If you generated the keys on your own or are using otherwise specific certs, move them to the PKI folder for PrivyPaste (`/opt/privypaste/pki/`) and set the correct permissions. After that, you can either rename them
+to `encryption_key.bin` and `hmac_key.bin` and no additional configuration is needed or you can update the PKI configuration file with the filenames.
 
-The PKI config file is located at `/opt/privypaste/web/PrivyPaste/conf/pki.php`. Update each filename string to reflect your certificates and PKI configuration should be complete.
+The PKI config file is located at `/opt/privypaste/web/PrivyPaste/conf/pki.php`. Update each filename string to reflect your keys and PKI configuration should be complete.
 
 At this point, you should be able to point your browser at this server and access the application. The URL will be in the format `http(s)://pp.example.com/PrivyPaste/`.
 
