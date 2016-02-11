@@ -1,6 +1,6 @@
-#!/usr/bin/php
-
 <?php
+	namespace privypaste;
+
 	/**
 	 *  PrivyPaste
 	 *  Author: Josh Carlson
@@ -17,19 +17,31 @@
 
 	// configuration files
 	// global
-	require_once $_SERVER['DOCUMENT_ROOT'].'/'.__NAMESPACE__.'/conf/global.php';
+	require_once '../conf/global.php';
 	// pki
-	require_once BASE_DIR.__NAMESPACE__.'/conf/pki.php';
+	require_once '../conf/pki.php';
 
 	// classes
-	// autoloader
-	require_once BASE_DIR.__NAMESPACE__.'/lib/autoloader.php';
+	require_once '../lib/cryptkeeper.php';
 
-	// generate key using default options
-	$key = \privypaste\CryptKeeper::generateKey();
+	/*
+	 * Crypto Specs:
+	 *  Encryption:
+	 *      CIPHER: AES256
+	 *      MODE: CBC
+	 *  HMAC
+	 *      HASH FUNCTION: sha256
+	 */
 
-	// write key to file
-	\privypaste\CryptKeeper::writeKeyToFile($key,KEY_FILE);
+	// generate encryption key using default options
+	$encKey = \privypaste\CryptKeeper::generateKey();
+
+	// generate HMAC key
+	$hmacKey = \privypaste\CryptKeeper::generateKey();
+
+	// write keys to file
+	\privypaste\CryptKeeper::writeKeyToFile($encKey, ENC_KEY_FILE);
+	\privypaste\CryptKeeper::writeKeyToFile($hmacKey, HMAC_KEY_FILE);
 
 	exit(0)
 ?>

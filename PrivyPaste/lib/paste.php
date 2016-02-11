@@ -19,9 +19,10 @@
 	    public $lastModifiedTime = 0;
         protected $plaintext = '';
 	    protected $ciphertext = '';
+	    private $iv = '';
 	    private $logger;
 
-        public function __construct($plaintext = '', $ciphertext = '', $pasteUid = '00000000', $creationTime = 0, $lastModifiedTime = 0, $pasteId = 0)
+        public function __construct($plaintext = '', $ciphertext = '', $pasteUid = '00000000', $creationTime = 0, $lastModifiedTime = 0, $pasteId = 0, $iv = '')
         {
             // set object vars
 	        $this->logger = new Logger();
@@ -33,6 +34,7 @@
                 || !$this->setLastModifiedTime($lastModifiedTime)
                 || !$this->setPlaintext($plaintext)
 	            || !$this->setCiphertext($ciphertext)
+	            || !$this->setInitializationVector($iv)
             )
             {
                 // something went wrong
@@ -202,6 +204,25 @@
 		    return true;
 	    }
 
+	    public function setInitializationVector($iv)
+	    {
+		    /*
+			*  Params:
+			*      - $iv [BLOB]: initialization vector
+			*
+			*  Usage:
+			*      - sets the encryption initialization vector for the paste
+			*
+			*  Returns:
+			*      - boolean
+			*/
+
+		    // no restrictions at this time
+		    $this->iv = $iv;
+
+		    return true;
+	    }
+
         // Getters
         public function getPasteId()
         {
@@ -254,15 +275,15 @@
 	    public function getLastModifiedTime()
 	    {
 		    /*
-		 *  Params:
-		 *      - NONE
-		 *
-		 *  Usage:
-		 *      - returns the last modified time in epoch time format
-		 *
-		 *  Returns:
-		 *      - int
-		 */
+			 *  Params:
+			 *      - NONE
+			 *
+			 *  Usage:
+			 *      - returns the last modified time in epoch time format
+			 *
+			 *  Returns:
+			 *      - int
+			 */
 
 		    return $this->lastModifiedTime;
 	    }
@@ -299,6 +320,22 @@
 		    return $this->ciphertext;
 	    }
 
+	    public function getInitializationVector()
+	    {
+		    /*
+			 *  Params:
+			 *      - NONE
+			 *
+			 *  Usage:
+			 *      - returns encryption initialization vector
+			 *
+			 *  Returns:
+			 *      - blob
+			 */
+
+		    return $this->iv;
+	    }
+
         // Other functions
 		public function encryptPlaintext()
 		{
@@ -313,26 +350,39 @@
 			 *      - boolean
 			 */
 
-			// get public key from file
-			if($publicKey = CryptKeeper::getPkiKeyFromFile('public', PUBLIC_KEY))
+			// get keys from file
+			if($encKey = CryptKeeper::readKeyFromFile(ENC_KEY_FILE) && $hmacKey = CryptKeeper::readKeyFromFile(HMAC_KEY_FILE))
 			{
-				// public key successfully read, encrypt text using key
-				if($encryptedString = CryptKeeper::encryptString($publicKey, $this->plaintext, true))
+				// encryption key and hmac key successfully read, encrypt text using key
+				// generate IV (16 bytes)
+				$iv = CryptKeeper::generateInitializationVector(16);
+				if($iv !== '')
 				{
-					// encryption was successful, set ciphertext as $this->ciphertext
-					$this->setCiphertext($encryptedString);
+//					echo "DEBUG :: ".$this->plaintext." :: ".bin2hex($key)." :: ".bin2hex($iv);
+					if($encryptedString = CryptKeeper::encryptString($encKey, $iv, $this->plaintext, $hmacKey))
+					{
+						// encryption was successful, set ciphertext as $this->ciphertext
+						$this->setCiphertext($encryptedString);
 
-					return true;
+						// also set IV
+						$this->setInitializationVector($iv);
+
+						return true;
+					} else
+					{
+						// set error msg
+						$this->logger->setLogMsg('paste encryption failed using given key ['.ENC_KEY_FILE.']');
+					}
 				}
 				else
 				{
 					// set error msg
-					$this->logger->setLogMsg('could not encrypt paste using given public key ['.PUBLIC_KEY.']');
+					$this->logger->setLogMsg('could not generate encryption IV');
 				}
 			}
 			else
 			{
-				$this->logger->setLogMsg('could not read in public key from file ['.PUBLIC_KEY.']');
+				$this->logger->setLogMsg('could not read in key from file [ '.ENC_KEY_FILE.' ]');
 			}
 
 			// log an error
@@ -355,11 +405,12 @@
 			 *      - boolean
 			 */
 
-		    // get private key from file
-		    if($privateKey = CryptKeeper::getPkiKeyFromFile('private', PRIVATE_KEY))
+		    // get key from file
+		    if($encKey = CryptKeeper::readKeyFromFile(ENC_KEY_FILE) && $hmacKey = CryptKeeper::readKeyFromFile(HMAC_KEY_FILE))
 		    {
-			    // private key successfully read, decrypt text
-			    if($decryptedString = CryptKeeper::decryptString($privateKey, $this->ciphertext, true))
+//			    echo "DEBUG :: ".$this->ciphertext." :: ".bin2hex($encKey)." :: ".bin2hex($this->iv);
+			    // encryption key and hmac key successfully read, decrypt text
+			    if($decryptedString = CryptKeeper::decryptString($encKey, $this->iv, $this->ciphertext, $hmacKey))
 			    {
 				    // decryption was successful, set plaintext as $this->plaintext
 				    $this->setPlaintext($decryptedString);
@@ -369,12 +420,12 @@
 			    else
 			    {
 				    // set error msg
-				    $this->logger->setLogMsg('could not decrypt paste using given private key ['.PRIVATE_KEY.']');
+				    $this->logger->setLogMsg('paste decryption failed using given key [ '.ENC_KEY_FILE.' ]');
 			    }
 		    }
 		    else
 		    {
-			    $this->logger->setLogMsg('could not read in private key from file ['.PRIVATE_KEY.']');
+			    $this->logger->setLogMsg('could not read in key from file ['.ENC_KEY_FILE.']');
 		    }
 
 		    // log an error
@@ -401,16 +452,20 @@
 		    // get UID
 		    $pasteUid = CryptKeeper::generateUniquePasteID();
 
+		    // convert IV to hex string
+		    $iv = bin2hex($this->iv);
+
 		    if($pasteUid !== '')
 		    {
 			    // UID was successfully generated
 			    // craft SQL query
-			    $sql = "INSERT INTO pastes SET uid = :paste_uid, created = NOW(), last_modified = NOW(), ciphertext = :ciphertext";
+			    $sql = "INSERT INTO pastes SET uid = :paste_uid, created = NOW(), last_modified = NOW(), ciphertext = :ciphertext, initialization_vector = :iv";
 
 			    // set sql param array
 			    $sqlParams = array(
 				    'paste_uid' => $pasteUid,
-				    'ciphertext' => $this->ciphertext
+				    'ciphertext' => $this->ciphertext,
+				    'iv' => $iv
 			    );
 
 			    // execute and get result
@@ -458,7 +513,7 @@
 		     */
 
 			// craft select sql query
-		    $sql = "SELECT id, uid, created, last_modified, ciphertext FROM pastes WHERE uid = :paste_uid LIMIT 1";
+		    $sql = "SELECT id, uid, created, last_modified, ciphertext, initialization_vector FROM pastes WHERE uid = :paste_uid LIMIT 1";
 
 		    // set sql param array
 		    $sqlParams = array(
@@ -476,6 +531,7 @@
 			    $this->setCreationTime(strtotime($sqlResults[0]['created']));
 			    $this->setLastModifiedTime(strtotime($sqlResults[0]['last_modified']));
 			    $this->setCiphertext($sqlResults[0]['ciphertext']);
+			    $this->setInitializationVector(hex2bin($sqlResults[0]['initialization_vector']));
 
 			    return true;
 		    }

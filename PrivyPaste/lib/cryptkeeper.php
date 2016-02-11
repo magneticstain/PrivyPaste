@@ -15,6 +15,185 @@
 	class CryptKeeper
 	{
 		// FUNCTIONS
+		public static function encryptString($encKey, $iv, $plaintext, $hmacKey)
+		{
+			/*
+			 *  Params:
+			 *      - $encKey
+			 *          - encryption key resource (represented in hex)
+			 *          - normally read in from user-generated key file
+			 *          - used for encrypting plaintext
+			 *
+			 *      - $iv
+			 *          - initialization vector for encryption process
+			 *          - more info: https://en.wikipedia.org/wiki/Initialization_vector
+			 *
+			 *      - $plaintext
+			 *          - plaintext that will need to be encrypted
+			 *
+			 *      - $hmacKey
+			 *          - encryption key resource (represented in hex)
+			 *          - normally read in from user-generated key file
+			 *          - used for message authentication algo's
+			 *
+			 *  Usage:
+			 *      - encrypts the given plaintext using the provided AES key
+			 *
+			 *  Returns:
+			 *      - string
+			 */
+
+			// try encrypting data
+			// ciphertext is stored by supplying $ciphertext var as function param
+			$ciphertext = openssl_encrypt($plaintext, 'aes-256-cbc', $encKey, 0, $iv);
+
+			// generate an HMAC of the ciphertext
+			$mac = hash_hmac('sha256', $ciphertext, $hmacKey, false);
+
+			if(!$ciphertext)
+			{
+				$errorMsg = 'PrivyPaste :: CryptKepper() -> encryptString() :: OpenSSL Error';
+
+				# check if openssl returned an error
+				while($openSSLErrorMsg = openssl_error_string())
+				{
+					$errorMsg .= ":: [ $openSSLErrorMsg ]";
+				}
+
+				error_log($errorMsg);
+			}
+
+//			echo "DEBUG :: ".$ciphertext;
+
+			return $mac.'.'.$ciphertext;
+		}
+
+		public static function decryptString($encKey, $iv, $ciphertext, $hmacKey)
+		{
+			/*
+			 *  Params:
+			 *      - $encKey
+			 *          - encryption key resource (represented in hex)
+			 *          - normally read in from user-generated key file
+			 *          - used for encrypting plaintext
+			 *
+			 *      - $iv
+			 *          - initialization vector for encryption process
+			 *          - more info: https://en.wikipedia.org/wiki/Initialization_vector
+			 *
+			 *      - $ciphertext
+			 *          - previously-encrypted text that will need to be decrypted using the key
+			 *
+			 *      - $hmacKey
+			 *          - encryption key resource (represented in hex)
+			 *          - normally read in from user-generated key file
+			 *          - used for message authentication algo's
+			 *
+			 *  Usage:
+			 *      - decrypts the given ciphertext using the provided AES key
+			 *
+			 *  Returns:
+			 *      - string
+			 */
+
+			$errorMsg = '';
+
+			// get hmac and ciphertext
+			$encryptedData = explode('.', $ciphertext);
+			$hmac = $encryptedData[0];
+			$ciphertext = $encryptedData[1];
+
+			// authenticate ciphertext
+			$calculatedHMAC = hash_hmac('sha256', $ciphertext, $hmacKey, false);
+			if($calculatedHMAC !== $hmac)
+			{
+				error_log('PrivyPaste :: CryptKepper() -> decryptString() :: HMAC Error :: message failed HMAC authentication');
+
+				return false;
+			}
+
+			// try decrypting data
+			if(!$plaintext = openssl_decrypt($ciphertext, 'aes-256-cbc', $encKey, 0, $iv))
+			{
+				$errorMsg = 'PrivyPaste :: CryptKepper() -> decryptString() :: OpenSSL Error';
+
+				# check if openssl returned an error
+				while($openSSLErrorMsg = openssl_error_string())
+				{
+					$errorMsg .= ":: [ $openSSLErrorMsg ]";
+				}
+			}
+
+			// check if error message needs to be logged
+			if($errorMsg !== '')
+			{
+				error_log($errorMsg);
+			}
+
+			return $plaintext;
+		}
+
+		public static function generateInitializationVector($ivLength)
+		{
+			/*
+			*  Params:
+			*      - $ivLength
+			*           - length of IV to be generated
+			*
+			*  Usage:
+			*      - generates a 16-byte IV for use when encrypting (and later decrypting) data
+			*
+			*  Returns:
+			*      - string
+			*/
+
+			// normalize to int to meet function param requirements
+			$ivLength = (int)$ivLength;
+
+			// generate IV
+			// this var will be updated by openssl function if cryptographically secure function was successfully used
+			$usedSecureAlgorithm = false;
+			if($iv = openssl_random_pseudo_bytes($ivLength, $usedSecureAlgorithm))
+			{
+				// IV could be generated using OpenSSL functions
+				if($usedSecureAlgorithm)
+				{
+					// IV was generated using a secure algorithm, return it
+					return $iv;
+				}
+			}
+
+			return '';
+		}
+
+		public static function generateUniquePasteID()
+		{
+			/*
+			*  Params:
+			*      - NONE
+			*
+			*  Usage:
+			*      - generates an 8 character unique identifier that is correlated to a paste
+			*      - string is generated from a 4-byte random bitstream. This allows for 256^4, or 4294967296, possible permutations
+			*
+			*  Returns:
+			*      - string
+			*/
+
+			$UID = '';
+			$numRandomBytes = 4;
+			$cryptographicallySecureBitStream = true;
+
+			// generate cryptographically-secure bitstream
+			if($binaryString = openssl_random_pseudo_bytes($numRandomBytes, $cryptographicallySecureBitStream))
+			{
+				// convert bitstream to hex
+				$UID = bin2hex($binaryString);
+			}
+
+			return $UID;
+		}
+
 		public static function generateKey($keySize = 32, $useCryptographicallyStrongAlgorithm = true)
 		{
 			/*
@@ -60,178 +239,76 @@
 			 *      - true if write suceeded, false if it fails
 			 */
 
-			// generate file handle
-			if($fileHandle = fopen($filename, 'w'))
+			// try to open or create file
+			if(!file_exists($filename))
 			{
-				// attempt to write to file
-				return fwrite($fileHandle,$key);
+				if(!@touch($filename))
+				{
+					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not create key file :: [ '.$filename.' ]');
+
+					return false;
+				}
+				else
+				{
+					// set file permissions
+					chgrp($filename,'www-data');
+					chmod($filename,0775);
+				}
+			}
+
+			try
+			{
+				// open file
+				$fileHandle = @fopen($filename,'a+');
+
+				if($fileHandle)
+				{
+					// wrtie to file and close the file handle
+					$fileWrite = fwrite($fileHandle,$key);
+
+					fclose($fileHandle);
+
+					return $fileWrite;
+				}
+				else
+				{
+					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not open key file :: [ '.$filename.' ]');
+				}
+
+				return $fileHandle;
+			}
+			catch(\Exception $e)
+			{
+				error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: [ '.$e->getMessage().' ]');
+
+				return false;
+			}
+		}
+
+		public static function readKeyFromFile($filename)
+		{
+			/*
+			 *  Params:
+			 *      - $filename
+			 *          - filename where key data is stored
+			 *
+			 *  Usage:
+			 *      - reads key data from file
+			 *
+			 *  Returns:
+			 *      - data if read suceeded, false if it fails
+			 */
+
+			// generate file handle
+			if($fileHandle = fopen($filename, 'r'))
+			{
+				// attempt to read from file
+				return fread($fileHandle, filesize($filename));
 			}
 			else
 			{
 				return false;
 			}
-		}
-
-		public static function getPkiKeyFromFile($keyType, $keyFile)
-		{
-			/*
-			 *  Params:
-			 *      - $keyType
-			 *          - type of certificate being read in
-			 *          - can be set to 'private' or 'public'
-			 *
-			 *  Usage:
-			 *      - returns key in OpenSSL key resource form
-			 *
-			 *  Returns:
-			 *      - key resource (later used with other encryption/openssl functions)
-			 *      - FALSE if not able to open or read
-			 */
-
-			// try to open key file and return to user
-			// format $keyFile to filename format that openssl_pkey_get_X() requires to read in from file
-			$keyFile = 'file://'.$keyFile;
-
-			// function used to read in file is dependent on key type
-			// normalize $keyType
-			$keyType = strtolower($keyType);
-
-			$key = '';
-			if($keyType === 'public')
-			{
-				// read in public key
-				$key = openssl_pkey_get_public($keyFile);
-			}
-			elseif($keyType === 'private')
-			{
-				// read in private key
-				$key = openssl_pkey_get_private($keyFile);
-			}
-
-			// see if file read was successful
-			if($key)
-			{
-				return $key;
-			}
-
-			// return blank string if anything goes wrong
-			return false;
-		}
-
-		public static function encryptString($publicKey, $plaintext, $isBase64Encoded = false)
-		{
-			/*
-			 *  Params:
-			 *      - $publicKey
-			 *          - public key resource, normally read in from user-generated key file
-			 *      - $plaintext
-			 *          - plaintext that will need to be encrypted
-			 *      - $isBase64Encoded
-			 *          - bool to indicate whether data should be returned as raw binary data blob or as Base64 encoded string
-			 *
-			 *  Usage:
-			 *      - encrypts the given plaintext using the provided public key
-			 *
-			 *  Returns:
-			 *      - binary blob OR string
-			 */
-
-			$ciphertext = '';
-
-			// try encrypting data (default padding option is used)
-			// ciphertext is stored by supplying $ciphertext var as function param
-			if(!openssl_public_encrypt($plaintext, $ciphertext, $publicKey))
-			{
-				$errorMsg = 'PrivyPaste :: CryptKepper() -> encryptString() :: OpenSSL Error';
-
-				# check if openssl returned an error
-				while($openSSLErrorMsg = openssl_error_string())
-				{
-					$errorMsg .= ":: [ $openSSLErrorMsg ]";
-				}
-
-				error_log($errorMsg);
-			}
-
-			// return ciphertext as binary blob or string depending on flag param
-			if($isBase64Encoded === true)
-			{
-				return base64_encode($ciphertext);
-			}
-
-			// default is to return as a binary blob
-			return $ciphertext;
-		}
-
-		public static function decryptString($privateKey, $ciphertext, $isBase64Encoded)
-		{
-			/*
-			 *  Params:
-			 *      - $privateKey
-			 *          - private key resource, normally read in from user-generated key file
-			 *      - $ciphertext
-			 *          - previously-encrypted text that will need to be decrypted using the private key
-			 *
-			 *  Usage:
-			 *      - decrypts the given ciphertext using the provided RSA private key
-			 *
-			 *  Returns:
-			 *      - binary blob
-			 */
-
-			$plaintext = '';
-
-			// check if data was sent in base64 encoding or a binary blob
-			if($isBase64Encoded === true)
-			{
-				// decode
-				$ciphertext = base64_decode($ciphertext);
-			}
-
-			// try decrypting data (default padding option is used)
-			// plaintext is stored by supplying $plaintext var as function param
-			if(!openssl_private_decrypt($ciphertext, $plaintext, $privateKey))
-			{
-				$errorMsg = 'PrivyPaste :: CryptKepper() -> decryptString() :: OpenSSL Error';
-
-				# check if openssl returned an error
-				while($openSSLErrorMsg = openssl_error_string())
-				{
-					$errorMsg .= ":: [ $openSSLErrorMsg ]";
-				}
-
-				error_log($errorMsg);
-			}
-
-			return $plaintext;
-		}
-
-		public static function generateUniquePasteID()
-		{
-			/*
-			*  Params:
-			*      - NONE
-			*
-			*  Usage:
-			*      - generates an 8 character unique identifier that is correlated to a paste
-			*      - string is generated from a 4-byte random bitstream. This allows for 256^4, or 4294967296, possible permutations
-			*
-			*  Returns:
-			*      - string
-			*/
-
-			$UID = '';
-			$numRandomBytes = 4;
-			$cryptographicallySecureBitStream = true;
-
-			// generate cryptographically-secure bitstream
-			if($binaryString = openssl_random_pseudo_bytes($numRandomBytes, $cryptographicallySecureBitStream))
-			{
-				// convert bitstream to hex
-				$UID = bin2hex($binaryString);
-			}
-
-			return $UID;
 		}
 	}
 ?>

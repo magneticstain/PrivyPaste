@@ -365,7 +365,7 @@
 		    $numPastes = (int)$numPastes;
 
 		    // craft sql query
-		    $sql = "SELECT uid, last_modified, ciphertext FROM pastes ORDER BY last_modified DESC LIMIT :num_pastes";
+		    $sql = "SELECT uid, last_modified, ciphertext, initialization_vector FROM pastes ORDER BY last_modified DESC LIMIT :num_pastes";
 
 		    // set sql bind var array
 		    $sqlParams = array(
@@ -386,20 +386,37 @@
 				    // results returned by query, get decrypted value of each and re-save
 				    $paste = new Paste();
 				    $decryptedResults = array();
-				    $pasteCiphertext = '';
 				    foreach($dbResults as $row)
 				    {
-					    // extract ciphertext from sql result row
+					    // extract ciphertext and IV from sql result row
 					    $pasteCiphertext = $row['ciphertext'];
+					    $pasteIV = $row['initialization_vector'];
+
+//					    echo "DEBUG :: ".$pasteCiphertext." :: ".$pasteIV."<br />";
 
 					    // set ciphertext of Paste()
 					    $paste->setCiphertext($pasteCiphertext);
 
-					    // decrypt text
-					    $paste->decryptCiphertext();
+					    // set IV
+					    $paste->setInitializationVector(hex2bin($pasteIV));
 
-					    // set last_modified timestamp and decrypted text as array and append to decrypted results array as new entry
-					    array_push($decryptedResults, array($row['uid'], $row['last_modified'], $paste->getPlaintext()));
+					    // decrypt text
+					    if($paste->decryptCiphertext())
+					    {
+						    // set last_modified timestamp and decrypted text as array and append to decrypted results array as new entry
+						    array_push($decryptedResults, array($row['uid'], $row['last_modified'], $paste->getPlaintext()));
+					    }
+					    else
+					    {
+						    // could not decrypt ciphertext
+
+						    # log error
+						    $this->logger->setLogMsg('could not decrypt ciphertext of paste [ '.$row['uid'].' ]');
+						    $this->logger->setLogSrcFunction('PrivyPaste() -> getMostRecentlyModifiedPastes()');
+						    $this->logger->writeLog();
+
+						    array_push($decryptedResults, array('#', date('Y-m-d H:i:s'), '[UNKNOWN]'));
+					    }
 				    }
 
 				    return $decryptedResults;

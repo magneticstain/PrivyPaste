@@ -11,9 +11,7 @@
      */
 
 	// KEY FILES
-	define('KEY_FILE', '/opt/privypaste/pki/key.bin')
-
-	// CERTIFICATES
-//	define('PUBLIC_KEY', '/opt/privypaste/certs/public_key.pem');
-//	define('PRIVATE_KEY', '/opt/privypaste/certs/private_key.pem');
+	#define('KEY_FILE', '/opt/privypaste/pki/key.bin')
+	define('ENC_KEY_FILE', '/var/www/PrivyPaste/pki/encryption_key.bin');
+	define('HMAC_KEY_FILE', '/var/www/PrivyPaste/pki/hmac_key.bin');
 ?>

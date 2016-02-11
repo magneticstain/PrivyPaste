@@ -95,8 +95,17 @@ fi
 echo "$medHr"
 echo " Installing database schema... "
 echo "$medHr"
+
+DB_NAME=$(grep -i db_name ../conf/db.php | cut -d "'" -f4)
+if [ -z "$DB_NAME" ]
+then
+    # prompt user for db name
+    echo -en "DATABASE NAME: "
+    read DB_NAME
+fi
+
 mysqlPath=$(/usr/bin/which mysql)
-$mysqlPath -u root -p privypaste < ./PrivyPaste/src/db/privypaste_schema.sql
+$mysqlPath -u root -p $DB_NAME < ../src/db/privypaste_schema.sql
 if [ "$?" -eq 0 ]
 then
 	echo "Schema installed succesfully!"

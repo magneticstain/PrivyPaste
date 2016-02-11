@@ -70,7 +70,7 @@
 		if($paste !== '')
 		{
 			// encrypt plaintext within object
-			if($paste->encryptPlaintext())
+			if($iv = $paste->encryptPlaintext())
 			{
 				// text encryption was successful
 				// send text to db

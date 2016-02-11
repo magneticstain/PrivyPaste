@@ -27,6 +27,7 @@
 	// autoloader
 	require_once BASE_DIR.__NAMESPACE__.'/lib/autoloader.php';
 
+	$fullUrl = '';
 	$errorMsg = '';
 	$content = '';
 
@@ -41,15 +42,15 @@
 	}
 
 	// get URL for links
-//	try
-//	{
+	try
+	{
 		$fullUrl = PrivyPaste::getServerUrl(BASE_URL_DIR);
-//	} catch(\Exception $e)
-//	{
-//		$logger->setLogMsg('could not get server URL :: using base URL dir ['.BASE_URL_DIR.']');
-//		$logger->setLogSrcFunction('main()');
-//		$logger->writeLog();
-//	}
+	} catch(\Exception $e)
+	{
+		$logger->setLogMsg('could not get server URL :: using base URL dir ['.BASE_URL_DIR.']');
+		$logger->setLogSrcFunction('main()');
+		$logger->writeLog();
+	}
 
 	// create db connection required for PrivyPaste()
 	$db = '';
