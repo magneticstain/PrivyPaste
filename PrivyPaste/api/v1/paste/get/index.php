@@ -107,6 +107,11 @@
 			$jsonOutput['error'] = 'Could not connect to database';
 		}
 	}
+	else
+	{
+		// paste UID was not supplied, set an error
+		$jsonOutput['error'] = 'no paste UID supplied';
+	}
 
 	// echo out json output
 	echo json_encode($jsonOutput);

@@ -14,8 +14,6 @@
 	//
 	// CONFIGS AND LIBRARIES
 	//
-
-	// configuration files
 	// global
 	require_once $_SERVER['DOCUMENT_ROOT'].'/'.__NAMESPACE__.'/conf/global.php';
 	// db
@@ -53,7 +51,6 @@
 	}
 
 	// create db connection required for PrivyPaste()
-	$db = '';
 	try
 	{
 		# try to start a db connection
@@ -97,6 +94,7 @@
 	$content = '
 								<div id="mainTextWorkspace">
 	';
+
 	// check if paste UID was sent
 	if(isset($_GET['p']) && $_GET['p'] !== '')
 	{
@@ -115,6 +113,7 @@
 									<textarea id="newPasteText">Enter your text here!</textarea>
 		';
 	}
+
 	// close #text div
 	$content .= '
 								</div>

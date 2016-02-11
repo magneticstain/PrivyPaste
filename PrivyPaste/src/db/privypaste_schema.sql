@@ -1,8 +1,8 @@
--- MySQL dump 10.14  Distrib 5.5.43-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.14  Distrib 5.5.46-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: privypaste
+-- Host: localhost    Database: privypaste_testing
 -- ------------------------------------------------------
--- Server version	5.5.43-MariaDB-1~wheezy-log
+-- Server version	5.5.46-MariaDB-1~wheezy-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,10 +28,20 @@ CREATE TABLE `pastes` (
   `created` datetime DEFAULT NULL,
   `last_modified` datetime DEFAULT NULL,
   `ciphertext` varchar(1000) DEFAULT NULL,
+  `initialization_vector` varchar(32) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pastes`
+--
+
+LOCK TABLES `pastes` WRITE;
+/*!40000 ALTER TABLE `pastes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pastes` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -42,4 +52,4 @@ CREATE TABLE `pastes` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-31 19:31:22
+-- Dump completed on 2016-02-11  0:51:48

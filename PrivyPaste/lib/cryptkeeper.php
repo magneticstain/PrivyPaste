@@ -15,124 +15,126 @@
 	class CryptKeeper
 	{
 		// FUNCTIONS
-		public static function encryptString($encKey, $iv, $plaintext, $hmacKey)
+		// KEY GENERATION AND MANIPULATION
+		public static function generateKey($keySize = 32, $useCryptographicallyStrongAlgorithm = true)
 		{
 			/*
 			 *  Params:
-			 *      - $encKey
-			 *          - encryption key resource (represented in hex)
-			 *          - normally read in from user-generated key file
-			 *          - used for encrypting plaintext
+			 *      - $keySize
+			 *          - size of key to be generated (in bytes)
+			 *          - default = 32, generating a 256-bit key
 			 *
-			 *      - $iv
-			 *          - initialization vector for encryption process
-			 *          - more info: https://en.wikipedia.org/wiki/Initialization_vector
-			 *
-			 *      - $plaintext
-			 *          - plaintext that will need to be encrypted
-			 *
-			 *      - $hmacKey
-			 *          - encryption key resource (represented in hex)
-			 *          - normally read in from user-generated key file
-			 *          - used for message authentication algo's
+			 *      - $useCryptographicallyStrongAlgorithm
+			 *          - sets option to use cryptographically-strong algorithm when generating a key
+			 *          - default = true
+			 *          - it is HIGHLY suggested that true always be set here except for testing
 			 *
 			 *  Usage:
-			 *      - encrypts the given plaintext using the provided AES key
+			 *      - generate cryptographically-secure set of random bytes to be used as AES key
 			 *
 			 *  Returns:
-			 *      - string
+			 *      - binary key
+			 *      - false if key generation failed
 			 */
 
-			// try encrypting data
-			// ciphertext is stored by supplying $ciphertext var as function param
-			$ciphertext = openssl_encrypt($plaintext, 'aes-256-cbc', $encKey, 0, $iv);
+			// uses the OpenSSL random numbers algorithm :: https://wiki.openssl.org/index.php/Random_Numbers
+			// http://php.net/manual/en/function.openssl-random-pseudo-bytes.php
+			$key = openssl_random_pseudo_bytes($keySize, $useCryptographicallyStrongAlgorithm);
 
-			// generate an HMAC of the ciphertext
-			$mac = hash_hmac('sha256', $ciphertext, $hmacKey, false);
-
-			if(!$ciphertext)
-			{
-				$errorMsg = 'PrivyPaste :: CryptKepper() -> encryptString() :: OpenSSL Error';
-
-				# check if openssl returned an error
-				while($openSSLErrorMsg = openssl_error_string())
-				{
-					$errorMsg .= ":: [ $openSSLErrorMsg ]";
-				}
-
-				error_log($errorMsg);
-			}
-
-//			echo "DEBUG :: ".$ciphertext;
-
-			return $mac.'.'.$ciphertext;
+			return $key;
 		}
 
-		public static function decryptString($encKey, $iv, $ciphertext, $hmacKey)
+		public static function writeKeyToFile($key, $filename)
 		{
 			/*
 			 *  Params:
-			 *      - $encKey
-			 *          - encryption key resource (represented in hex)
-			 *          - normally read in from user-generated key file
-			 *          - used for encrypting plaintext
+			 *      - $key
+			 *          - binary key data
+			 *          - should be generated using generateKey()
 			 *
-			 *      - $iv
-			 *          - initialization vector for encryption process
-			 *          - more info: https://en.wikipedia.org/wiki/Initialization_vector
-			 *
-			 *      - $ciphertext
-			 *          - previously-encrypted text that will need to be decrypted using the key
-			 *
-			 *      - $hmacKey
-			 *          - encryption key resource (represented in hex)
-			 *          - normally read in from user-generated key file
-			 *          - used for message authentication algo's
+			 *      - $filename
+			 *          - filename where key data is stored
 			 *
 			 *  Usage:
-			 *      - decrypts the given ciphertext using the provided AES key
+			 *      - writes given binary key data to file
 			 *
 			 *  Returns:
-			 *      - string
+			 *      - true if write suceeded, false if it fails
 			 */
 
-			$errorMsg = '';
-
-			// get hmac and ciphertext
-			$encryptedData = explode('.', $ciphertext);
-			$hmac = $encryptedData[0];
-			$ciphertext = $encryptedData[1];
-
-			// authenticate ciphertext
-			$calculatedHMAC = hash_hmac('sha256', $ciphertext, $hmacKey, false);
-			if($calculatedHMAC !== $hmac)
+			// check if the key file exists, and if not, create it
+			if(!file_exists($filename))
 			{
-				error_log('PrivyPaste :: CryptKepper() -> decryptString() :: HMAC Error :: message failed HMAC authentication');
+				if(!@touch($filename))
+				{
+					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not create key file :: [ '.$filename.' ]');
 
+					return false;
+				}
+				else
+				{
+					// set file permissions
+					chgrp($filename,'www-data');
+					chmod($filename,0775);
+				}
+			}
+
+			// write the key to the file
+			try
+			{
+				// attempt to open file
+				$fileHandle = @fopen($filename,'a+');
+
+				if($fileHandle)
+				{
+					// write to file
+					$fileWrite = fwrite($fileHandle, $key);
+
+					// close file handle
+					fclose($fileHandle);
+
+					return $fileWrite;
+				}
+				else
+				{
+					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not open key file :: [ '.$filename.' ]');
+				}
+			}
+			catch(\Exception $e)
+			{
+				error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: [ '.$e->getMessage().' ]');
+			}
+
+			return false;
+		}
+
+		public static function readKeyFromFile($filename)
+		{
+			/*
+			 *  Params:
+			 *      - $filename
+			 *          - filename where key data is stored
+			 *
+			 *  Usage:
+			 *      - reads key data from file
+			 *
+			 *  Returns:
+			 *      - data if read suceeded, false if it fails
+			 */
+
+			// generate file handle
+			if($fileHandle = fopen($filename, 'r'))
+			{
+				// attempt to read from file
+				return fread($fileHandle, filesize($filename));
+			}
+			else
+			{
 				return false;
 			}
-
-			// try decrypting data
-			if(!$plaintext = openssl_decrypt($ciphertext, 'aes-256-cbc', $encKey, 0, $iv))
-			{
-				$errorMsg = 'PrivyPaste :: CryptKepper() -> decryptString() :: OpenSSL Error';
-
-				# check if openssl returned an error
-				while($openSSLErrorMsg = openssl_error_string())
-				{
-					$errorMsg .= ":: [ $openSSLErrorMsg ]";
-				}
-			}
-
-			// check if error message needs to be logged
-			if($errorMsg !== '')
-			{
-				error_log($errorMsg);
-			}
-
-			return $plaintext;
 		}
 
+		// PSUEDORANDOM DATA
 		public static function generateInitializationVector($ivLength)
 		{
 			/*
@@ -194,121 +196,128 @@
 			return $UID;
 		}
 
-		public static function generateKey($keySize = 32, $useCryptographicallyStrongAlgorithm = true)
+		// ENCRYPTION AND DECRYPTION
+		public static function encryptString($encKey, $iv, $plaintext, $hmacKey)
 		{
 			/*
 			 *  Params:
-			 *      - $keySize
-			 *          - size of key to be generated (in bytes)
-			 *          - default = 32, generating a 256-bit key
+			 *      - $encKey
+			 *          - encryption key resource (represented in binary)
+			 *          - normally read in from user-generated key file
+			 *          - used for encrypting plaintext
 			 *
-			 *      - $useCryptographicallyStrongAlgorithm
-			 *          - sets option to use cryptographically-strong algorithm when generating a key
-			 *          - default = true
+			 *      - $iv
+			 *          - initialization vector for encryption process
+			 *          - more info: https://en.wikipedia.org/wiki/Initialization_vector
 			 *
-			 *  Usage:
-			 *      - generate cryptographically-secure set of random bytes to be used as AES key
+			 *      - $plaintext
+			 *          - plaintext that will need to be encrypted
 			 *
-			 *  Returns:
-			 *      - binary key
-			 *      - false if key generation failed
-			 */
-
-			// uses the OpenSSL random numbers algorithm :: https://wiki.openssl.org/index.php/Random_Numbers
-			// http://php.net/manual/en/function.openssl-random-pseudo-bytes.php
-			$key = openssl_random_pseudo_bytes($keySize, $useCryptographicallyStrongAlgorithm);
-
-			return $key;
-		}
-
-		public static function writeKeyToFile($key, $filename)
-		{
-			/*
-			 *  Params:
-			 *      - $key
-			 *          - binary key data
-			 *          - should be generated using generateKey()
-			 *
-			 *      - $filename
-			 *          - filename where key data is stored
+			 *      - $hmacKey
+			 *          - encryption key resource (represented in binary)
+			 *          - normally read in from user-generated key file
+			 *          - used for message authentication algo's
 			 *
 			 *  Usage:
-			 *      - writes given binary key data to file
+			 *      - encrypts the given plaintext using the provided AES key
 			 *
 			 *  Returns:
-			 *      - true if write suceeded, false if it fails
+			 *      - string
 			 */
 
-			// try to open or create file
-			if(!file_exists($filename))
+			// encryption text is using an encrypt-then-mac setup
+			$mac = '';
+
+			// try encrypting data
+			$ciphertext = openssl_encrypt($plaintext, 'aes-256-cbc', $encKey, 0, $iv);
+
+			// check if encryption was successful
+			if(!$ciphertext)
 			{
-				if(!@touch($filename))
+				$errorMsg = 'PrivyPaste :: CryptKepper() -> encryptString() :: OpenSSL Error';
+
+				// check if openssl returned an error
+				while($openSSLErrorMsg = openssl_error_string())
 				{
-					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not create key file :: [ '.$filename.' ]');
-
-					return false;
-				}
-				else
-				{
-					// set file permissions
-					chgrp($filename,'www-data');
-					chmod($filename,0775);
-				}
-			}
-
-			try
-			{
-				// open file
-				$fileHandle = @fopen($filename,'a+');
-
-				if($fileHandle)
-				{
-					// wrtie to file and close the file handle
-					$fileWrite = fwrite($fileHandle,$key);
-
-					fclose($fileHandle);
-
-					return $fileWrite;
-				}
-				else
-				{
-					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not open key file :: [ '.$filename.' ]');
+					$errorMsg .= ":: [ $openSSLErrorMsg ]";
 				}
 
-				return $fileHandle;
-			}
-			catch(\Exception $e)
-			{
-				error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: [ '.$e->getMessage().' ]');
+				error_log($errorMsg);
 
 				return false;
-			}
-		}
-
-		public static function readKeyFromFile($filename)
-		{
-			/*
-			 *  Params:
-			 *      - $filename
-			 *          - filename where key data is stored
-			 *
-			 *  Usage:
-			 *      - reads key data from file
-			 *
-			 *  Returns:
-			 *      - data if read suceeded, false if it fails
-			 */
-
-			// generate file handle
-			if($fileHandle = fopen($filename, 'r'))
-			{
-				// attempt to read from file
-				return fread($fileHandle, filesize($filename));
 			}
 			else
 			{
+				// encryption was successful, take MAC of the ciphertext and return it all concatonated by a '.'
+				$mac = hash_hmac('sha256', $ciphertext, $hmacKey, false);
+
+				return $mac.'.'.$ciphertext;
+			}
+		}
+
+		public static function decryptString($encKey, $iv, $ciphertext, $hmacKey)
+		{
+			/*
+			 *  Params:
+			 *      - $encKey
+			 *          - encryption key resource (represented in hex)
+			 *          - normally read in from user-generated key file
+			 *          - used for encrypting plaintext
+			 *
+			 *      - $iv
+			 *          - initialization vector for encryption process
+			 *          - more info: https://en.wikipedia.org/wiki/Initialization_vector
+			 *
+			 *      - $ciphertext
+			 *          - previously-encrypted text that will need to be decrypted using the key
+			 *
+			 *      - $hmacKey
+			 *          - encryption key resource (represented in hex)
+			 *          - normally read in from user-generated key file
+			 *          - used for message authentication algo's
+			 *
+			 *  Usage:
+			 *      - decrypts the given ciphertext using the provided AES key
+			 *
+			 *  Returns:
+			 *      - string
+			 */
+
+			$errorMsg = '';
+
+			// split hmac and ciphertext
+			$encryptedData = explode('.', $ciphertext);
+			$hmac = $encryptedData[0];
+			$ciphertext = $encryptedData[1];
+
+			// authenticate ciphertext integrity using mac
+			$calculatedHMAC = hash_hmac('sha256', $ciphertext, $hmacKey, false);
+			if($calculatedHMAC !== $hmac)
+			{
+				error_log('PrivyPaste :: CryptKepper() -> decryptString() :: HMAC Error :: message failed HMAC authentication');
+
 				return false;
 			}
+
+			// try decrypting data
+			if(!$plaintext = openssl_decrypt($ciphertext, 'aes-256-cbc', $encKey, 0, $iv))
+			{
+				$errorMsg = 'PrivyPaste :: CryptKepper() -> decryptString() :: OpenSSL Error';
+
+				# check if openssl returned an error
+				while($openSSLErrorMsg = openssl_error_string())
+				{
+					$errorMsg .= ":: [ $openSSLErrorMsg ]";
+				}
+			}
+
+			// check if error message needs to be logged
+			if($errorMsg !== '')
+			{
+				error_log($errorMsg);
+			}
+
+			return $plaintext;
 		}
 	}
 ?>

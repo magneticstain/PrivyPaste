@@ -54,7 +54,7 @@
              */
 
 		    // normalize param to string
-		    $errorMsg = (string) $errorMsg;
+		    $errorMsg = (string)$errorMsg;
 
 		    // there are no limitations on what the error message can be, so we can just set it
 		    $this->errorMsg = $errorMsg;
@@ -77,7 +77,7 @@
              */
 
 		    // normalize param to string
-		    $subTitle = (string) $subTitle;
+		    $subTitle = (string)$subTitle;
 
 		    // there are no limitations on what the subtitle can be, so we can just set it
 		    $this->subTitle = $subTitle;
@@ -234,6 +234,7 @@
 	    }
 
 	    // OTHER FUNCTIONS
+	    // METADATA
 	    public static function getServerUrl($basePath)
 	    {
 		    /*
@@ -347,6 +348,7 @@
 		    return $timeAgo;
 	    }
 
+	    // DATA GATHERING
 	    public function getMostRecentlyModifiedPastes($numPastes = 5)
 	    {
 		    /*
@@ -391,8 +393,6 @@
 					    // extract ciphertext and IV from sql result row
 					    $pasteCiphertext = $row['ciphertext'];
 					    $pasteIV = $row['initialization_vector'];
-
-//					    echo "DEBUG :: ".$pasteCiphertext." :: ".$pasteIV."<br />";
 
 					    // set ciphertext of Paste()
 					    $paste->setCiphertext($pasteCiphertext);
@@ -440,6 +440,41 @@
 		    return 0;
 	    }
 
+	    public function getTotalPastes()
+	    {
+		    /*
+             *  Params:
+             *      - NONE
+             *
+             *  Usage:
+             *      - gets the total number of pastes currently stored in the db
+             *
+             *  Returns:
+             *      - int
+             */
+
+		    // craft SQL query
+		    $sql = "SELECT count(*) as cnt FROM pastes";
+
+		    // connect to db
+		    // if connection was successful, attempt paste insertion
+		    if($this->dbConn->createDbConnection())
+		    {
+			    // connection is good, execute query
+			    $dbResults = $this->dbConn->queryDb($sql, 'select');
+			    if($dbResults)
+			    {
+				    // results returned by query, return results to user
+				    return $dbResults[0]['cnt'];
+			    }
+		    }
+
+		    // anything goes wrong, set error message and return 0
+		    $this->errorMsg = 'Unable to access paste database. Please contact your system administrator.';
+		    return 0;
+	    }
+
+	    // VIEW/HTML
 	    public function generateMostRecentlyModifiedPastesHtml()
 	    {
 		    /*
@@ -453,7 +488,7 @@
              *      - string
              */
 
-			// get most recent pastes from db
+		    // get most recent pastes from db
 		    $recentPastes = $this->getMostRecentlyModifiedPastes();
 
 		    // generate and return html
@@ -501,40 +536,6 @@
 		    }
 
 		    return $recentPasteHtml;
-	    }
-
-	    public function getTotalPastes()
-	    {
-		    /*
-             *  Params:
-             *      - NONE
-             *
-             *  Usage:
-             *      - gets the total number of pastes currently stored in the db
-             *
-             *  Returns:
-             *      - int
-             */
-
-		    // craft SQL query
-		    $sql = "SELECT count(*) as cnt FROM pastes";
-
-		    // connect to db
-		    // if connection was successful, attempt paste insertion
-		    if($this->dbConn->createDbConnection())
-		    {
-			    // connection is good, execute query
-			    $dbResults = $this->dbConn->queryDb($sql, 'select');
-			    if($dbResults)
-			    {
-				    // results returned by query, return results to user
-				    return $dbResults[0]['cnt'];
-			    }
-		    }
-
-		    // anything goes wrong, set error message and return 0
-		    $this->errorMsg = 'Unable to access paste database. Please contact your system administrator.';
-		    return 0;
 	    }
 
 	    public function generatePasteContentHtml($pasteUid, $updateTitle = false)

@@ -279,6 +279,8 @@
 			 *      - bool
 		     */
 
+		    $dbConn = '';
+
 		    // create db connection
 		    try
 		    {
@@ -288,9 +290,6 @@
 			    $this->logger->setLogMsg('could not create new PDO() object :: '.$e->getMessage());
 			    $this->logger->setLogSrcFunction('Databaser() -> createDbConnection()');
 			    $this->logger->writeLog();
-//			    $this->logger->setLogMsg('mysql:host='.$this->host.' :: dbname='.$this->dbName.' :: '.$this->username.' :: '.$this->password);
-//			    $this->logger->writeLog();
-			    return false;
 		    }
 
 		    // if connection was successful, attempt paste insertion

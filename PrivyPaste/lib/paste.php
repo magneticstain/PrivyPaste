@@ -19,7 +19,7 @@
 	    public $lastModifiedTime = 0;
         protected $plaintext = '';
 	    protected $ciphertext = '';
-	    private $iv = '';
+	    protected $iv = '';
 	    private $logger;
 
         public function __construct($plaintext = '', $ciphertext = '', $pasteUid = '00000000', $creationTime = 0, $lastModifiedTime = 0, $pasteId = 0, $iv = '')
@@ -47,7 +47,8 @@
         {
             /*
              *  Params:
-             *      - $pasteId [INT]: unique identifier for each paste
+             *      - $pasteId
+             *          - identifier for each paste
              *
              *  Usage:
              *      - verifies and sets the paste ID
@@ -74,8 +75,8 @@
 	    {
 		    /*
 			 *  Params:
-			 *      - $pasteUid [STRING]
-			 *          - unique identifier for each paste
+			 *      - $pasteUid
+			 *          - public unique identifier for each paste
 			 *
 			 *  Usage:
 			 *      - verifies and sets the paste UID
@@ -104,7 +105,7 @@
 	    {
 		    /*
 			 *  Params:
-			 *      - $creationTimestamp [INT]
+			 *      - $creationTimestamp
 			 *          - time of creation in epoch time
 			 *
 			 *  Usage:
@@ -117,7 +118,7 @@
 		    // normalize to int
 		    $creationTimestamp = (int) $creationTimestamp;
 
-		    // timestamp should be before now
+		    // timestamp should be now or before
 		    $currentTime = time();
 		    if($creationTimestamp <= $currentTime)
 		    {
@@ -134,7 +135,7 @@
 	    {
 		    /*
 			 *  Params:
-			 *      - $lastModifiedTimestamp [INT]
+			 *      - $lastModifiedTimestamp
 			 *          - time of last modification in epoch time
 			 *
 			 *  Usage:
@@ -147,7 +148,7 @@
 		    // normalize to int
 		    $lastModifiedTimestamp = (int) $lastModifiedTimestamp;
 
-		    // timestamp should be before now
+		    // timestamp should be before now or now
 		    $currentTime = time();
 		    if($lastModifiedTimestamp <= $currentTime)
 		    {
@@ -164,7 +165,8 @@
         {
             /*
              *  Params:
-             *      - $plaintext [STRING]: plaintext (supplied by the user) for each paste
+             *      - $plaintext
+             *          - plaintext (supplied by the user) for each paste
              *
              *  Usage:
              *      - verifies and sets the plaintext of the paste
@@ -184,9 +186,10 @@
 
 	    public function setCiphertext($cipherText)
 	    {
-		    /*
+			/*
 			*  Params:
-			*      - $cipherText [STRING]: ciphertext of $plaintext after being encrypted
+			*      - $cipherText
+			*          - ciphertext of $plaintext after being encrypted
 			*
 			*  Usage:
 			*      - sets the ciphertext of the paste
@@ -206,9 +209,10 @@
 
 	    public function setInitializationVector($iv)
 	    {
-		    /*
+			/*
 			*  Params:
-			*      - $iv [BLOB]: initialization vector
+			*      - $iv
+			*          - initialization vector
 			*
 			*  Usage:
 			*      - sets the encryption initialization vector for the paste
@@ -226,48 +230,48 @@
         // Getters
         public function getPasteId()
         {
-            /*
-             *  Params:
-             *      - NONE
-             *
-             *  Usage:
-             *      - returns the paste ID
-             *
-             *  Returns:
-             *      - int
-             */
+			/*
+			 *  Params:
+			 *      - NONE
+			 *
+			 *  Usage:
+			 *      - returns the paste ID
+			 *
+			 *  Returns:
+			 *      - int
+			 */
 
             return $this->pasteId;
         }
 
 	    public function getPasteUid()
 	    {
-		    /*
-		 *  Params:
-		 *      - NONE
-		 *
-		 *  Usage:
-		 *      - returns the paste UID
-		 *
-		 *  Returns:
-		 *      - string
-		 */
+			/*
+			*  Params:
+			*      - NONE
+			*
+			*  Usage:
+			*      - returns the paste UID
+			*
+			*  Returns:
+			*      - string
+			*/
 
 		    return $this->pasteUid;
 	    }
 
 	    public function getCreationTime()
 	    {
-		    /*
-		 *  Params:
-		 *      - NONE
-		 *
-		 *  Usage:
-		 *      - returns the creation time in epoch time format
-		 *
-		 *  Returns:
-		 *      - int
-		 */
+			/*
+			*  Params:
+			*      - NONE
+			*
+			*  Usage:
+			*      - returns the creation time in epoch time format
+			*
+			*  Returns:
+			*      - int
+			*/
 
 		    return $this->creationTime;
 	    }
@@ -337,6 +341,7 @@
 	    }
 
         // Other functions
+	    // encryption and decryption
 		public function encryptPlaintext()
 		{
 			/*
@@ -353,12 +358,12 @@
 			// get keys from file
 			if($encKey = CryptKeeper::readKeyFromFile(ENC_KEY_FILE) && $hmacKey = CryptKeeper::readKeyFromFile(HMAC_KEY_FILE))
 			{
-				// encryption key and hmac key successfully read, encrypt text using key
-				// generate IV (16 bytes)
+				// encryption key and hmac key successfully read
+				// generate IV (16 bytes for AES-256-CBC)
 				$iv = CryptKeeper::generateInitializationVector(16);
 				if($iv !== '')
 				{
-//					echo "DEBUG :: ".$this->plaintext." :: ".bin2hex($key)." :: ".bin2hex($iv);
+					// IV generated, encrypt text
 					if($encryptedString = CryptKeeper::encryptString($encKey, $iv, $this->plaintext, $hmacKey))
 					{
 						// encryption was successful, set ciphertext as $this->ciphertext
@@ -382,7 +387,7 @@
 			}
 			else
 			{
-				$this->logger->setLogMsg('could not read in key from file [ '.ENC_KEY_FILE.' ]');
+				$this->logger->setLogMsg('could not read in the encryption and/or HMAC keys from file :: ENCRYPTION KEY FILE: [ '.ENC_KEY_FILE.' ] :: HMAC KEY FILE: [ '.HMAC_KEY_FILE.' ]');
 			}
 
 			// log an error
@@ -405,10 +410,9 @@
 			 *      - boolean
 			 */
 
-		    // get key from file
+		    // get keys from file
 		    if($encKey = CryptKeeper::readKeyFromFile(ENC_KEY_FILE) && $hmacKey = CryptKeeper::readKeyFromFile(HMAC_KEY_FILE))
 		    {
-//			    echo "DEBUG :: ".$this->ciphertext." :: ".bin2hex($encKey)." :: ".bin2hex($this->iv);
 			    // encryption key and hmac key successfully read, decrypt text
 			    if($decryptedString = CryptKeeper::decryptString($encKey, $this->iv, $this->ciphertext, $hmacKey))
 			    {
@@ -419,13 +423,12 @@
 			    }
 			    else
 			    {
-				    // set error msg
 				    $this->logger->setLogMsg('paste decryption failed using given key [ '.ENC_KEY_FILE.' ]');
 			    }
 		    }
 		    else
 		    {
-			    $this->logger->setLogMsg('could not read in key from file ['.ENC_KEY_FILE.']');
+			    $this->logger->setLogMsg('could not read in encryption and/or HMAC keys from file :: ENCRYPTION KEY FILE: [ '.ENC_KEY_FILE.' ] :: HMAC KEY FILE: [ '.HMAC_KEY_FILE.' ]');
 		    }
 
 		    // log an error
@@ -435,6 +438,7 @@
 		    return false;
 	    }
 
+	    // database syncing
 	    public function sendPasteDataToDb($db)
 	    {
 			/*
@@ -525,13 +529,17 @@
 		    if($sqlResults !== false && count($sqlResults) === 1)
 		    {
 				// got results
+
+			    // convert IV from hex to binary data
+			    $IV = hex2bin($sqlResults[0]['initialization_vector']);
+
 			    // set result as respective object var and return true
 			    $this->setPasteId($sqlResults[0]['id']);
 			    $this->setPasteUid($sqlResults[0]['uid']);
 			    $this->setCreationTime(strtotime($sqlResults[0]['created']));
 			    $this->setLastModifiedTime(strtotime($sqlResults[0]['last_modified']));
 			    $this->setCiphertext($sqlResults[0]['ciphertext']);
-			    $this->setInitializationVector(hex2bin($sqlResults[0]['initialization_vector']));
+			    $this->setInitializationVector($IV);
 
 			    return true;
 		    }

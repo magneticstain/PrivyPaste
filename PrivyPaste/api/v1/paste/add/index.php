@@ -33,14 +33,14 @@
 	function checkForRawTxt()
 	{
 		// check for raw text sent via GET var
-		if(isset($_POST['text']) && !empty($_POST['text']))
+		if(isset($_POST['text']))
 		{
 			// text var is set an non-empty
 			return $_POST['text'];
 		}
 
-		// in all other cases, return an empty string
-		return '';
+		// in all other cases, return false
+		return false;
 	}
 
 	//
@@ -53,7 +53,7 @@
 
 	// check if plaintext was sent
 	$plainText = checkForRawTxt();
-	if($plainText !== '')
+	if($plainText !== false)
 	{
 		// plaintext is set
 		// create new paste object
@@ -67,13 +67,14 @@
 		}
 
 		// check if paste() creation was successful
-		if($paste !== '')
+		if(!isset($jsonOutput['error']))
 		{
 			// encrypt plaintext within object
-			if($iv = $paste->encryptPlaintext())
+			if($paste->encryptPlaintext())
 			{
 				// text encryption was successful
 				// send text to db
+
 				// create Db() object for db connection
 				$db = '';
 				try
@@ -88,7 +89,7 @@
 				// if connection was successful, attempt paste insertion
 				if($db->createDbConnection())
 				{
-					// connection is good, insert text
+					// connection is good, insert date into db
 					$newPasteId = $paste->sendPasteDataToDb($db);
 
 					// any error with the query will generate a paste ID of -1
@@ -118,6 +119,11 @@
 				$jsonOutput['error'] = 'Text encryption was unsuccessful. Please verify PKI certificates and application configs.';
 			}
 		}
+	}
+	else
+	{
+		// paste text was not supplied, set an error
+		$jsonOutput['error'] = 'no text supplied';
 	}
 
 	// echo out json output
