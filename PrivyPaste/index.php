@@ -107,7 +107,7 @@
 		$content .= '
 									<div id="newPasteTextUploadButton">
 										<div>
-											<img src="media/icons/upload.png" alt="Upload your text" /> Upload Text
+											<img src="'.BASE_URL_DIR.'media/icons/upload.png" alt="Upload your text" /> Upload Text
 										</div>
 									</div>
 									<textarea id="newPasteText">Enter your text here!</textarea>
