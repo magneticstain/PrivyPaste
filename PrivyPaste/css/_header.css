@@ -38,7 +38,7 @@
 }
 
 /* styles for header text and content (e.g. title, logo, subtitle, etc) */
-header h1, header p
+header h1
 {
 	display: inline;
 }
@@ -46,7 +46,39 @@ header h1, header p
 #logo
 {
 	float: left;
-	width: 300px;
+	/*width: 300px;*/
+}
+
+header div, #pasteTotals
+{
+    float: right;
+    font: italic 1.2em 'Quicksand', sans-serif;
+}
+
+header div
+{
+    margin: 25px 5px;
+}
+
+#pasteTotalsStandalone
+{
+    margin: 45px 15px 0;
+}
+
+#userArea
+{
+    margin: 5px 0;
+}
+
+#userArea span
+{
+    vertical-align: middle;
+}
+
+#userArea span:first-of-type
+{
+    border-left: 3px solid #911002;
+    padding: 5px 0 5px 10px;
 }
 
 /* HEADINGS */
@@ -62,7 +94,19 @@ header h1, header p
 	vertical-align: super;
 }
 
+#userArea img
+{
+    vertical-align: middle;
+}
+
 /* TEXT */
+#userArea
+{
+    font-size: 32px;
+    font-style: normal;
+    text-align: right;
+}
+
 #ticker p
 {
     /* any messages displaying in the ticket should use this style */
@@ -70,11 +114,9 @@ header h1, header p
     display: inline;
 }
 
-header p
+#pasteTotals
 {
-	float: right;
-    font: italic 1.2em 'Quicksand', sans-serif;
-	margin: 50px 15px 0;
+    text-align: center;
 }
 
 /* LINKS */
@@ -83,4 +125,16 @@ header p
 {
     border: none;
     background: none;
+}
+
+#userArea a
+{
+    padding: 5px 5px 5px 0;
+    vertical-align: middle;
+}
+
+#userArea a:hover
+{
+    border: none;
+    color: #911002;
 }

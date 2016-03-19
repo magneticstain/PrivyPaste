@@ -538,6 +538,60 @@
 		    return $recentPasteHtml;
 	    }
 
+	    public function generateHeadingSubArea()
+	    {
+		    /*
+             *  Params:
+             *      - NONE
+             *
+             *  Usage:
+             *      - generates HTML for the heading subarea, including user info
+             *
+             *  Returns:
+             *      - string
+             */
+
+		    // initialize wrapper div
+		    $subAreaHTML = '
+								<div id="subArea">
+			';
+
+		    // get total number of pastes which will be displayed in the header's subtitle
+		    $totalPastes = $this->getTotalPastes();
+
+		    // check if user is logged in TODO
+		    $isLoggedIn = false;
+
+		    if($isLoggedIn)
+		    {
+				$subAreaHTML .= '
+									<p id="userArea">
+										<img src="'.BASE_URL_DIR.'media/icons/user.png" alt="Logged in as [jcarlson]" />
+										 <span>logged in as </span><a href="#">jcarlson</a>
+									</p>
+									<hr />
+					                <p id="pasteTotals">
+					                    Currently serving '.(string) $totalPastes.' encrypted pastes!
+					                </p>
+				';
+		    }
+		    else
+		    {
+			    $subAreaHTML .= '
+					                <p id="pasteTotalsStandalone">
+					                    Currently serving '.(string) $totalPastes.' encrypted pastes!
+					                </p>
+			    ';
+		    }
+
+		    // close wrapper div
+		    $subAreaHTML .= '
+								</div>
+		    ';
+
+		    return $subAreaHTML;
+	    }
+
 	    public function generatePasteContentHtml($pasteUid, $updateTitle = false)
 	    {
 		    /*
@@ -671,8 +725,8 @@
 		    // get most recent pastes that will be displayed at the top of the page
 		    $lastModifiedPastesHTML = $this->generateMostRecentlyModifiedPastesHtml();
 
-		    // get total number of pastes which will be displayed in the header's subtitle
-		    $totalPastes = $this->getTotalPastes();
+		    // get header subArea HTML
+		    $subAreaHTML = $this->generateHeadingSubArea();
 
 		    // build page html
 		    $html = '
@@ -715,7 +769,7 @@
 										<h1 class="accent">Privy</h1><h1>Paste</h1>
 									</a>
 								</div>
-				                <p id="subtitle">Currently serving '.(string) $totalPastes.' encrypted pastes!</p>
+								'.$subAreaHTML.'
 							</header>
 							<section id="content">
 								'.$this->content.'

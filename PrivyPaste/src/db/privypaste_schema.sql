@@ -27,7 +27,7 @@ CREATE TABLE `pastes` (
   `uid` varchar(8) NOT NULL,
   `created` datetime DEFAULT NULL,
   `last_modified` datetime DEFAULT NULL,
-  `ciphertext` text,
+  `ciphertext` longtext,
   `initialization_vector` varchar(32) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`)
