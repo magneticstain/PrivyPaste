@@ -29,7 +29,9 @@ function createKey
 	echo "Creating encryption key..."
 	echo "$medHr"
 
-	./generate_key.php
+	chmod +x ./generate_key.php
+
+	/usr/bin/php ./generate_key.php
 
 	return 0
 }
@@ -47,9 +49,8 @@ function installApplicationFiles
     mkdir $WEB_DIR_ROOT > /dev/null 2>&1
 
     # move to application directory
-    cp -r ./* $APP_SRC_DIR > /dev/null 2>&1
-    cp -r *.pem APP_CERTS_DIR > /dev/null 2>&1
-    rsync -av ./PrivyPaste/ $WEB_DIR_ROOT --exclude 'src' --exclude 'tests' > /dev/null 2>&1
+    cp -r ../../* $APP_SRC_DIR > /dev/null 2>&1
+    rsync -av ../../PrivyPaste/ $WEB_DIR_ROOT --exclude 'src' --exclude 'tests' > /dev/null 2>&1
 
     # set perms
     # check which distro we're using
@@ -81,7 +82,7 @@ function promptUser
 
 # MAIN
 echo "$lgHr"
-echo "	PrivyPaste Installer v1.0 "
+echo "	PrivyPaste Installer v2.0 "
 echo "$lgHr"
 
 # prompt for key generation
