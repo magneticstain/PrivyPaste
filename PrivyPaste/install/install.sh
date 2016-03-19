@@ -50,7 +50,7 @@ function installApplicationFiles
 
     # move to application directory
     cp -r ../../* $APP_SRC_DIR > /dev/null 2>&1
-    rsync -av ../../PrivyPaste/ $WEB_DIR_ROOT --exclude 'src' --exclude 'tests' > /dev/null 2>&1
+    rsync -av ../../PrivyPaste/ $WEB_DIR_ROOT --exclude 'install' --exclude 'src' --exclude 'tests' > /dev/null 2>&1
 
     # set perms
     # check which distro we're using
