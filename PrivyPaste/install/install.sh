@@ -105,6 +105,7 @@ then
     read DB_NAME
 fi
 
+echo "Please enter the password for the MySQL root user below..."
 mysqlPath=$(/usr/bin/which mysql)
 $mysqlPath -u root -p $DB_NAME < ../src/db/privypaste_schema.sql
 if [ "$?" -eq 0 ]
