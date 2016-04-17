@@ -226,8 +226,6 @@
 			 */
 
 			// encryption text is using an encrypt-then-mac setup
-			$mac = '';
-
 			// try encrypting data
 			$ciphertext = openssl_encrypt($plaintext, 'aes-256-cbc', $encKey, 0, $iv);
 
@@ -307,7 +305,7 @@
 				# check if openssl returned an error
 				while($openSSLErrorMsg = openssl_error_string())
 				{
-					$errorMsg .= ":: [ $openSSLErrorMsg ]";
+					$errorMsg .= " :: [ $openSSLErrorMsg ]";
 				}
 			}
 

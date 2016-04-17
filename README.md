@@ -34,14 +34,14 @@ It is expected to work on the following versions. If you experience any issues o
 ### Preparation
 After installing all prerequisite software, create the database and database service account.
 ```bash
-    # create database
-    mysql -e "CREATE DATABASE privypaste;"
-    
-    # best practice is to set the host field to the narrowest subset possible
-    mysql -e "CREATE USER 'privypaste'@'%' IDENTIFIED BY '<password>';"
-    
-    # set permissions for database service account
-    mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'%'; FLUSH PRIVILEGES;"
+# create database
+mysql -e "CREATE DATABASE privypaste;"
+
+# best practice is to set the host field to the narrowest subset possible
+mysql -e "CREATE USER 'privypaste'@'%' IDENTIFIED BY '<password>';"
+
+# set permissions for database service account
+mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'%'; FLUSH PRIVILEGES;"
 ```
 
 Configure Apache how you would like. You can set it up as virtual hosts, SSL or non-SSL (we recommend SSL), etc.
