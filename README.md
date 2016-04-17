@@ -42,6 +42,9 @@ mysql -e "CREATE USER 'privypaste'@'%' IDENTIFIED BY '<password>';"
 
 # set permissions for database service account
 mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'%'; FLUSH PRIVILEGES;"
+
+# if you plan on running MySQL and your HTTP server on the same device, you can limit the connectivity scope to just the localhost
+mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'127.0.0.1'; FLUSH PRIVILEGES;"
 ```
 
 Configure Apache how you would like. You can set it up as virtual hosts, SSL or non-SSL (we recommend SSL), etc.
