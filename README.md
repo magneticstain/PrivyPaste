@@ -43,7 +43,7 @@ mysql -e "CREATE USER 'privypaste'@'%' IDENTIFIED BY '<password>';"
 # set permissions for database service account
 mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'%'; FLUSH PRIVILEGES;"
 
-# if you plan on running MySQL and your HTTP server on the same device, you can limit the connectivity scope to just the localhost
+# if you plan on running MySQL and your HTTP server on the same device, you can limit the connectivity scope to just the localhost for added security
 mysql -e "GRANT SELECT, INSERT, UPDATE, DELETE ON privypaste.* TO 'privypaste'@'127.0.0.1'; FLUSH PRIVILEGES;"
 ```
 
@@ -254,6 +254,14 @@ If any errors occur, you will be notified via the error message box at the top o
 
 ### View a Paste
 To view a previous uploaded page, simply enter the URL into your browser. It will automatically display the text - both in HTML and plaintext format - along with the paste's metadata.
+
+### API
+PrivyPaste includes a HTTP API that is used by the application itself as well as any user who can connect to the webapp. Below is a description on how to use this API and the various calls available:
+
+| Method   | URL                  | Parameters                  | Example Response                                                                                            |
+| :------: | :------------------: | :-------------------------- | :---------------------------------------------------------------------------------------------------------- |
+| GET      | /api/v1/paste/get/   | **id**: paste ID            | ```{"success":1,"paste_text":"Example text.","creation_time":1461101084,"last_modified_time":1461101084}``` |
+| POST     | /api/v1/paste/add/   | **text**: raw text of paste | ```{"success":1,"paste_id":"39856e06"}```                                                                   |
 
 ## Contributing
 We would love it if you decided to help contribute to PrivyPaste! Whether it's by fixing/creating bug reports, suggesting ideas, improving documentation - whatever it is you're good at.
