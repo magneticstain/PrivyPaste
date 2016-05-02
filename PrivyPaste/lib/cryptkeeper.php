@@ -65,17 +65,17 @@
 			// check if the key file exists, and if not, create it
 			if(!file_exists($filename))
 			{
-				if(!@touch($filename))
-				{
-					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not create key file :: [ '.$filename.' ]');
-
-					return false;
-				}
-				else
+				if(@touch($filename))
 				{
 					// set file permissions
 					chgrp($filename,'www-data');
 					chmod($filename,0775);
+				}
+				else
+				{
+					error_log('PrivyPaste :: CryptKepper() -> writeKeyToFile() :: File Handle Error :: could not create key file :: [ '.$filename.' ]');
+
+					return false;
 				}
 			}
 
@@ -184,13 +184,18 @@
 
 			$UID = '';
 			$numRandomBytes = 4;
-			$cryptographicallySecureBitStream = true;
+			$usedSecureAlgorithm = false;
 
 			// generate cryptographically-secure bitstream
-			if($binaryString = openssl_random_pseudo_bytes($numRandomBytes, $cryptographicallySecureBitStream))
+			if($binaryString = openssl_random_pseudo_bytes($numRandomBytes, $usedSecureAlgorithm))
 			{
-				// convert bitstream to hex
-				$UID = bin2hex($binaryString);
+				// paste UID was generated using OpenSSL functions
+				// check if it was generated using a secure algorithm
+				if($usedSecureAlgorithm)
+				{
+					// paste UID was generated using a secure algorithm, convert bitstream to hex
+					$UID = bin2hex($binaryString);
+				}
 			}
 
 			return $UID;
@@ -237,7 +242,7 @@
 				// check if openssl returned an error
 				while($openSSLErrorMsg = openssl_error_string())
 				{
-					$errorMsg .= ":: [ $openSSLErrorMsg ]";
+					$errorMsg .= " :: [ $openSSLErrorMsg ]";
 				}
 
 				error_log($errorMsg);
@@ -285,12 +290,12 @@
 
 			// split hmac and ciphertext
 			$encryptedData = explode('.', $ciphertext);
-			$hmac = $encryptedData[0];
-			$ciphertext = $encryptedData[1];
+			$origHmac = $encryptedData[0];
+			$origCiphertext = $encryptedData[1];
 
 			// authenticate ciphertext integrity using mac
-			$calculatedHMAC = hash_hmac('sha256', $ciphertext, $hmacKey, false);
-			if($calculatedHMAC !== $hmac)
+			$calculatedHMAC = hash_hmac('sha256', $origCiphertext, $hmacKey, false);
+			if($calculatedHMAC !== $origHmac)
 			{
 				error_log('PrivyPaste :: CryptKepper() -> decryptString() :: HMAC Error :: message failed HMAC authentication');
 
@@ -298,7 +303,7 @@
 			}
 
 			// try decrypting data
-			if(!$plaintext = openssl_decrypt($ciphertext, 'aes-256-cbc', $encKey, 0, $iv))
+			if(!$plaintext = openssl_decrypt($origCiphertext, 'aes-256-cbc', $encKey, 0, $iv))
 			{
 				$errorMsg = 'PrivyPaste :: CryptKepper() -> decryptString() :: OpenSSL Error';
 

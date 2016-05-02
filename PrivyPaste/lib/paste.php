@@ -22,7 +22,14 @@
 	    protected $iv = '';
 	    private $logger;
 
-        public function __construct($plaintext = '', $ciphertext = '', $pasteUid = '00000000', $creationTime = 0, $lastModifiedTime = 0, $pasteId = 0, $iv = '')
+        public function __construct(
+	        $plaintext = '',
+	        $ciphertext = '',
+	        $pasteUid = '00000000',
+	        $creationTime = 0,
+	        $lastModifiedTime = 0,
+	        $pasteId = 0,
+	        $iv = '')
         {
             // set object vars
 	        $this->logger = new Logger();
@@ -60,7 +67,7 @@
             // normalize to integer
             $pasteId = (int) $pasteId;
 
-            if($pasteId >= 0)
+            if(0 <= $pasteId)
             {
                 // valid id
                 $this->pasteId = $pasteId;
@@ -88,8 +95,8 @@
 		    // normalize to string
 		    $pasteUid = (string) $pasteUid;
 
-		    // UID is an alphanumeric string
-		    // normally 8 chars, but adjustments may be made to accomedate larger installs
+		    // check if UID is an alphanumeric string
+		    // normally 8 chars, but adjustments may be made here to accommodate larger installs
 		    if(ctype_alnum($pasteUid) && strlen($pasteUid) === 8)
 		    {
 			    // valid UID
@@ -349,7 +356,7 @@
 			 *      - NONE
 			 *
 			 *  Usage:
-			 *      - encrypt whatever is set as $plaintext to $ciphertext
+			 *      - encrypt whatever is set as $this->plaintext to $this->ciphertext
 			 *
 			 *  Returns:
 			 *      - boolean
@@ -453,7 +460,7 @@
 			*      - integer
 			*/
 
-		    // get UID
+		    // generate UID
 		    $pasteUid = CryptKeeper::generateUniquePasteID();
 
 		    // convert IV to hex string
@@ -476,7 +483,7 @@
 			    $sqlResults = $db->queryDb($sql, 'insert', $sqlParams);
 
 			    // execute query
-			    if($sqlResults >= 1)
+			    if(1 <= $sqlResults)
 			    {
 				    // query executed successfully, return paste UID
 				    return $pasteUid;
@@ -484,7 +491,7 @@
 			    else
 			    {
 				    // set error msg
-				    $this->logger->setLogMsg('could not insert paste into database [PUID: '.$pasteUid.']');
+				    $this->logger->setLogMsg('could not insert paste into database :: [PUID: '.$pasteUid.']');
 			    }
 		    }
 		    else
@@ -496,8 +503,8 @@
 		    $this->logger->setLogSrcFunction('Paste() -> sendPasteDataToDb()');
 		    $this->logger->writeLog();
 
-		    // if anything fails, return -1 as a string val
-		    return '-1';
+		    // if anything fails, return -1
+		    return -1;
 	    }
 
 	    public function retrievePasteDataFromDb($db, $pasteUid)
@@ -516,6 +523,9 @@
 			 *      - bool
 		     */
 
+		    // normalize paste UID as stirng
+		    $pasteUid = (string) $pasteUid;
+
 			// craft select sql query
 		    $sql = "SELECT id, uid, created, last_modified, ciphertext, initialization_vector FROM pastes WHERE uid = :paste_uid LIMIT 1";
 
@@ -526,10 +536,11 @@
 
 		    // execute and get result
 		    $sqlResults = $db->queryDb($sql, 'select', $sqlParams);
+
+		    // results should have exactly one row returned
 		    if($sqlResults !== false && count($sqlResults) === 1)
 		    {
 				// got results
-
 			    // convert IV from hex to binary data
 			    $IV = hex2bin($sqlResults[0]['initialization_vector']);
 
@@ -546,7 +557,7 @@
 		    else
 		    {
 			    // set error msg
-			    $this->logger->setLogMsg('could not retrieve paste from database [PUID: '.$pasteUid.']');
+			    $this->logger->setLogMsg('could not retrieve paste from database :: [PUID: '.$pasteUid.']');
 
 			    // log an error
 			    $this->logger->setLogSrcFunction('Paste() -> retrievePasteDataFromDb()');

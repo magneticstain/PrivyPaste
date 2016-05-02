@@ -61,7 +61,6 @@
 
 		// get paste ciphertext from db
 		// create Db() object for db connection
-		$db = '';
 		try
 		{
 			$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
@@ -72,13 +71,14 @@
 
 		// connect to db
 		// if connection was successful, try to retrieve encrypted paste
-		if($db->createDbConnection())
+		if(isset($db) && $db->createDbConnection())
 		{
 			// connection is good, get text
 			if($paste->retrievePasteDataFromDb($db, $pasteUid))
 			{
 				// paste was retrieved successfully
-				// decrypt the current ciphertext
+				// value from db is now set as the current ciphertext
+				// decrypt the db ciphertext
 				if($paste->decryptCiphertext())
 				{
 					// ciphertext was successfully decrypted, return new plaintext and paste metadata to user

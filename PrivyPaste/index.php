@@ -36,7 +36,7 @@
 		$logger = new Logger();
 	} catch(\Exception $e)
 	{
-		die('FATAL ERROR: unable to start logging functionality');
+		die('[FATAL] :: unable to start logging functionality');
 	}
 
 	// get URL for links
@@ -45,7 +45,7 @@
 		$fullUrl = PrivyPaste::getServerUrl(BASE_URL_DIR);
 	} catch(\Exception $e)
 	{
-		$logger->setLogMsg('could not get server URL :: using base URL dir ['.BASE_URL_DIR.']');
+		$logger->setLogMsg('[WARN] :: could not get server URL :: using base URL dir ['.BASE_URL_DIR.']');
 		$logger->setLogSrcFunction('main()');
 		$logger->writeLog();
 	}
@@ -57,14 +57,14 @@
 		$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
 	} catch(\Exception $e)
 	{
-		$logMessage = 'unable to create database object';
+		$logMessage = '[FATAL] :: unable to create database object :: Please check database availability!';
 
-		$logger->setLogMsg('[FATAL] :: '.$logMessage.' :: Please check database availability!');
+		$logger->setLogMsg($logMessage);
 		$logger->setLogSrcFunction('main()');
 		$logger->writeLog();
 
 		# kill everything
-		die('FATAL ERROR: '.$logMessage);
+		die($logMessage);
 	}
 
 	// format user-facing error message if not blank
@@ -79,14 +79,14 @@
 		$privypaste = new PrivyPaste($db, $content, $errorMsg, $fullUrl);
 	} catch(\Exception $e)
 	{
-		$logMessage = 'unable to start app engine';
+		$logMessage = '[FATAL] :: unable to start app engine :: Please check application availability!';
 
-		$logger->setLogMsg('[FATAL] :: '.$logMessage.' :: Please check application availability!');
+		$logger->setLogMsg($logMessage);
 		$logger->setLogSrcFunction('main()');
 		$logger->writeLog();
 
 		# kill everything
-		die('FATAL ERROR: '.$logMessage);
+		die($logMessage);
 	}
 
 	// set content

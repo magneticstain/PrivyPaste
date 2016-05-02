@@ -1,15 +1,15 @@
 <?php
     namespace PrivyPaste;
 
-    /**
- *  PrivyPaste
- *  Author: Josh Carlson
- *  Email: jcarlson(at)carlso(dot)net
- */
+	/**
+	 *  PrivyPaste
+	 *  Author: Josh Carlson
+	 *  Email: jcarlson(at)carlso(dot)net
+	 */
 
-    /*
-     *  databaser.php - a class for database connections [CURRENTLY: MYSQL]
-     */
+	/*
+	 *  databaser.php - a class for database connections [CURRENTLY: MYSQL]
+	 */
 
     class Databaser
     {
@@ -292,7 +292,7 @@
 			    $this->logger->writeLog();
 		    }
 
-		    // if connection was successful, attempt paste insertion
+		    // if connection was successful, set object variable
 		    if($dbConn !== '')
 		    {
 			    $this->dbConn = $dbConn;
@@ -360,33 +360,29 @@
 		    $dbStmt = $this->dbConn->prepare($sql);
 
 			// bind any params
-		    if(count($sqlParams) > 0)
-		    {
-			    // params were sent, start binding
-				foreach($sqlParams as $sqlParamName => $bindVal)
+			foreach($sqlParams as $sqlParamName => $bindVal)
+			{
+				// check if data type of bind value was set and is valid
+				if(isset($bindVal[1]) && ($bindVal[1] === 'i' || $bindVal[1] === 's'))
 				{
-					// check if data type of bind value was set and is valid
-					if(isset($bindVal[1]) && ($bindVal[1] === 'i' || $bindVal[1] === 's'))
+					// data type was explicitly set, binding value based on data type
+					if($bindVal[1] === 'i')
 					{
-						// data type was explicitly set, binding value based on data type
-						if($bindVal[1] === 'i')
-						{
-							// bind as integer
-							$dbStmt->bindValue($sqlParamName, $bindVal[0], \PDO::PARAM_INT);
-						}
-						elseif($bindVal[1] === 's')
-						{
-							// bind as string
-							$dbStmt->bindValue($sqlParamName, $bindVal[0], \PDO::PARAM_STR);
-						}
+						// bind as integer
+						$dbStmt->bindValue($sqlParamName, $bindVal[0], \PDO::PARAM_INT);
 					}
-					else
+					elseif($bindVal[1] === 's')
 					{
-						// no explicit data type set, assuming default
-						$dbStmt->bindValue($sqlParamName, $bindVal);
+						// bind as string
+						$dbStmt->bindValue($sqlParamName, $bindVal[0], \PDO::PARAM_STR);
 					}
 				}
-		    }
+				else
+				{
+					// no explicit data type set, assuming default
+					$dbStmt->bindValue($sqlParamName, $bindVal);
+				}
+			}
 
 		    // execute and get result
 		    if($dbStmt->execute())
@@ -421,12 +417,14 @@
 		    }
 		    else
 		    {
-			    // log error
+			    // get PDO error
 			    $dbStmtErrorInfo = $dbStmt->errorInfo();
-			    $this->logger->setLogMsg('BAD SQL QUERY: '.$dbStmtErrorInfo[2]);
+
+			    // log error
+			    $this->logger->setLogMsg('BAD SQL QUERY :: '.$dbStmtErrorInfo[2]);
 			    $this->logger->setLogSrcFunction('Databaser() -> queryDb()');
 			    $this->logger->writeLog();
-			    $this->logger->setLogMsg('QUERY: '.$sql);
+			    $this->logger->setLogMsg('QUERY :: '.$sql);
 			    $this->logger->writeLog();
 		    }
 

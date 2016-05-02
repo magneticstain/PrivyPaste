@@ -112,7 +112,7 @@
 			 */
 
 			// normalize $logLvl
-			$logLvl = (int)$logLvl;
+			$logLvl = (int) $logLvl;
 
 			// valid log levels are [0-4]
 			if(0 <= $logLvl && $logLvl <= 4)
@@ -165,7 +165,7 @@
 			 */
 
 			// if file exists, check to see if it is writable
-			if(file_exists($logFilename) && !is_writable($logFilename))
+			if(!file_exists($logFilename) || !is_writable($logFilename))
 			{
 				return false;
 			}
@@ -279,7 +279,7 @@
 			$logMessage = 'PrivyPaste :: '.$this->logSrcFunction.' :: '.$this->logMsg;
 
 			# send error via email if email is not blank and log level is set to 1
-			if($this->logEmail !== '' && $this->logLvl === 3)
+			if($this->logEmail !== '' && $this->logLvl === 1)
 			{
 				// email error log
 				error_log($logMessage, $this->logLvl, $this->logEmail);

@@ -8,7 +8,7 @@
 	 */
 
 	/*
-	 *  api/$current_version/paste/add/ - api feature to insert a new, encrypted paste into the database
+	 *  api/$current_version/paste/add/ - api feature to insert a new paste into the database
 	 */
 
 	//
@@ -32,15 +32,15 @@
 	//
 	function checkForRawTxt()
 	{
-		// check for raw text sent via GET var
+		// check for raw text sent via POST var
 		if(isset($_POST['text']))
 		{
-			// text var is set an non-empty
+			// text var is set as non-empty
 			return $_POST['text'];
 		}
 
-		// in all other cases, return false
-		return false;
+		// in all other cases, return blank string
+		return '';
 	}
 
 	//
@@ -53,11 +53,10 @@
 
 	// check if plaintext was sent
 	$plainText = checkForRawTxt();
-	if($plainText !== false)
+	if($plainText !== '')
 	{
 		// plaintext is set
 		// create new paste object
-		$paste = '';
 		try
 		{
 			$paste = new Paste($plainText);
@@ -67,7 +66,7 @@
 		}
 
 		// check if paste() creation was successful
-		if(!isset($jsonOutput['error']))
+		if(!isset($jsonOutput['error']) && isset($paste))
 		{
 			// encrypt plaintext within object
 			if($paste->encryptPlaintext())

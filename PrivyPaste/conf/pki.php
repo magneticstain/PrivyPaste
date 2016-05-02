@@ -11,6 +11,6 @@
      */
 
 	// KEY FILES
-	define('ENC_KEY_FILE', '/var/www/html/PrivyPaste/pki/encryption_key.bin');
-	define('HMAC_KEY_FILE', '/var/www/html/PrivyPaste/pki/hmac_key.bin');
+	define('ENC_KEY_FILE', '/opt/privypaste/web/PrivyPaste/pki/encryption_key.bin');
+	define('HMAC_KEY_FILE', '/opt/privypaste/web/PrivyPaste/pki/hmac_key.bin');
 ?>

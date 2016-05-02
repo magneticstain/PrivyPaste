@@ -12,7 +12,6 @@
 function changeUploadButton(newUploadButtonHTML, doFade, f)
 {
     // change html inside upload button div to given text, with or without fading
-//    console.log('NEW HTML:' + newUploadButtonHTML);
 
     // check for valid new html
     if(newUploadButtonHTML.trim())

@@ -2,10 +2,10 @@
 	namespace PrivyPaste;
 
 	/*
-	*  PrivyPaste
-	*  Author: Josh Carlson
-	*  Email: jcarlson(at)carlso(dot)net
-	*/
+	 *  PrivyPaste
+	 *  Author: Josh Carlson
+	 *  Email: jcarlson(at)carlso(dot)net
+	 */
 
     /*
      *  privypaste.php - class containing functions and data pertaining to the entire webapp
@@ -39,6 +39,32 @@
 	    }
 
 	    // SETTERS
+	    public function setUrl($url)
+	    {
+		    /*
+             *  Params:
+             *      - $url
+		     *          - full URL to access PrivyPaste
+             *
+             *  Usage:
+             *      - verifies and sets the URL of the PrivyPaste site
+             *
+             *  Returns:
+             *      - boolean
+             */
+
+		    // $url must be in a valid format. whether it's the correct URL will be validated during testing by the user
+		    if(filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false)
+		    {
+			    // valid URL
+			    $this->url = $url;
+
+			    return true;
+		    }
+
+		    return false;
+	    }
+
 	    public function setErrorMsg($errorMsg)
 	    {
 		    /*
@@ -54,7 +80,7 @@
              */
 
 		    // normalize param to string
-		    $errorMsg = (string)$errorMsg;
+		    $errorMsg = (string) $errorMsg;
 
 		    // there are no limitations on what the error message can be, so we can just set it
 		    $this->errorMsg = $errorMsg;
@@ -77,7 +103,7 @@
              */
 
 		    // normalize param to string
-		    $subTitle = (string)$subTitle;
+		    $subTitle = (string) $subTitle;
 
 		    // there are no limitations on what the subtitle can be, so we can just set it
 		    $this->subTitle = $subTitle;
@@ -124,32 +150,6 @@
 		    $this->dbConn = $dbConn;
 
 		    return true;
-	    }
-
-	    public function setUrl($url)
-	    {
-		    /*
-             *  Params:
-             *      - $url
-		     *          - full URL to access PrivyPaste
-             *
-             *  Usage:
-             *      - verifies and sets the URL of the PrivyPaste site
-             *
-             *  Returns:
-             *      - boolean
-             */
-
-		    // $url must be in a valid format. whether it's the correct URL will be validated during testing by the user
-		    if(filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false)
-		    {
-			    // valid URL
-			    $this->url = $url;
-
-			    return true;
-		    }
-
-		    return false;
 	    }
 
 	    // GETTERS
@@ -364,7 +364,7 @@
              */
 
 		    // normalize $numberPastes
-		    $numPastes = (int)$numPastes;
+		    $numPastes = (int) $numPastes;
 
 		    // craft sql query
 		    $sql = "SELECT uid, last_modified, ciphertext, initialization_vector FROM pastes ORDER BY last_modified DESC LIMIT :num_pastes";
@@ -471,6 +471,12 @@
 
 		    // anything goes wrong, set error message and return 0
 		    $this->errorMsg = 'Unable to access paste database. Please contact your system administrator.';
+
+		    # log error
+		    $this->logger->setLogMsg('could not connect to database :: using user ['.$this->dbConn->getUsername().']');
+		    $this->logger->setLogSrcFunction('PrivyPaste() -> getTotalPastes()');
+		    $this->logger->writeLog();
+
 		    return 0;
 	    }
 
@@ -493,8 +499,8 @@
 
 		    // generate and return html
 		    $recentPasteHtml = '<strong>Most Recent Pastes: </strong>';
-		    // check if there were any pastes returned or
-		    if(count($recentPastes) < 1)
+		    // check if there were any pastes returned
+		    if(count($recentPastes) <= 0)
 		    {
 			    // no pastes created yet
 			    $recentPasteHtml .= '<p>No pastes have been created yet!</p>';
@@ -559,8 +565,10 @@
 		    // get total number of pastes which will be displayed in the header's subtitle
 		    $totalPastes = $this->getTotalPastes();
 
-		    // check if user is logged in TODO
+		    // ################################
+		    // TODO check if user is logged in
 		    $isLoggedIn = false;
+		    // ################################
 
 		    if($isLoggedIn)
 		    {
@@ -628,6 +636,8 @@
 
 			    $rawPasteData = file_get_contents($apiUrl, false, stream_context_create($fileGetContentsOptions));
 		    }
+
+		    // decode results
 		    $pasteJson = json_decode($rawPasteData);
 
 		    // see if API query was successful
