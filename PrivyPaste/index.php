@@ -36,7 +36,7 @@
 		$logger = new Logger();
 	} catch(\Exception $e)
 	{
-		die('[FATAL] :: unable to start logging functionality');
+		die('[FATAL] :: unable to start logging functionality :: '.$e->getMessage());
 	}
 
 	// get URL for links
@@ -57,7 +57,7 @@
 		$db = new Databaser(DB_USER, DB_PASS, DB_HOST, DB_NAME);
 	} catch(\Exception $e)
 	{
-		$logMessage = '[FATAL] :: unable to create database object :: Please check database availability!';
+		$logMessage = '[FATAL] :: unable to create database object :: Please check database availability! :: '.$e->getMessage();
 
 		$logger->setLogMsg($logMessage);
 		$logger->setLogSrcFunction('main()');
@@ -79,7 +79,7 @@
 		$privypaste = new PrivyPaste($db, $content, $errorMsg, $fullUrl);
 	} catch(\Exception $e)
 	{
-		$logMessage = '[FATAL] :: unable to start app engine :: Please check application availability!';
+		$logMessage = '[FATAL] :: unable to start app engine :: Please check application availability! :: '.$e->getMessage();
 
 		$logger->setLogMsg($logMessage);
 		$logger->setLogSrcFunction('main()');

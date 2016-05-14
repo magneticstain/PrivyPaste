@@ -19,7 +19,7 @@
 		protected $logEmail;
 		protected $logFile;
 
-		public function __construct($logMsg = '', $logSrcFunction = 'Logger()', $logLvl = 0, $logEmail = '', $logFile = '')
+		public function __construct($logMsg = '', $logSrcFunction = 'Logger()', $logLvl = 0, $logEmail = '', $logFile = '/')
 		{
 			/*
 			 * Params:
@@ -165,7 +165,7 @@
 			 */
 
 			// if file exists, check to see if it is writable
-			if(!file_exists($logFilename) || !is_writable($logFilename))
+			if($logFilename !== '' && (!file_exists($logFilename) || !is_writable($logFilename)))
 			{
 				return false;
 			}
