@@ -776,6 +776,7 @@
 								<div id="logo">
 									<a href="'.$this->url.'">
 										<img src="'.BASE_URL_DIR.'media/icons/paper_airplane.png" alt="Welcome to PrivyPaste!" />
+										<br />
 										<h1 class="accent">Privy</h1><h1>Paste</h1>
 									</a>
 								</div>

@@ -19,7 +19,7 @@
 		protected $logEmail;
 		protected $logFile;
 
-		public function __construct($logMsg = '', $logSrcFunction = 'Logger()', $logLvl = 0, $logEmail = '', $logFile = '/')
+		public function __construct($logMsg = '', $logSrcFunction = 'Logger()', $logLvl = 0, $logEmail = '', $logFile = '')
 		{
 			/*
 			 * Params:
