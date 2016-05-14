@@ -217,14 +217,12 @@ SSLCryptoDevice builtin
 Verify that PHP is installed along with the proper packages for it to work with Apache, and we should be set to install the application files.
   
 ### Installation
-Once the public and private keys have been created, and the prereq software installed, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. 
-
-The installation script can be found in the root folder of the application files and is called `install.sh`.
+Once the prereq software is installed, configured, and running, run the installation script which will guide you through the rest of the process of setting up PrivyPaste. The installation script can be found in `$APP_FILES/install/` and is called `install.sh`.
 
 ### Configuration
 After the application has been installed, we can configure it.
 
-#### Database Settings
+#### Database Configs
 One thing that needs configuration by the user with this application are the database settings. The file for this is located at `/opt/privypaste/web/PrivyPaste/conf/db.php`.
 Open up this file for editing and add in each field with the values for your installation. An example is included below:
 ```
