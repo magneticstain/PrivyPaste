@@ -85,13 +85,6 @@ echo "$lgHr"
 echo "	PrivyPaste Installer v2.0 "
 echo "$lgHr"
 
-# prompt for key generation
-createKey=$(promptUser 'Create key? [y/n]: ')
-if [[ "$createKey" == "y" || "$createKey" == "Y" ]]
-then
-	createKey
-fi
-
 # install db schema
 echo "$medHr"
 echo " Installing database schema... "
@@ -119,5 +112,12 @@ fi
 # move application files
 installApplicationFiles
 echo "Application files and directories installed succesfully!"
+
+# prompt for key generation
+createKey=$(promptUser 'Create key? [y/n]: ')
+if [[ "$createKey" == "y" || "$createKey" == "Y" ]]
+then
+	createKey
+fi
 
 echo "Installation complete!"
