@@ -340,8 +340,8 @@ If you would like to submit a pull request, we only ask that you follow the codi
 
 ### Bug Reporting and Responsible Disclosure
 #### Bugs
-If you find a bug with PrivyPaste - let us know! We try to improve PrivyPaste everyday, but we can't catch everything. 
-If you would like to let us know about a bug, please submit a bug report using the issue tracker for this project (located to your right). Please try to be as thorough as possible to help speed up remediation.
+If you find a bug with PrivyPaste, let us know! We try to improve PrivyPaste everyday, but we can't catch everything. 
+If you would like to let us know about a bug, please submit a bug report using the issue tracker for this project (located toward the top of the page). Please try to be as thorough as possible to help speed up remediation.
 
 #### Security Issues/Responsible Disclosure
 If you find a security vulnerability or general security issue, let us know about that too. You can use the issue tracker for this project (located to your right), or if it is a 
