@@ -100,6 +100,10 @@
 	{
 		// generate paste display content and append to $content
 		$content .= $privypaste->generatePasteContentHtml($_GET['p'], true);
+
+		// set Cache-Control header for client-side cache control
+		// only set if we're displaying a paste - the home page is dynamic
+		PrivyPaste::setCacheControlHTTPHeader();
 	}
 	else
 	{
@@ -121,9 +125,6 @@
 
 	// set context after it's been updated to reflect the paste UID GET variable
 	$privypaste->setContent($content);
-
-	// set Cache-Control header for client-side cache control
-	PrivyPaste::setCacheControlHTTPHeader();
 
 	// echo out the html
 	echo $privypaste;
