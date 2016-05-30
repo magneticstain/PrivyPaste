@@ -1,3 +1,4 @@
+# Rewrite paste requests
 RewriteEngine On
 
 RewriteCond %{SCRIPT_FILENAME} !-d
@@ -5,3 +6,9 @@ RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !(\.css|\.js|\.png|\.jpg|\.gif|robots\.txt)$ [NC]
 
 RewriteRule ^paste/(.*)$ ./index.php?p=$1 [NC]
+
+# cache static data
+<FilesMatch "(?i)^.*\.(ico|flv|jpg|jpeg|png|gif|js|css)$">
+ExpiresActive On
+ExpiresDefault A2592000
+</FilesMatch>

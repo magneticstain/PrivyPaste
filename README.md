@@ -52,6 +52,7 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
     * the DocumentRoot directive must be set to the application file directory (/opt/privypaste/web by default)
     * the directory section for the application files has the `AllowOverride All` directive. [More info on that directive can be found here.](https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride)
     * mod_rewrite is turned on
+    * mod_expires is turned on
   * Example Apache configs are show below, and should work with most installations.
   
 #### Ubuntu-based OS
