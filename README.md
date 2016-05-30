@@ -258,6 +258,16 @@ PrivyPaste includes a HTTP API that is used by the application itself as well as
 | GET      | /api/v1/paste/get/   | **id**: paste ID            | ```{"success":1,"paste_text":"Example text.","creation_time":1461101084,"last_modified_time":1461101084}``` |
 | POST     | /api/v1/paste/add/   | **text**: raw text of paste | ```{"success":1,"paste_id":"39856e06"}```                                                                   |
 
+
+## Releases
+### Cadence
+PrivyPaste's release cadence is normally a 180 day schedule. That means you can expect to see a new release of PrivyPaste about once every 6 months, or 2 per year. The spring release
+is made available around March, while the fall release is done around September.
+
+### Schema
+We are working towards moving to a tick-tock model of releases, similar to Intel. The spring release focuses on new features and improvements, while the fall release focuses on bug fixes,
+improved stability, and better performance.
+
 ## Contributing
 We would love it if you decided to help contribute to PrivyPaste! Whether it's by fixing/creating bug reports, suggesting ideas, improving documentation - whatever it is you're good at.
 
