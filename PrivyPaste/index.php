@@ -122,6 +122,9 @@
 	// set context after it's been updated to reflect the paste UID GET variable
 	$privypaste->setContent($content);
 
+	// set Cache-Control header for client-side cache control
+	PrivyPaste::setCacheControlHTTPHeader();
+
 	// echo out the html
 	echo $privypaste;
 ?>

@@ -348,6 +348,30 @@
 		    return $timeAgo;
 	    }
 
+	    public static function setCacheControlHTTPHeader($numSecsUntilExp = 2592000)
+	    {
+		    /*
+             *  Params:
+             *      - $numSecsUntilExp
+		     *          - amount of seconds until the browser should consider the page expired and require a server-side request
+		     *          - default is 2592000s or 30 days
+             *
+             *  Usage:
+             *      - sets the HTTP header 'Cache-Control' in order to better control client-side (browser) caching
+             *
+             *  Returns:
+             *      - bool
+             */
+
+		    // cast expiration timespan as int
+		    $numSecsUntilExp = (int)$numSecsUntilExp;
+
+		    // set header
+		    header('Cache-Control: max-age='.$numSecsUntilExp);
+
+		    return true;
+	    }
+
 	    // DATA GATHERING
 	    public function getMostRecentlyModifiedPastes($numPastes = 5)
 	    {
@@ -750,13 +774,6 @@
 						<!-- CSS -->
 						<link rel="stylesheet" type="text/css" href="'.BASE_URL_DIR.'css/master.css" />
 
-						<!-- js -->
-						<script src="'.BASE_URL_DIR.'js/jquery-1.11.1.min.js"></script>
-						<script src="'.BASE_URL_DIR.'js/jquery.global.js"></script>
-						<script src="'.BASE_URL_DIR.'js/jquery.errorator.js"></script>
-						<script src="'.BASE_URL_DIR.'js/jquery.textual.js"></script>
-						<script src="'.BASE_URL_DIR.'js/jquery.controller.js"></script>
-						<script src="'.BASE_URL_DIR.'js/jquery.js"></script>
 					</head>
 					<body id="index">
 						<div id="vars">
@@ -788,6 +805,14 @@
 								<a target="_blank" href="https://github.com/magneticstain/PrivyPaste">Project Home</a> | <a target="_blank" href="http://opensource.org/licenses/MIT">The MIT License (MIT)</a>
 							</footer>
 						</div>
+					
+						<!-- js -->
+						<script src="'.BASE_URL_DIR.'js/jquery-1.11.1.min.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.global.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.errorator.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.textual.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.controller.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery.js"></script>
 					</body>
 				</html>
 		    ';
