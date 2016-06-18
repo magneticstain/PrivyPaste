@@ -26,7 +26,7 @@ It is expected to work on the following versions. If you experience any issues o
 
 ### Services
 * Apache (latest version is preferable)
-* PHP 5.4<=
+* PHP 5.4 <=
 * MySQL or MariaDB, v 5.1<=
 * OpenSSL 1.0.1<=
 
