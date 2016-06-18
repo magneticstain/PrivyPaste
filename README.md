@@ -26,7 +26,7 @@ It is expected to work on the following versions. If you experience any issues o
 
 ### Services
 * Apache (latest version is preferable)
-* PHP 5.4 <=
+* PHP 5.4<=
 * MySQL or MariaDB, v 5.1<=
 * OpenSSL 1.0.1<=
 
@@ -144,6 +144,67 @@ Configure Apache how you would like. You can set it up as virtual hosts, SSL or 
 		# Requires Apache >= 2.4
 		SSLCompression off 
 	</VirtualHost>
+</IfModule>
+```
+
+#### Redhat-based OS
+```
+LoadModule ssl_module modules/mod_ssl.so
+
+Listen 443
+
+SSLPassPhraseDialog  builtin
+
+SSLSessionCache         shmcb:/var/cache/mod_ssl/scache(512000)
+SSLSessionCacheTimeout  300
+
+SSLMutex default
+
+SSLRandomSeed startup file:/dev/urandom  256
+SSLRandomSeed connect builtin
+
+SSLCryptoDevice builtin
+
+<IfModule mod_ssl.c>
+    <VirtualHost _default_:443>
+        # this is important, and must point towards this directory
+        DocumentRoot /opt/privypaste/web
+
+        <Directory /opt/privypaste/web/>
+            Options +Indexes +FollowSymLinks
+            AllowOverride All
+            Order allow,deny
+            Allow from all
+        </Directory>
+
+        LogLevel warn
+
+        ErrorLog /opt/privypaste/logs/web-errors.log
+        CustomLog /opt/privypaste/logs/web-access_log combined
+
+        SSLEngine on
+
+        # Replace these with your own TLS certificates
+        SSLCertificateFile  /etc/pki/tls/certs/localhost.crt
+        SSLCertificateKeyFile /etc/pki/tls/private/localhost.key
+
+        <FilesMatch "\.(cgi|shtml|phtml|php)$">
+            SSLOptions +StdEnvVars
+        </FilesMatch>
+
+        BrowserMatch "MSIE [2-6]" \
+            nokeepalive ssl-unclean-shutdown \
+            downgrade-1.0 force-response-1.0
+        # MSIE 7 and newer should be able to use keepalive
+        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+        # Cipherlist [ via cipherli.st ]
+        SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+        SSLProtocol All -SSLv2 -SSLv3
+        SSLHonorCipherOrder On
+        # Requires Apache >= 2.4
+        # SSLCompression off
+    </VirtualHost>
 </IfModule>
 ```
 
