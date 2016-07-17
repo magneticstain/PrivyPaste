@@ -807,7 +807,7 @@
 						</div>
 					
 						<!-- js -->
-						<script src="'.BASE_URL_DIR.'js/jquery-1.11.1.min.js"></script>
+						<script src="'.BASE_URL_DIR.'js/jquery-3.1.0.min.js"></script>
 						<script src="'.BASE_URL_DIR.'js/jquery.global.js"></script>
 						<script src="'.BASE_URL_DIR.'js/jquery.errorator.js"></script>
 						<script src="'.BASE_URL_DIR.'js/jquery.textual.js"></script>
