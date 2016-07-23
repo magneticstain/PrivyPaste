@@ -22,4 +22,7 @@ $(document).ready(function(){
 
     // [index] main text area
     mainTextarea = $('#newPasteText');
+
+    // [paste] raw paste textarea
+    pasteTextarea = $('#pastePlaintext');
 });

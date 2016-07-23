@@ -767,7 +767,7 @@
 		        <!DOCTYPE html>
 				<html>
 					<head>
-						<meta charset="utf-8"/>
+						<meta charset="utf-8" />
 						
 						<link rel="shortcut icon" type="image/x-icon" href="'.BASE_URL_DIR.'media/favicon.ico" />
 

@@ -34,6 +34,11 @@ $(document).ready(function() {
         $(this).fadeTo(400,.85);
     });
 
+    // highlight textarea of paste raw text
+    pasteTextarea.focus(function(){
+        $(this).select();
+    });
+
     /*
         CONTROLLER-ORIENTED LOGIC
      */
